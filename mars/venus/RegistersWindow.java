@@ -498,9 +498,11 @@ public class RegistersWindow extends JPanel implements Observer {
         }
 
         private String[] columnToolTips = {
-                /* name */   "Each register has a tool tip describing its usage convention",
-                /* number */ "Corresponding register number",
-                /* value */  "Current 32 bit value"
+                "Each register has a tool tip describing its usage convention", // name
+                "Corresponding register number", // register number
+                "Current 32 bit value", // value
+                "Current value encoded as an ASCII character", // ascii
+                "Annotate your registers by double clicking the cell", // annotation
         };
 
         //Implement table header tool tips.
