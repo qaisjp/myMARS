@@ -92,14 +92,16 @@ public class RegistersWindow extends JPanel implements Observer {
         col.setWidth(25);
         col.setMaxWidth(25);
 
-        table.getColumnModel().getColumn(NOTE_COLUMN).setPreferredWidth(12);
+        col = table.getColumnModel().getColumn(NOTE_COLUMN);
+        col.setPreferredWidth(12);
+
         // Display register values (String-ified) right-justified in mono font
 
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
         table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(ASCII_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(NOTE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(NOTE_COLUMN).setCellRenderer(new RegisterCellRenderer(null, SwingConstants.LEFT));
 
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
         this.setLayout(new BorderLayout()); // table display will occupy entire width if widened
@@ -278,7 +280,9 @@ public class RegistersWindow extends JPanel implements Observer {
 
         public RegisterCellRenderer(Font font, int alignment) {
             super();
-            this.font = font;
+            if (font != null) {
+                this.font = font;
+            }
             this.alignment = alignment;
         }
 
