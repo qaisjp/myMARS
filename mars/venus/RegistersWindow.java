@@ -53,7 +53,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       private static final int NAME_COLUMN = 0;
       private static final int NUMBER_COLUMN = 1;
       private static final int VALUE_COLUMN = 2;
-      private static final int ASCII_COLUMN = 2;
+      private static final int ASCII_COLUMN = 3;
       private static Settings settings;
    /**
      *  Constructor which sets up a fresh window with a table that contains the register values.
@@ -67,7 +67,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
          table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(25);
          table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(12);
          table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
-           table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(12);
+           table.getColumnModel().getColumn(ASCII_COLUMN).setPreferredWidth(12);
       	// Display register values (String-ified) right-justified in mono font
          table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
          table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
