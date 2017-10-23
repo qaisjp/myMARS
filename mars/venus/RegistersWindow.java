@@ -70,38 +70,42 @@ public class RegistersWindow extends JPanel implements Observer {
         this.highlighting = false;
         table = new MyTippedJTable(new RegTableModel(setupWindow()));
 
-        TableColumn col;
+        // Initialise cell renderers
+        // These display register values (String-ified) right-justified in mono font (except for "note", which doesn't use monospace)
+        RegisterCellRenderer cellRendererMonoLeft = new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT);
+        RegisterCellRenderer cellRendererMonoRight = new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT);
+        RegisterCellRenderer cellRendererRegularLeft = new RegisterCellRenderer(null, SwingConstants.LEFT);
+
+        TableColumn col; // current column being edited
 
         col = table.getColumnModel().getColumn(NAME_COLUMN);
         col.setPreferredWidth(40);
         col.setWidth(40);
         col.setMaxWidth(40);
+        col.setCellRenderer(cellRendererMonoLeft);
 
         col = table.getColumnModel().getColumn(NUMBER_COLUMN);
         col.setPreferredWidth(25);
         col.setWidth(25);
         col.setMaxWidth(25);
+        col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(VALUE_COLUMN);
         col.setPreferredWidth(80);
         col.setWidth(80);
         col.setMaxWidth(80);
+        col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(ASCII_COLUMN);
         col.setPreferredWidth(25);
         col.setWidth(25);
         col.setMaxWidth(25);
+        col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(NOTE_COLUMN);
         col.setPreferredWidth(12);
-
-        // Display register values (String-ified) right-justified in mono font
-
-        table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
-        table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(ASCII_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(NOTE_COLUMN).setCellRenderer(new RegisterCellRenderer(null, SwingConstants.LEFT));
+        col.setWidth(12);
+        col.setCellRenderer(cellRendererRegularLeft);
 
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
         this.setLayout(new BorderLayout()); // table display will occupy entire width if widened
@@ -494,9 +498,9 @@ public class RegistersWindow extends JPanel implements Observer {
         }
 
         private String[] columnToolTips = {
-            /* name */   "Each register has a tool tip describing its usage convention",
-            /* number */ "Corresponding register number",
-            /* value */  "Current 32 bit value"
+                /* name */   "Each register has a tool tip describing its usage convention",
+                /* number */ "Corresponding register number",
+                /* value */  "Current 32 bit value"
         };
 
         //Implement table header tool tips.
