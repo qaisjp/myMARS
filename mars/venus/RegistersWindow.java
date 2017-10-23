@@ -292,7 +292,8 @@ public class RegistersWindow extends JPanel implements Observer {
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (settings.getRegistersHighlighting() && highlighting && row == highlightRow) {
+
+            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));
