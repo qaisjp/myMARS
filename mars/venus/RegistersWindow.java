@@ -354,7 +354,9 @@ public class RegistersWindow extends JPanel implements Observer {
    * editable.
    */
         public boolean isCellEditable(int row, int col) {
-            if (col == NOTE_COLUMN) { return true; }
+            if (col == NOTE_COLUMN) {
+                return true;
+            }
 
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
