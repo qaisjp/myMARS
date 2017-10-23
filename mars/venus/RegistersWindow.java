@@ -69,12 +69,32 @@ public class RegistersWindow extends JPanel implements Observer {
         settings = Globals.getSettings();
         this.highlighting = false;
         table = new MyTippedJTable(new RegTableModel(setupWindow()));
-        table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(25);
-        table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(12);
-        table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
-        table.getColumnModel().getColumn(ASCII_COLUMN).setPreferredWidth(12);
+
+        TableColumn col;
+
+        col = table.getColumnModel().getColumn(NAME_COLUMN);
+        col.setPreferredWidth(40);
+        col.setWidth(40);
+        col.setMaxWidth(40);
+
+        col = table.getColumnModel().getColumn(NUMBER_COLUMN);
+        col.setPreferredWidth(25);
+        col.setWidth(25);
+        col.setMaxWidth(25);
+
+        col = table.getColumnModel().getColumn(VALUE_COLUMN);
+        col.setPreferredWidth(80);
+        col.setWidth(80);
+        col.setMaxWidth(80);
+
+        col = table.getColumnModel().getColumn(ASCII_COLUMN);
+        col.setPreferredWidth(25);
+        col.setWidth(25);
+        col.setMaxWidth(25);
+
         table.getColumnModel().getColumn(NOTE_COLUMN).setPreferredWidth(12);
         // Display register values (String-ified) right-justified in mono font
+
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
         table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
