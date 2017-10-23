@@ -57,6 +57,7 @@ public class RegistersWindow extends JPanel implements Observer {
     private static final int NUMBER_COLUMN = 1;
     private static final int VALUE_COLUMN = 2;
     private static final int ASCII_COLUMN = 3;
+    private static final int NOTE_COLUMN = 4;
     private static Settings settings;
 
     /**
@@ -72,11 +73,14 @@ public class RegistersWindow extends JPanel implements Observer {
         table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(12);
         table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
         table.getColumnModel().getColumn(ASCII_COLUMN).setPreferredWidth(12);
+        table.getColumnModel().getColumn(NOTE_COLUMN).setPreferredWidth(12);
         // Display register values (String-ified) right-justified in mono font
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
         table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(ASCII_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(NOTE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
         this.setLayout(new BorderLayout()); // table display will occupy entire width if widened
         this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
@@ -90,28 +94,32 @@ public class RegistersWindow extends JPanel implements Observer {
 
     public Object[][] setupWindow() {
         int valueBase = NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex());
-        tableData = new Object[35][4];
+        tableData = new Object[35][5];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = new Integer(registers[i].getNumber());
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
             tableData[i][3] = Character.toString((char) registers[i].getValue());
+            tableData[i][4] = "";
         }
         tableData[32][0] = "pc";
         tableData[32][1] = "";//new Integer(32);
         tableData[32][2] = NumberDisplayBaseChooser.formatUnsignedInteger(RegisterFile.getProgramCounter(), valueBase);
         tableData[32][3] = "?";
+        tableData[32][4] = "program counter";
 
         tableData[33][0] = "hi";
         tableData[33][1] = "";//new Integer(33);
         tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
         tableData[33][3] = "?";
+        tableData[33][4] = "hi";
 
         tableData[34][0] = "lo";
         tableData[34][1] = "";//new Integer(34);
         tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
         tableData[34][3] = "?";
+        tableData[34][4] = "?";
 
         return tableData;
     }
@@ -281,7 +289,7 @@ public class RegistersWindow extends JPanel implements Observer {
     ////////////////////////////////////////////////////////////////////////////
 
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Num", "Value", "ASCII"};
+        final String[] columnNames = {"Name", "Num", "Value", "ASCII", "Note"};
         Object[][] data;
 
         public RegTableModel(Object[][] d) {
@@ -317,6 +325,8 @@ public class RegistersWindow extends JPanel implements Observer {
    * editable.
    */
         public boolean isCellEditable(int row, int col) {
+            if (col == NOTE_COLUMN) { return true; }
+
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
             // these registers are not editable: $zero (0), $pc (32), $ra (31)
@@ -334,6 +344,11 @@ public class RegistersWindow extends JPanel implements Observer {
       	* value is valid, MIPS register is updated.
          */
         public void setValueAt(Object value, int row, int col) {
+            if (col == NOTE_COLUMN) {
+                data[row][col] = (String) value;
+                fireTableCellUpdated(row, col);
+                return;
+            }
             int val = 0;
             try {
                 val = Binary.stringToInt((String) value);
