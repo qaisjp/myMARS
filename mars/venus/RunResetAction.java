@@ -88,8 +88,8 @@ public class RunResetAction extends GuiAction {
         executePane.getTextSegmentWindow().highlightStepAtPC();
         mainUI.getRegistersPane().setSelectedComponent(executePane.getRegistersWindow());
         FileStatus.set(FileStatus.RUNNABLE);
-        mainUI.setReset(true);
-        mainUI.setStarted(false);
+        VenusUI.setReset(true);
+        VenusUI.setStarted(false);
 
         // Aug. 24, 2005 Ken Vollmar
         SystemIO.resetFiles();  // Ensure that I/O "file descriptors" are initialized for a new program run

@@ -57,10 +57,10 @@ public class RunStepAction extends GuiAction {
         executePane = mainUI.getMainPane().getExecutePane();
         boolean done = false;
         if (FileStatus.isAssembled()) {
-            if (!mainUI.getStarted()) {  // DPS 17-July-2008
+            if (!VenusUI.getStarted()) {  // DPS 17-July-2008
                 processProgramArgumentsIfAny();
             }
-            mainUI.setStarted(true);
+            VenusUI.setStarted(true);
             mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             try {
@@ -111,7 +111,7 @@ public class RunStepAction extends GuiAction {
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
         }
-        mainUI.setReset(false);
+        VenusUI.setReset(false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////

@@ -40,89 +40,89 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public interface MARSTextEditingArea {
 
     // Used by Find/Replace
-    public static final int TEXT_NOT_FOUND = 0;
-    public static final int TEXT_FOUND = 1;
-    public static final int TEXT_REPLACED_FOUND_NEXT = 2;
-    public static final int TEXT_REPLACED_NOT_FOUND_NEXT = 3;
+    int TEXT_NOT_FOUND = 0;
+    int TEXT_FOUND = 1;
+    int TEXT_REPLACED_FOUND_NEXT = 2;
+    int TEXT_REPLACED_NOT_FOUND_NEXT = 3;
 
 
-    public void copy();
+    void copy();
 
-    public void cut();
+    void cut();
 
-    public int doFindText(String find, boolean caseSensitive);
+    int doFindText(String find, boolean caseSensitive);
 
-    public int doReplace(String find, String replace, boolean caseSensitive);
+    int doReplace(String find, String replace, boolean caseSensitive);
 
-    public int doReplaceAll(String find, String replace, boolean caseSensitive);
+    int doReplaceAll(String find, String replace, boolean caseSensitive);
 
-    public int getCaretPosition();
+    int getCaretPosition();
 
-    public Document getDocument();
+    Document getDocument();
 
-    public String getSelectedText();
+    String getSelectedText();
 
-    public int getSelectionEnd();
+    int getSelectionEnd();
 
-    public int getSelectionStart();
+    int getSelectionStart();
 
-    public void select(int selectionStart, int selectionEnd);
+    void select(int selectionStart, int selectionEnd);
 
-    public void selectAll();
+    void selectAll();
 
-    public String getText();
+    String getText();
 
-    public UndoManager getUndoManager();
+    UndoManager getUndoManager();
 
-    public void paste();
+    void paste();
 
-    public void replaceSelection(String str);
+    void replaceSelection(String str);
 
-    public void setCaretPosition(int position);
+    void setCaretPosition(int position);
 
-    public void setEditable(boolean editable);
+    void setEditable(boolean editable);
 
-    public void setSelectionEnd(int pos);
+    void setSelectionEnd(int pos);
 
-    public void setSelectionStart(int pos);
+    void setSelectionStart(int pos);
 
-    public void setText(String text);
+    void setText(String text);
 
-    public void setFont(Font f);
+    void setFont(Font f);
 
-    public Font getFont();
+    Font getFont();
 
-    public boolean requestFocusInWindow();
+    boolean requestFocusInWindow();
 
-    public FontMetrics getFontMetrics(Font f);
+    FontMetrics getFontMetrics(Font f);
 
-    public void setBackground(Color c);
+    void setBackground(Color c);
 
-    public void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 
-    public void grabFocus();
+    void grabFocus();
 
-    public void redo();
+    void redo();
 
-    public void revalidate();
+    void revalidate();
 
-    public void setSourceCode(String code, boolean editable);
+    void setSourceCode(String code, boolean editable);
 
-    public void setCaretVisible(boolean vis);
+    void setCaretVisible(boolean vis);
 
-    public void setSelectionVisible(boolean vis);
+    void setSelectionVisible(boolean vis);
 
-    public void undo();
+    void undo();
 
-    public void discardAllUndoableEdits();
+    void discardAllUndoableEdits();
 
-    public void setLineHighlightEnabled(boolean highlight);
+    void setLineHighlightEnabled(boolean highlight);
 
-    public void setCaretBlinkRate(int rate);
+    void setCaretBlinkRate(int rate);
 
-    public void setTabSize(int chars);
+    void setTabSize(int chars);
 
-    public void updateSyntaxStyles();
+    void updateSyntaxStyles();
 
-    public Component getOuterComponent();
+    Component getOuterComponent();
 }

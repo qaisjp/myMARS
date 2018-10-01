@@ -361,11 +361,7 @@ public class RegistersWindow extends JPanel implements Observer {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
             // these registers are not editable: $zero (0), $pc (32), $ra (31)
-            if (col == VALUE_COLUMN && row != 0 && row != 32 && row != 31) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN && row != 0 && row != 32 && row != 31;
         }
 
 
@@ -376,7 +372,7 @@ public class RegistersWindow extends JPanel implements Observer {
          */
         public void setValueAt(Object value, int row, int col) {
             if (col == NOTE_COLUMN) {
-                data[row][col] = (String) value;
+                data[row][col] = value;
                 fireTableCellUpdated(row, col);
                 return;
             }

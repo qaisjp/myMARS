@@ -865,7 +865,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider) e.getSource();
                 if (!source.getValueIsAdjusting()) {
-                    delayLengthIndex = (int) source.getValue();
+                    delayLengthIndex = source.getValue();
                     transmitDelayInstructionCountLimit = generateDelay();
                 } else {
                     sliderLabel.setText(setLabel(source.getValue()));
@@ -880,7 +880,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     //
 
     private interface TransmitterDelayTechnique {
-        public int generateDelay(double parameter);
+        int generateDelay(double parameter);
     }
 
     // Delay value is fixed, and equal to slider value.

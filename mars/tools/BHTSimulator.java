@@ -192,7 +192,7 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
         m_gui.getTaLog().setText("");
         m_bhtModel.initBHT(((Integer) m_gui.getCbBHTentries().getSelectedItem()).intValue(),
                 ((Integer) m_gui.getCbBHThistory().getSelectedItem()).intValue(),
-                ((String) m_gui.getCbBHTinitVal().getSelectedItem()).equals(BHTSimGUI.BHT_TAKE_BRANCH));
+                m_gui.getCbBHTinitVal().getSelectedItem().equals(BHTSimGUI.BHT_TAKE_BRANCH));
 
         m_pendingBranchInstAddress = 0;
         m_lastBranchTaken = false;
@@ -275,9 +275,9 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
         }
 
         if (0x04 <= opCode && opCode <= 0x07) return true; // beq, bne, blez, bgtz
-        if (0x14 <= opCode && opCode <= 0x17) return true; // beql, bnel, blezl, bgtzl
+        // beql, bnel, blezl, bgtzl
+        return 0x14 <= opCode && opCode <= 0x17;
 
-        return false;
     }
 
 

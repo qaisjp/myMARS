@@ -62,11 +62,8 @@ public class MIFDumpFormat { //extends AbstractDumpFormat {
      *                     must be on word boundary.
      * @param lastAddress  last (highest) memory address to dump.  In bytes but
      *                     must be on word boundary.  Will dump the word that starts at this address.
-     * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
-     * @throws IOException           if error occurs during file output.
      */
-    public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
-            throws AddressErrorException, IOException {
+    public void dumpMemoryRange(File file, int firstAddress, int lastAddress) {
 
     }
 }

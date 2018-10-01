@@ -86,7 +86,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 00000 00000 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 // Hey I like this so far!
                             }
                         }));
@@ -156,7 +156,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -169,7 +169,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -182,7 +182,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001001 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -195,7 +195,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff sssss 00000 00000 011000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (long) RegisterFile.getValue(operands[0])
                                         * (long) RegisterFile.getValue(operands[1]);
@@ -210,7 +210,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff sssss 00000 00000 011001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (((long) RegisterFile.getValue(operands[0])) << 32 >>> 32)
                                         * (((long) RegisterFile.getValue(operands[1])) << 32 >>> 32);
@@ -225,7 +225,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "011100 sssss ttttt fffff 00000 000010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (long) RegisterFile.getValue(operands[1])
                                         * (long) RegisterFile.getValue(operands[2]);
@@ -242,7 +242,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "011100 fffff sssss 00000 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (long) RegisterFile.getValue(operands[0])
                                         * (long) RegisterFile.getValue(operands[1]);
@@ -260,7 +260,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "011100 fffff sssss 00000 00000 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (((long) RegisterFile.getValue(operands[0])) << 32 >>> 32)
                                         * (((long) RegisterFile.getValue(operands[1])) << 32 >>> 32);
@@ -278,7 +278,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "011100 fffff sssss 00000 00000 000100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (long) RegisterFile.getValue(operands[0])
                                         * (long) RegisterFile.getValue(operands[1]);
@@ -296,7 +296,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "011100 fffff sssss 00000 00000 000101",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 long product = (((long) RegisterFile.getValue(operands[0])) << 32 >>> 32)
                                         * (((long) RegisterFile.getValue(operands[1])) << 32 >>> 32);
@@ -314,7 +314,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff sssss 00000 00000 011010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[1]) == 0) {
                                     // Note: no exceptions and undefined results for zero div
@@ -338,7 +338,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff sssss 00000 00000 011011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[1]) == 0) {
                                     // Note: no exceptions, and undefined results for zero divide
@@ -359,7 +359,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 00000 fffff 00000 010000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(33));
@@ -371,7 +371,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 00000 fffff 00000 010010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(34));
@@ -383,7 +383,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff 00000 00000 00000 010001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(33,
                                         RegisterFile.getValue(operands[0]));
@@ -395,7 +395,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff 00000 00000 00000 010011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(34,
                                         RegisterFile.getValue(operands[0]));
@@ -407,7 +407,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -420,7 +420,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100101",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -433,7 +433,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001100 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // ANDing with 0x0000FFFF zero-extends the immediate (high 16 bits always 0).
                                 RegisterFile.updateRegister(operands[0],
@@ -447,7 +447,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001101 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // ANDing with 0x0000FFFF zero-extends the immediate (high 16 bits always 0).
                                 RegisterFile.updateRegister(operands[0],
@@ -461,7 +461,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100111",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         ~(RegisterFile.getValue(operands[1])
@@ -474,7 +474,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 100110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1])
@@ -487,7 +487,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001110 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // ANDing with 0x0000FFFF zero-extends the immediate (high 16 bits always 0).
                                 RegisterFile.updateRegister(operands[0],
@@ -501,7 +501,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 sssss fffff ttttt 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         RegisterFile.getValue(operands[1]) << operands[2]);
@@ -513,7 +513,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 ttttt sssss fffff 00000 000100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // Mask all but low 5 bits of register containing shamt.
                                 RegisterFile.updateRegister(operands[0],
@@ -527,7 +527,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 sssss fffff ttttt 000010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // must zero-fill, so use ">>>" instead of ">>".
                                 RegisterFile.updateRegister(operands[0],
@@ -540,7 +540,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 00000 sssss fffff ttttt 000011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // must sign-fill, so use ">>".
                                 RegisterFile.updateRegister(operands[0],
@@ -553,7 +553,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 ttttt sssss fffff 00000 000111",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // Mask all but low 5 bits of register containing shamt.Use ">>" to sign-fill.
                                 RegisterFile.updateRegister(operands[0],
@@ -567,7 +567,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 ttttt sssss fffff 00000 000110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // Mask all but low 5 bits of register containing shamt.Use ">>>" to zero-fill.
                                 RegisterFile.updateRegister(operands[0],
@@ -628,7 +628,7 @@ public class InstructionSet {
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int result = RegisterFile.getValue(operands[0]);
-                                    for (int i = 0; i <= address % Globals.memory.WORD_LENGTH_BYTES; i++) {
+                                    for (int i = 0; i <= address % Memory.WORD_LENGTH_BYTES; i++) {
                                         result = Binary.setByte(result, 3 - i, Globals.memory.getByte(address - i));
                                     }
                                     RegisterFile.updateRegister(operands[0], result);
@@ -648,7 +648,7 @@ public class InstructionSet {
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int result = RegisterFile.getValue(operands[0]);
-                                    for (int i = 0; i <= 3 - (address % Globals.memory.WORD_LENGTH_BYTES); i++) {
+                                    for (int i = 0; i <= 3 - (address % Memory.WORD_LENGTH_BYTES); i++) {
                                         result = Binary.setByte(result, i, Globals.memory.getByte(address + i));
                                     }
                                     RegisterFile.updateRegister(operands[0], result);
@@ -705,7 +705,7 @@ public class InstructionSet {
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int source = RegisterFile.getValue(operands[0]);
-                                    for (int i = 0; i <= address % Globals.memory.WORD_LENGTH_BYTES; i++) {
+                                    for (int i = 0; i <= address % Memory.WORD_LENGTH_BYTES; i++) {
                                         Globals.memory.setByte(address - i, Binary.getByte(source, 3 - i));
                                     }
                                 } catch (AddressErrorException e) {
@@ -724,7 +724,7 @@ public class InstructionSet {
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int source = RegisterFile.getValue(operands[0]);
-                                    for (int i = 0; i <= 3 - (address % Globals.memory.WORD_LENGTH_BYTES); i++) {
+                                    for (int i = 0; i <= 3 - (address % Memory.WORD_LENGTH_BYTES); i++) {
                                         Globals.memory.setByte(address + i, Binary.getByte(source, i));
                                     }
                                 } catch (AddressErrorException e) {
@@ -738,7 +738,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001111 00000 fffff ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0], operands[1] << 16);
                             }
@@ -749,7 +749,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000100 fffff sssss tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
 
                                 if (RegisterFile.getValue(operands[0])
@@ -764,7 +764,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000101 fffff sssss tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0])
                                         != RegisterFile.getValue(operands[1])) {
@@ -778,7 +778,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000001 fffff 00001 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) >= 0) {
                                     processBranch(operands[1]);
@@ -791,7 +791,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000001 fffff 10001 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) >= 0) {  // the "and link" part
                                     processReturnAddress(31);//RegisterFile.updateRegister("$ra",RegisterFile.getProgramCounter());
@@ -805,7 +805,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000111 fffff 00000 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) > 0) {
                                     processBranch(operands[1]);
@@ -818,7 +818,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000110 fffff 00000 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) <= 0) {
                                     processBranch(operands[1]);
@@ -831,7 +831,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000001 fffff 00000 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) < 0) {
                                     processBranch(operands[1]);
@@ -844,7 +844,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "000001 fffff 10000 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[0]) < 0) {  // the "and link" part
                                     processReturnAddress(31);//RegisterFile.updateRegister("$ra",RegisterFile.getProgramCounter());
@@ -858,7 +858,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 101010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         (RegisterFile.getValue(operands[1])
@@ -873,7 +873,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 101011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 int first = RegisterFile.getValue(operands[1]);
                                 int second = RegisterFile.getValue(operands[2]);
@@ -892,7 +892,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001010 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // 16 bit immediate value in operands[2] is sign-extended
                                 RegisterFile.updateRegister(operands[0],
@@ -908,7 +908,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_FORMAT,
                         "001011 sssss fffff tttttttttttttttt",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 int first = RegisterFile.getValue(operands[1]);
                                 // 16 bit immediate value in operands[2] is sign-extended
@@ -928,7 +928,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 001011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[2]) != 0)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -940,7 +940,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttttt fffff 00000 001010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[2]) == 0)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -952,7 +952,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss 000 00 fffff 00000 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 0)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -964,7 +964,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttt 00 fffff 00000 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[2]) == 0)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -976,7 +976,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss 000 01 fffff 00000 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 1)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -988,7 +988,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss ttt 01 fffff 00000 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[2]) == 1)
                                     RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
@@ -1035,7 +1035,7 @@ public class InstructionSet {
                         BasicInstructionFormat.J_FORMAT,
                         "000010 ffffffffffffffffffffffffff",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 processJump(
                                         ((RegisterFile.getProgramCounter() & 0xF0000000)
@@ -1048,7 +1048,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff 00000 00000 00000 001000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 processJump(RegisterFile.getValue(operands[0]));
                             }
@@ -1059,7 +1059,7 @@ public class InstructionSet {
                         BasicInstructionFormat.J_FORMAT,
                         "000011 ffffffffffffffffffffffffff",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 processReturnAddress(31);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
                                 processJump(
@@ -1073,7 +1073,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 sssss 00000 fffff 00000 001001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 processReturnAddress(operands[0]);//RegisterFile.updateRegister(operands[0], RegisterFile.getProgramCounter());
                                 processJump(RegisterFile.getValue(operands[1]));
@@ -1085,7 +1085,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "000000 fffff 00000 11111 00000 001001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 processReturnAddress(31);//RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
                                 processJump(RegisterFile.getValue(operands[0]));
@@ -1228,7 +1228,7 @@ public class InstructionSet {
                         // the binary code that is not really an issue.
                         "011100 sssss 00000 fffff 00000 100001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 int value = RegisterFile.getValue(operands[1]);
                                 int leadingOnes = 0;
@@ -1247,7 +1247,7 @@ public class InstructionSet {
                         // See comments for "clo" instruction above.  They apply here too.
                         "011100 sssss 00000 fffff 00000 100000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 int value = RegisterFile.getValue(operands[1]);
                                 int leadingZeros = 0;
@@ -1265,7 +1265,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010000 00000 fffff sssss 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
                                         Coprocessor0.getValue(operands[1]));
@@ -1277,7 +1277,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010000 00100 fffff sssss 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 Coprocessor0.updateRegister(operands[1],
                                         RegisterFile.getValue(operands[0]));
@@ -1291,7 +1291,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float add1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float add2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1311,7 +1311,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 000001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float sub1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float sub2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1325,7 +1325,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 000010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float mul1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float mul2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1339,7 +1339,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 000011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float div1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float div2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1353,7 +1353,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 000100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float value = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 int floatSqrt = 0;
@@ -1377,7 +1377,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 001111",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float floatValue = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 int floor = (int) Math.floor(floatValue);
@@ -1398,7 +1398,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 001110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float floatValue = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 int ceiling = (int) Math.ceil(floatValue);
@@ -1419,7 +1419,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 001100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException { // MIPS32 documentation (and IEEE 754) states that round rounds to the nearest but when
+                            public void simulate(ProgramStatement statement) { // MIPS32 documentation (and IEEE 754) states that round rounds to the nearest but when
                                 // both are equally near it rounds to the even one!  SPIM rounds -4.5, -5.5,
                                 // 4.5 and 5.5 to (-4, -5, 5, 6).  Curiously, it rounds -5.1 to -4 and -5.6 to -5.
                                 // Until MARS 3.5, I used Math.round, which rounds to nearest but when both are
@@ -1463,7 +1463,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 001101",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float floatValue = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 int truncate = (int) floatValue;// Typecasting will round toward zero, the correct action
@@ -1715,7 +1715,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "010001 01000 00001 ffffffffffffffff",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 1) {
                                     processBranch(operands[0]);
@@ -1728,7 +1728,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "010001 01000 fff 01 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[0]) == 1) {
                                     processBranch(operands[1]);
@@ -1741,7 +1741,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "010001 01000 00000 ffffffffffffffff",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 0) {
                                     processBranch(operands[0]);
@@ -1755,7 +1755,7 @@ public class InstructionSet {
                         BasicInstructionFormat.I_BRANCH_FORMAT,
                         "010001 01000 fff 00 ssssssssssssssss",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[0]) == 0) {
                                     processBranch(operands[1]);
@@ -1769,7 +1769,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 sssss fffff 00000 110010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[0]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
@@ -1785,7 +1785,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fff 00 11 0010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1801,7 +1801,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 sssss fffff 00000 111110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[0]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
@@ -1817,7 +1817,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fff 00 111110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1833,7 +1833,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 sssss fffff 00000 111100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[0]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
@@ -1849,7 +1849,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fff 00 111100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 float op1 = Float.intBitsToFloat(Coprocessor1.getValue(operands[1]));
                                 float op2 = Float.intBitsToFloat(Coprocessor1.getValue(operands[2]));
@@ -1991,7 +1991,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 000101",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // I need only clear the high order bit!
                                 Coprocessor1.updateRegister(operands[0],
@@ -2075,7 +2075,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10100 00000 sssss fffff 100000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // convert integer to single (interpret $f1 value as int?)
                                 Coprocessor1.updateRegister(operands[0],
@@ -2105,7 +2105,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 100100",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 // convert single precision in $f1 to integer stored in $f0
                                 Coprocessor1.updateRegister(operands[0],
@@ -2235,7 +2235,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 000110",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
                             }
@@ -2246,7 +2246,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 000 00 sssss fffff 010001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 0)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2258,7 +2258,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttt 00 sssss fffff 010001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[2]) == 0)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2270,7 +2270,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 000 01 sssss fffff 010001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(0) == 1)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2282,7 +2282,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttt 01 sssss fffff 010001",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (Coprocessor1.getConditionFlag(operands[2]) == 1)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2294,7 +2294,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 010011",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[2]) != 0)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2306,7 +2306,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 ttttt sssss fffff 010010",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 if (RegisterFile.getValue(operands[2]) == 0)
                                     Coprocessor1.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
@@ -2318,7 +2318,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 00000 fffff sssss 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
                             }
@@ -2329,7 +2329,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 00100 fffff sssss 00000 000000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 Coprocessor1.updateRegister(operands[1], RegisterFile.getValue(operands[0]));
                             }
@@ -2358,7 +2358,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010001 10000 00000 sssss fffff 000111",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 int[] operands = statement.getOperands();
                                 int value = Coprocessor1.getValue(operands[1]);
                                 // flip the sign bit
@@ -2395,7 +2395,7 @@ public class InstructionSet {
                                     throw new ProcessingException(statement, "first register must be even-numbered");
                                 }
                                 // IF statement added by DPS 13-July-2011.
-                                if (!Globals.memory.doublewordAligned(RegisterFile.getValue(operands[2]) + operands[1])) {
+                                if (!Memory.doublewordAligned(RegisterFile.getValue(operands[2]) + operands[1])) {
                                     throw new ProcessingException(statement,
                                             new AddressErrorException("address not aligned on doubleword boundary ",
                                                     Exceptions.ADDRESS_EXCEPTION_LOAD, RegisterFile.getValue(operands[2]) + operands[1]));
@@ -2442,7 +2442,7 @@ public class InstructionSet {
                                     throw new ProcessingException(statement, "first register must be even-numbered");
                                 }
                                 // IF statement added by DPS 13-July-2011.
-                                if (!Globals.memory.doublewordAligned(RegisterFile.getValue(operands[2]) + operands[1])) {
+                                if (!Memory.doublewordAligned(RegisterFile.getValue(operands[2]) + operands[1])) {
                                     throw new ProcessingException(statement,
                                             new AddressErrorException("address not aligned on doubleword boundary ",
                                                     Exceptions.ADDRESS_EXCEPTION_STORE, RegisterFile.getValue(operands[2]) + operands[1]));
@@ -2648,7 +2648,7 @@ public class InstructionSet {
                         BasicInstructionFormat.R_FORMAT,
                         "010000 1 0000000000000000000 011000",
                         new SimulationCode() {
-                            public void simulate(ProgramStatement statement) throws ProcessingException {
+                            public void simulate(ProgramStatement statement) {
                                 // set EXL bit (bit 1) in Status register to 0 and set PC to EPC
                                 Coprocessor0.updateRegister(Coprocessor0.STATUS,
                                         Binary.clearBit(Coprocessor0.getValue(Coprocessor0.STATUS), Coprocessor0.EXCEPTION_LEVEL));

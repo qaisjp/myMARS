@@ -1356,7 +1356,7 @@ public class MipsXray extends AbstractMarsToolAndApplication {
             for (int i = 0; i < vertexTraversed.size(); i++) {
                 vert = vertexTraversed.get(i);
                 if (vert.isMovingXaxis == true) {
-                    if (vert.getDirection() == vert.movingLeft) {
+                    if (vert.getDirection() == Vertex.movingLeft) {
                         printTrackLtoR(vert);
                         if (vert.isActive() == false) {
                             int j = vert.getTargetVertex().size();
@@ -1395,7 +1395,7 @@ public class MipsXray extends AbstractMarsToolAndApplication {
                     }
                 } //end of condition of X axis
                 else {
-                    if (vert.getDirection() == vert.movingDownside) {
+                    if (vert.getDirection() == Vertex.movingDownside) {
                         if (vert.isText == true)
                             printTextDtoU(vert);
                         else

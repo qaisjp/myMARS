@@ -321,7 +321,6 @@ public class SystemIO {
         if (fd == STDIN && Globals.getGui() != null) {
             String input = Globals.getGui().getMessagesPane().getInputString(lengthRequested);
             byte[] bytesRead = input.getBytes();
-            ;
             for (int i = 0; i < myBuffer.length; i++) {
                 myBuffer[i] = (i < bytesRead.length) ? bytesRead[i] : 0;
             }
@@ -517,12 +516,10 @@ public class SystemIO {
         private static boolean fdInUse(int fd, int flag) {
             if (fd < 0 || fd >= SYSCALL_MAXFILES) {
                 return false;
-            } else if (fileNames[fd] != null && fileFlags[fd] == 0 && flag == 0) {  // O_RDONLY read-only
+            } else // O_WRONLY write-only
+                if (fileNames[fd] != null && fileFlags[fd] == 0 && flag == 0) {  // O_RDONLY read-only
                 return true;
-            } else if (fileNames[fd] != null && ((fileFlags[fd] & flag & O_WRONLY) == O_WRONLY)) {  // O_WRONLY write-only
-                return true;
-            }
-            return false;
+            } else return fileNames[fd] != null && ((fileFlags[fd] & flag & O_WRONLY) == O_WRONLY);
 
         }
 

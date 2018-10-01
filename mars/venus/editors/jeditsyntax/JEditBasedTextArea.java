@@ -147,7 +147,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
      */
 
     public void caretUpdate(CaretEvent e) {
-        editPane.displayCaretPosition(((MutableCaretEvent) e).getDot());
+        editPane.displayCaretPosition(e.getDot());
     }
 
 

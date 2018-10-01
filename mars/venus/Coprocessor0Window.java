@@ -292,11 +292,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            if (col == VALUE_COLUMN) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN;
         }
 
 

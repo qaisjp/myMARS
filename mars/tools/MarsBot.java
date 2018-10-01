@@ -291,8 +291,7 @@ public class MarsBot implements Observer, MarsTool {
                     //System.out.println(message + notice.getValue() );
                 } else if (address == ADDR_MOVE) {
                     message = "MarsBot.update: got move control value: ";
-                    if (notice.getValue() == 0) MarsBotMoving = false;
-                    else MarsBotMoving = true;
+                    MarsBotMoving = notice.getValue() != 0;
                     //System.out.println(message + notice.getValue() );
                 } else if (address == ADDR_WHEREAREWEX ||
                         address == ADDR_WHEREAREWEY) {

@@ -857,7 +857,7 @@ class ScribblerSettings {
  * of the screen rectangle to capture.
  */
 interface CaptureRectangleStrategy {
-    public Rectangle getCaptureRectangle(Rectangle magnifierRectangle);
+    Rectangle getCaptureRectangle(Rectangle magnifierRectangle);
 }
 
 /**
@@ -892,7 +892,7 @@ class CaptureScaledRectangle implements CaptureRectangleStrategy {
  * when displaying captured and scaled image.
  */
 interface CaptureDisplayAlignmentStrategy {
-    public void setScrollBarValue(JScrollBar scrollBar);
+    void setScrollBarValue(JScrollBar scrollBar);
 }
 
 /**

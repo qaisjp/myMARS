@@ -337,7 +337,7 @@ public class Tokenizer {
                         }
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
-                        if (!((result.isEmpty() || ((Token) result.get(result.size() - 1)).getType() != TokenTypes.IDENTIFIER) &&
+                        if (!((result.isEmpty() || result.get(result.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
                                 (line.length >= linePos + 2 && Character.isDigit(line[linePos + 1])))) {
                             // treat it as binary.....
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);

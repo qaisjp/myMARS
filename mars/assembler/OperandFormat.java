@@ -61,9 +61,7 @@ public class OperandFormat {
     static boolean tokenOperandMatch(TokenList candidateList, Instruction inst, ErrorList errors) {
         if (!numOperandsCheck(candidateList, inst, errors))
             return false;
-        if (!operandTypeCheck(candidateList, inst, errors))
-            return false;
-        return true;
+        return operandTypeCheck(candidateList, inst, errors);
     }
 
     /*

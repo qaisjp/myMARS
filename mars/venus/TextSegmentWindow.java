@@ -721,11 +721,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            if (col == BREAK_COLUMN || (col == CODE_COLUMN && Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED))) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == BREAK_COLUMN || (col == CODE_COLUMN && Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         }
 
         /**
@@ -767,7 +763,6 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                 // somehow, user was able to display out-of-range address.  Most likely to occur between
                 // stack base and Kernel.  
                 catch (AddressErrorException aee) {
-                    ;
                     return;
                 }
             }// end synchronized block

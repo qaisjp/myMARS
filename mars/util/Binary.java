@@ -309,7 +309,7 @@ public class Binary {
         String leadingX = new String("0x");
         String t = Integer.toHexString(d);
         if (t.length() > 4) {
-            t = t.substring(t.length() - 4, t.length());
+            t = t.substring(t.length() - 4);
         }
         while (t.length() < 4)
             t = leadingZero.concat(t);

@@ -149,7 +149,7 @@ public class EditTabbedPane extends JTabbedPane {
         FileStatus.set(FileStatus.NEW_NOT_EDITED);
 
         RegisterFile.resetRegisters();
-        mainUI.setReset(true);
+        VenusUI.setReset(true);
         mainPane.getExecutePane().clearPane();
         mainPane.setSelectedComponent(this);
         editPane.displayCaretPosition(new Point(1, 1));
