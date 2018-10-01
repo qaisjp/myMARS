@@ -1,17 +1,12 @@
 package mars.venus;
 
-import mars.simulator.*;
-import mars.*;
 import mars.util.*;
 
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import java.io.*;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -47,21 +42,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public abstract class AbstractFontSettingDialog extends JDialog {
 
     JDialog editorDialog;
-    JComboBox fontFamilySelector, fontStyleSelector;
-    JSlider fontSizeSelector;
-    JSpinner fontSizeSpinSelector;
-    JLabel fontSample;
-    protected Font currentFont;
+    private JComboBox fontFamilySelector;
+    private JComboBox fontStyleSelector;
+    private JSlider fontSizeSelector;
+    private JSpinner fontSizeSpinSelector;
+    private JLabel fontSample;
+    private final Font currentFont;
 
     // Used to determine upon OK, whether or not anything has changed.
-    String initialFontFamily, initialFontStyle, initialFontSize;
+    private String initialFontFamily;
+    private String initialFontStyle;
+    private String initialFontSize;
 
     /**
      * Create a new font chooser.  Has pertinent JDialog parameters.
      * Will do everything except make it visible.
      */
-    public AbstractFontSettingDialog(Frame owner, String title, boolean modality, Font currentFont) {
-        super(owner, title, modality);
+    protected AbstractFontSettingDialog(Frame owner, String title, Font currentFont) {
+        super(owner, title, true);
         this.currentFont = currentFont;
         JPanel overallPanel = new JPanel(new BorderLayout());
         overallPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -81,7 +79,7 @@ public abstract class AbstractFontSettingDialog extends JDialog {
     }
 
     // The dialog area, not including control buttons at bottom
-    protected JPanel buildDialogPanel() {
+    JPanel buildDialogPanel() {
         JPanel contents = new JPanel(new BorderLayout(20, 20));
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -112,31 +110,23 @@ public abstract class AbstractFontSettingDialog extends JDialog {
         fontSizeSelector = new JSlider(EditorFont.MIN_SIZE, EditorFont.MAX_SIZE, currentFont.getSize());
         fontSizeSelector.setToolTipText("Use slider to select font size from " + EditorFont.MIN_SIZE + " to " + EditorFont.MAX_SIZE + ".");
         fontSizeSelector.addChangeListener(
-                new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        Integer value = new Integer(((JSlider) e.getSource()).getValue());
-                        fontSizeSpinSelector.setValue(value);
-                        fontSample.setFont(getFont());
-                    }
+                e -> {
+                    Integer value = ((JSlider) e.getSource()).getValue();
+                    fontSizeSpinSelector.setValue(value);
+                    fontSample.setFont(getFont());
                 });
         SpinnerNumberModel fontSizeSpinnerModel = new SpinnerNumberModel(currentFont.getSize(), EditorFont.MIN_SIZE, EditorFont.MAX_SIZE, 1);
         fontSizeSpinSelector = new JSpinner(fontSizeSpinnerModel);
         fontSizeSpinSelector.setToolTipText("Current font size in points.");
         fontSizeSpinSelector.addChangeListener(
-                new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        Object value = ((JSpinner) e.getSource()).getValue();
-                        fontSizeSelector.setValue(((Integer) value).intValue());
-                        fontSample.setFont(getFont());
-                    }
+                e -> {
+                    Object value = ((JSpinner) e.getSource()).getValue();
+                    fontSizeSelector.setValue((Integer) value);
+                    fontSample.setFont(getFont());
                 });
         // Action listener to update sample when family or style selected
         ActionListener updateSample =
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        fontSample.setFont(getFont());
-                    }
-                };
+                e -> fontSample.setFont(getFont());
         fontFamilySelector.addActionListener(updateSample);
         fontStyleSelector.addActionListener(updateSample);
 
@@ -176,7 +166,7 @@ public abstract class AbstractFontSettingDialog extends JDialog {
     }
 
     // User has clicked "Apply" or "Apply and Close" button.
-    protected void performApply() {
+    void performApply() {
         apply(this.getFont());
     }
 
@@ -191,7 +181,7 @@ public abstract class AbstractFontSettingDialog extends JDialog {
         fontFamilySelector.setSelectedItem(initialFontFamily);
         fontStyleSelector.setSelectedItem(initialFontStyle);
         fontSizeSelector.setValue(EditorFont.sizeStringToSizeInt(initialFontSize));
-        fontSizeSpinSelector.setValue(new Integer(EditorFont.sizeStringToSizeInt(initialFontSize)));
+        fontSizeSpinSelector.setValue(EditorFont.sizeStringToSizeInt(initialFontSize));
     }
 
     /**
@@ -215,19 +205,19 @@ public abstract class AbstractFontSettingDialog extends JDialog {
     //
     /////////////////////////////////////////////////////////////////////
 
-    private static String SEPARATOR = "___SEPARATOR____";
+    private static final String SEPARATOR = "___SEPARATOR____";
 
     // Given an array of string arrays, will produce a Vector contenating
     // the arrays with a separator between each.
     private Vector makeVectorData(String[][] str) {
         boolean needSeparator = false;
         Vector data = new Vector();
-        for (int i = 0; i < str.length; i++) {
+        for (String[] aStr : str) {
             if (needSeparator) {
                 data.addElement(SEPARATOR);
             }
-            for (int j = 0; j < str[i].length; j++) {
-                data.addElement(str[i][j]);
+            for (String anAStr : aStr) {
+                data.addElement(anAStr);
                 needSeparator = true;
             }
         }
@@ -236,9 +226,9 @@ public abstract class AbstractFontSettingDialog extends JDialog {
 
     // Required renderer for handling the separator bar.
     private class ComboBoxRenderer extends JLabel implements ListCellRenderer {
-        JSeparator separator;
+        final JSeparator separator;
 
-        public ComboBoxRenderer() {
+        ComboBoxRenderer() {
             setOpaque(true);
             setBorder(new EmptyBorder(1, 1, 1, 1));
             separator = new JSeparator(JSeparator.HORIZONTAL);
@@ -265,7 +255,7 @@ public abstract class AbstractFontSettingDialog extends JDialog {
 
     // Required listener to handle the separator bar.
     private class BlockComboListener implements ActionListener {
-        JComboBox combo;
+        final JComboBox combo;
         Object currentItem;
 
         BlockComboListener(JComboBox combo) {

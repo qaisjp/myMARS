@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version August 2003
  **/
 
-public final class DataTypes {
+final class DataTypes {
     /**
      * Number of bytes occupied by MIPS double is 8.
      **/
@@ -44,19 +44,19 @@ public final class DataTypes {
     /**
      * Number of bytes occupied by MIPS float is 4.
      **/
-    public static final int FLOAT_SIZE = 4;
+    private static final int FLOAT_SIZE = 4;
     /**
      * Number of bytes occupied by MIPS word is 4.
      **/
-    public static final int WORD_SIZE = 4;
+    private static final int WORD_SIZE = 4;
     /**
      * Number of bytes occupied by MIPS halfword is 2.
      **/
-    public static final int HALF_SIZE = 2;
+    private static final int HALF_SIZE = 2;
     /**
      * Number of bytes occupied by MIPS byte is 1.
      **/
-    public static final int BYTE_SIZE = 1;
+    private static final int BYTE_SIZE = 1;
     /**
      * Number of bytes occupied by MIPS character is 1.
      **/
@@ -88,19 +88,19 @@ public final class DataTypes {
     /**
      * Maximum value that can be stored in a MIPS byte is 2<sup>7</sup>-1
      **/
-    public static final int MAX_BYTE_VALUE = Byte.MAX_VALUE;
+    private static final int MAX_BYTE_VALUE = Byte.MAX_VALUE;
     /**
      * Lowest value that can be stored in a MIPS byte is -2<sup>7</sup>
      **/
-    public static final int MIN_BYTE_VALUE = Byte.MIN_VALUE;
+    private static final int MIN_BYTE_VALUE = Byte.MIN_VALUE;
     /**
      * Maximum positive finite value that can be stored in a MIPS float is same as Java Float
      **/
-    public static final double MAX_FLOAT_VALUE = Float.MAX_VALUE;
+    private static final double MAX_FLOAT_VALUE = Float.MAX_VALUE;
     /**
      * Largest magnitude negative value that can be stored in a MIPS float (negative of the max)
      **/
-    public static final double LOW_FLOAT_VALUE = -Float.MAX_VALUE;
+    private static final double LOW_FLOAT_VALUE = -Float.MAX_VALUE;
     /**
      * Maximum positive finite value that can be stored in a MIPS double is same as Java Double
      **/

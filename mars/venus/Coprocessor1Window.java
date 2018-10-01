@@ -49,11 +49,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Coprocessor1Window extends JPanel implements ActionListener, Observer {
     private static JTable table;
     private static Register[] registers;
-    private Object[][] tableData;
     private boolean highlighting;
     private int highlightRow;
     private ExecutePane executePane;
-    private JCheckBox[] conditionFlagCheckBox;
+    private final JCheckBox[] conditionFlagCheckBox;
     private static final int NAME_COLUMN = 0;
     private static final int FLOAT_COLUMN = 1;
     private static final int DOUBLE_COLUMN = 2;
@@ -73,9 +72,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         table.getColumnModel().getColumn(FLOAT_COLUMN).setPreferredWidth(70);
         table.getColumnModel().getColumn(DOUBLE_COLUMN).setPreferredWidth(130);
         // Display register values (String-ified) right-justified in mono font
-        table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
-        table.getColumnModel().getColumn(FLOAT_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(DOUBLE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.LEFT));
+        table.getColumnModel().getColumn(FLOAT_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(DOUBLE_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.RIGHT));
         this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         // Display condition flags in panel below the registers
         JPanel flagsPane = new JPanel(new BorderLayout());
@@ -130,10 +129,10 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @return The array object with the data for the window.
      **/
 
-    public Object[][] setupWindow() {
+    private Object[][] setupWindow() {
         registers = Coprocessor1.getRegisters();
         this.highlighting = false;
-        tableData = new Object[registers.length][3];
+        Object[][] tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
@@ -141,7 +140,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                 long longValue = 0;
                 try {
                     longValue = Coprocessor1.getLongFromRegisterPair(registers[i].getName());
-                } catch (InvalidRegisterAccessException e) {
+                } catch (InvalidRegisterAccessException ignored) {
                 } // cannot happen since i must be even
                 tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue, NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
             } else {
@@ -194,7 +193,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      *
      * @param base number base for display (10 or 16)
      */
-    public void updateRegisters(int base) {
+    private void updateRegisters(int base) {
         registers = Coprocessor1.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             updateFloatRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
@@ -219,7 +218,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @param base   the number base for display (e.g. 10, 16)
      **/
 
-    public void updateFloatRegisterValue(int number, int val, int base) {
+    private void updateFloatRegisterValue(int number, int val, int base) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatFloatNumber(val, base), number, FLOAT_COLUMN);
 
     }
@@ -231,11 +230,11 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @param number The number of the double register to update.
      * @param base   the number base for display (e.g. 10, 16)
      **/
-    public void updateDoubleRegisterValue(int number, int base) {
+    private void updateDoubleRegisterValue(int number, int base) {
         long val = 0;
         try {
             val = Coprocessor1.getLongFromRegisterPair(registers[number].getName());
-        } catch (InvalidRegisterAccessException e) {
+        } catch (InvalidRegisterAccessException ignored) {
         } // happens only if number is not even
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatDoubleNumber(val, base), number, DOUBLE_COLUMN);
     }
@@ -286,7 +285,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      *
      * @param register Register object corresponding to row to be selected.
      */
-    void highlightCellForRegister(Register register) {
+    private void highlightCellForRegister(Register register) {
         this.highlightRow = register.getNumber();
         table.tableChanged(new TableModelEvent(table.getModel()));
           /*
@@ -312,12 +311,12 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     * all columns.
     */
     private class RegisterCellRenderer extends DefaultTableCellRenderer {
-        private Font font;
-        private int alignment;
+        private final Font font;
+        private final int alignment;
 
-        public RegisterCellRenderer(Font font, int alignment) {
+        RegisterCellRenderer(int alignment) {
             super();
-            this.font = font;
+            this.font = MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT;
             this.alignment = alignment;
         }
 
@@ -350,9 +349,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
 
     class RegTableModel extends AbstractTableModel {
         final String[] columnNames = {"Name", "Float", "Double"};
-        Object[][] data;
+        final Object[][] data;
 
-        public RegTableModel(Object[][] d) {
+        RegTableModel(Object[][] d) {
             data = d;
         }
 
@@ -458,7 +457,6 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                 // Should not occur; code below will re-display original value
                 fireTableCellUpdated(row, col);
             }
-            return;
         }
 
 
@@ -501,7 +499,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
             this.setSelectionBackground(Color.GREEN);
         }
 
-        private String[] regToolTips = {
+        private final String[] regToolTips = {
             /* $f0  */  "floating point subprogram return value",  
             /* $f1  */  "should not be referenced explicitly in your program",
             /* $f2  */  "floating point subprogram return value",
@@ -538,7 +536,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
 
         //Implement table cell tool tips.
         public String getToolTipText(MouseEvent e) {
-            String tip = null;
+            String tip;
             java.awt.Point p = e.getPoint();
             int rowIndex = rowAtPoint(p);
             int colIndex = columnAtPoint(p);
@@ -558,7 +556,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
             return tip;
         }
 
-        private String[] columnToolTips = {
+        private final String[] columnToolTips = {
             /* name */   "Each register has a tool tip describing its usage convention",
             /* float */ "32-bit single precision IEEE 754 floating point register",
             /* double */  "64-bit double precision IEEE 754 floating point register (uses a pair of 32-bit registers)"

@@ -42,7 +42,6 @@ public class EditFindReplaceAction extends GuiAction {
     private static String searchString = "";
     private static boolean caseSensitivity = true;
     private static final String DIALOG_TITLE = "Find and Replace";
-    JDialog findReplaceDialog;
 
     public EditFindReplaceAction(String name, Icon icon, String descrip,
                                  Integer mnemonic, KeyStroke accel, VenusUI gui) {
@@ -50,7 +49,7 @@ public class EditFindReplaceAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        findReplaceDialog = new FindReplaceDialog(Globals.getGui(), DIALOG_TITLE, false);
+        JDialog findReplaceDialog = new FindReplaceDialog(Globals.getGui());
         findReplaceDialog.setVisible(true);
     }
 
@@ -65,21 +64,21 @@ public class EditFindReplaceAction extends GuiAction {
         JRadioButton linearFromStart, circularFromCursor;
         private JLabel resultsLabel;
 
-        public static final String FIND_TOOL_TIP_TEXT = "Find next occurrence of given text; wraps around at end";
-        public static final String REPLACE_TOOL_TIP_TEXT = "Replace current occurrence of text then find next";
-        public static final String REPLACE_ALL_TOOL_TIP_TEXT = "Replace all occurrences of text";
-        public static final String CLOSE_TOOL_TIP_TEXT = "Close the dialog";
-        public static final String RESULTS_TOOL_TIP_TEXT = "Outcome of latest operation (button click)";
+        static final String FIND_TOOL_TIP_TEXT = "Find next occurrence of given text; wraps around at end";
+        static final String REPLACE_TOOL_TIP_TEXT = "Replace current occurrence of text then find next";
+        static final String REPLACE_ALL_TOOL_TIP_TEXT = "Replace all occurrences of text";
+        static final String CLOSE_TOOL_TIP_TEXT = "Close the dialog";
+        static final String RESULTS_TOOL_TIP_TEXT = "Outcome of latest operation (button click)";
 
-        public static final String RESULTS_TEXT_FOUND = "Text found";
-        public static final String RESULTS_TEXT_NOT_FOUND = "Text not found";
-        public static final String RESULTS_TEXT_REPLACED = "Text replaced and found next";
-        public static final String RESULTS_TEXT_REPLACED_LAST = "Text replaced; last occurrence";
-        public static final String RESULTS_TEXT_REPLACED_ALL = "Replaced";
-        public static final String RESULTS_NO_TEXT_TO_FIND = "No text to find";
+        static final String RESULTS_TEXT_FOUND = "Text found";
+        static final String RESULTS_TEXT_NOT_FOUND = "Text not found";
+        static final String RESULTS_TEXT_REPLACED = "Text replaced and found next";
+        static final String RESULTS_TEXT_REPLACED_LAST = "Text replaced; last occurrence";
+        static final String RESULTS_TEXT_REPLACED_ALL = "Replaced";
+        static final String RESULTS_NO_TEXT_TO_FIND = "No text to find";
 
-        public FindReplaceDialog(Frame owner, String title, boolean modality) {
-            super(owner, title, modality);
+        FindReplaceDialog(Frame owner) {
+            super(owner, EditFindReplaceAction.DIALOG_TITLE, false);
             this.setContentPane(buildDialogPanel());
             this.setDefaultCloseOperation(
                     JDialog.DO_NOTHING_ON_CLOSE);
@@ -156,35 +155,19 @@ public class EditFindReplaceAction extends GuiAction {
             findButton = new JButton("Find");
             findButton.setToolTipText(FIND_TOOL_TIP_TEXT);
             findButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performFind();
-                        }
-                    });
+                    e -> performFind());
             replaceButton = new JButton("Replace then Find");
             replaceButton.setToolTipText(REPLACE_TOOL_TIP_TEXT);
             replaceButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performReplace();
-                        }
-                    });
+                    e -> performReplace());
             replaceAllButton = new JButton("Replace all");
             replaceAllButton.setToolTipText(REPLACE_ALL_TOOL_TIP_TEXT);
             replaceAllButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performReplaceAll();
-                        }
-                    });
+                    e -> performReplaceAll());
             closeButton = new JButton("Close");
             closeButton.setToolTipText(CLOSE_TOOL_TIP_TEXT);
             closeButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performClose();
-                        }
-                    });
+                    e -> performClose());
             controlPanel.add(Box.createHorizontalGlue());
             controlPanel.add(findButton);
             controlPanel.add(Box.createHorizontalGlue());

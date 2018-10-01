@@ -1,13 +1,11 @@
 package mars;
 
-import mars.venus.*;
 import mars.assembler.*;
 import mars.simulator.*;
 import mars.mips.hardware.*;
 
 import java.util.*;
 import java.io.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 /*
@@ -226,7 +224,7 @@ public class MIPSprogram {
     public void readSource(String file) throws ProcessingException {
         this.filename = file;
         this.sourceList = new ArrayList();
-        ErrorList errors = null;
+        ErrorList errors;
         BufferedReader inputFile;
         String line;
         int lengthSoFar = 0;
@@ -242,7 +240,6 @@ public class MIPSprogram {
             errors.add(new ErrorMessage((MIPSprogram) null, 0, 0, e.toString()));
             throw new ProcessingException(errors);
         }
-        return;
     }
 
     /**
@@ -251,11 +248,10 @@ public class MIPSprogram {
      * @throws ProcessingException Will throw exception if errors occured while tokenizing.
      **/
 
-    public void tokenize() throws ProcessingException {
+    private void tokenize() throws ProcessingException {
         this.tokenizer = new Tokenizer();
         this.tokenList = tokenizer.tokenize(this);
         this.localSymbolTable = new SymbolTable(this.filename); // prepare for assembly
-        return;
     }
 
     /**
@@ -281,8 +277,8 @@ public class MIPSprogram {
             filenames.add(0, exceptionHandler);
             leadFilePosition = 1;
         }
-        for (int i = 0; i < filenames.size(); i++) {
-            String filename = (String) filenames.get(i);
+        for (Object filename1 : filenames) {
+            String filename = (String) filename1;
             MIPSprogram preparee = (filename.equals(leadFilename)) ? this : new MIPSprogram();
             preparee.readSource(filename);
             preparee.tokenize();
@@ -392,8 +388,7 @@ public class MIPSprogram {
     public boolean simulateStepAtPC(AbstractAction a) throws ProcessingException {
         steppedExecution = true;
         Simulator sim = Simulator.getInstance();
-        boolean done = sim.simulate(this, RegisterFile.getProgramCounter(), 1, null, a);
-        return done;
+        return sim.simulate(this, RegisterFile.getProgramCounter(), 1, null, a);
     }
 
     /**

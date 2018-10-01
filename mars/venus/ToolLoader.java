@@ -5,9 +5,7 @@ import mars.util.*;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
-import java.util.zip.*;
 import java.lang.reflect.*;
 
 	/*
@@ -51,7 +49,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version August 2005
  */
 
-public class ToolLoader {
+class ToolLoader {
 
     private static final String CLASS_PREFIX = "mars.tools.";
     private static final String TOOLS_DIRECTORY_PATH = "mars/tools";
@@ -76,8 +74,8 @@ public class ToolLoader {
             menu.setMnemonic(KeyEvent.VK_T);
             // traverse array list and build menu
             MarsToolClassAndInstance listItem;
-            for (int i = 0; i < marsToolList.size(); i++) {
-                listItem = (MarsToolClassAndInstance) marsToolList.get(i);
+            for (Object aMarsToolList : marsToolList) {
+                listItem = (MarsToolClassAndInstance) aMarsToolList;
                 menu.add(new ToolAction(listItem.marsToolClass, listItem.marsToolInstance.getName()));
             }
         }
@@ -115,8 +113,8 @@ public class ToolLoader {
         // pathname.
         //candidates.addAll(mars.Globals.getExternalTools());  // this by itself is not enough...
         HashMap tools = new HashMap();
-        for (int i = 0; i < candidates.size(); i++) {
-            String file = (String) candidates.get(i);
+        for (Object candidate : candidates) {
+            String file = (String) candidate;
             // Do not add class if already encountered (happens if run in MARS development directory)
             if (tools.containsKey(file)) {
                 continue;
@@ -144,8 +142,8 @@ public class ToolLoader {
 
 
     private class MarsToolClassAndInstance {
-        Class marsToolClass;
-        MarsTool marsToolInstance;
+        final Class marsToolClass;
+        final MarsTool marsToolInstance;
 
         MarsToolClassAndInstance(Class marsToolClass, MarsTool marsToolInstance) {
             this.marsToolClass = marsToolClass;

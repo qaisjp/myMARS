@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
  * You must now invoke start() on the SwingWorker after
  * creating it.
  */
-public abstract class SwingWorker {
+abstract class SwingWorker {
     private Object value;  // see getValue(), setValue()
 
     /**
@@ -50,7 +50,7 @@ public abstract class SwingWorker {
      * Get the value produced by the worker thread, or null if it
      * hasn't been constructed yet.
      */
-    protected synchronized Object getValue() {
+    private synchronized Object getValue() {
         return value;
     }
 
@@ -64,13 +64,13 @@ public abstract class SwingWorker {
     /**
      * Compute the value to be returned by the <code>get</code> method.
      */
-    public abstract Object construct();
+    protected abstract Object construct();
 
     /**
      * Called on the event dispatching thread (not on the worker thread)
      * after the <code>construct</code> method has returned.
      */
-    public void finished() {
+    void finished() {
     }
 
     /**
@@ -114,24 +114,18 @@ public abstract class SwingWorker {
      *
      * @param useSwing Set true if MARS is running from GUI, false otherwise.
      */
-    public SwingWorker(final boolean useSwing) {
-        final Runnable doFinished = new Runnable() {
-            public void run() {
-                finished();
-            }
-        };
+    SwingWorker(final boolean useSwing) {
+        final Runnable doFinished = this::finished;
 
-        Runnable doConstruct = new Runnable() {
-            public void run() {
-                try {
-                    setValue(construct());
-                } finally {
-                    threadVar.clear();
-                }
-
-                if (useSwing) SwingUtilities.invokeLater(doFinished);
-                else doFinished.run();
+        Runnable doConstruct = () -> {
+            try {
+                setValue(construct());
+            } finally {
+                threadVar.clear();
             }
+
+            if (useSwing) SwingUtilities.invokeLater(doFinished);
+            else doFinished.run();
         };
 
         // Thread that represents executing MIPS program...

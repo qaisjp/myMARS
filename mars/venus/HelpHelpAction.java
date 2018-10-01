@@ -55,7 +55,7 @@ public class HelpHelpAction extends GuiAction {
     }
 
     // Light gray background color for alternating lines of the instruction lists
-    static Color altBackgroundColor = new Color(0xEE, 0xEE, 0xEE);
+    private static final Color altBackgroundColor = new Color(0xEE, 0xEE, 0xEE);
 
     /**
      * Separates Instruction name descriptor from detailed (operation) description
@@ -87,11 +87,9 @@ public class HelpHelpAction extends GuiAction {
         //Add a "close" button to the non-modal help dialog.
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        dialog.setVisible(false);
-                        dialog.dispose();
-                    }
+                e1 -> {
+                    dialog.setVisible(false);
+                    dialog.dispose();
                 });
         JPanel closePanel = new JPanel();
         closePanel.setLayout(new BoxLayout(closePanel, BoxLayout.LINE_AXIS));
@@ -124,9 +122,9 @@ public class HelpHelpAction extends GuiAction {
             InputStream is = this.getClass().getResourceAsStream(Globals.helpPath + filename);
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
             String line;
-            StringBuffer text = new StringBuffer();
+            StringBuilder text = new StringBuilder();
             while ((line = in.readLine()) != null) {
-                text.append(line + "\n");
+                text.append(line).append("\n");
             }
             in.close();
             helpDisplay = new JEditorPane("text/html", text.toString());
@@ -153,9 +151,9 @@ public class HelpHelpAction extends GuiAction {
             InputStream is = this.getClass().getResourceAsStream("/MARSlicense.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
             String line;
-            StringBuffer text = new StringBuffer("<pre>");
+            StringBuilder text = new StringBuilder("<pre>");
             while ((line = in.readLine()) != null) {
-                text.append(line + "\n");
+                text.append(line).append("\n");
             }
             in.close();
             text.append("</pre>");
@@ -282,9 +280,8 @@ public class HelpHelpAction extends GuiAction {
         Vector exampleList = new Vector();
         String blanks = "            ";  // 12 blanks
         Directives direct;
-        Iterator it = Directives.getDirectiveList().iterator();
-        while (it.hasNext()) {
-            direct = (Directives) it.next();
+        for (Object o : Directives.getDirectiveList()) {
+            direct = (Directives) o;
             exampleList.add(direct.toString()
                     + blanks.substring(0, Math.max(0, blanks.length() - direct.toString().length()))
                     + direct.getDescription());
@@ -383,22 +380,20 @@ public class HelpHelpAction extends GuiAction {
                         webpagePane = new JEditorPane("text/html", cannotDisplayMessage);
                     }
                     webpagePane.addHyperlinkListener(
-                            new HyperlinkListener() {
-                                public void hyperlinkUpdate(HyperlinkEvent e) {
-                                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                                        JEditorPane pane = (JEditorPane) e.getSource();
-                                        if (e instanceof HTMLFrameHyperlinkEvent) {
-                                            HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
-                                            HTMLDocument doc = (HTMLDocument) pane.getDocument();
-                                            doc.processHTMLFrameHyperlinkEvent(evt);
-                                        } else {
-                                            try {
-                                                pane.setPage(e.getURL());
-                                            } catch (Throwable t) {
-                                                pane.setText(cannotDisplayMessage);
-                                            }
-                                            webpageURL.setText(e.getURL().toString());
+                            e12 -> {
+                                if (e12.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                                    JEditorPane pane1 = (JEditorPane) e12.getSource();
+                                    if (e12 instanceof HTMLFrameHyperlinkEvent) {
+                                        HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e12;
+                                        HTMLDocument doc = (HTMLDocument) pane1.getDocument();
+                                        doc.processHTMLFrameHyperlinkEvent(evt);
+                                    } else {
+                                        try {
+                                            pane1.setPage(e12.getURL());
+                                        } catch (Throwable t) {
+                                            pane1.setText(cannotDisplayMessage);
                                         }
+                                        webpageURL.setText(e12.getURL().toString());
                                     }
                                 }
                             });
@@ -418,11 +413,9 @@ public class HelpHelpAction extends GuiAction {
                     webpageDisplay.add(webpageScrollPane);
                     JButton closeButton = new JButton("Close");
                     closeButton.addActionListener(
-                            new ActionListener() {
-                                public void actionPerformed(ActionEvent e) {
-                                    webpageDisplay.setVisible(false);
-                                    webpageDisplay.dispose();
-                                }
+                            e1 -> {
+                                webpageDisplay.setVisible(false);
+                                webpageDisplay.dispose();
                             });
                     JPanel closePanel = new JPanel();
                     closePanel.setLayout(new BoxLayout(closePanel, BoxLayout.LINE_AXIS));

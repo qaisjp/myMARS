@@ -5,11 +5,9 @@ import mars.simulator.*;
 import mars.mips.hardware.*;
 import mars.util.*;
 
-import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 import javax.swing.*;
-import java.io.*;
 
 	/*
 Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
@@ -44,8 +42,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunGoAction extends GuiAction {
 
-    public static int defaultMaxSteps = -1; // "forever", formerly 10000000; // 10 million
-    public static int maxSteps = defaultMaxSteps;
+    private static final int defaultMaxSteps = -1; // "forever", formerly 10000000; // 10 million
+    private static int maxSteps = defaultMaxSteps;
     private String name;
     private ExecutePane executePane;
 
@@ -78,7 +76,7 @@ public class RunGoAction extends GuiAction {
                 try {
                     int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
                     boolean done = Globals.program.simulateFromPC(breakPoints, maxSteps, this);
-                } catch (ProcessingException pe) {
+                } catch (ProcessingException ignored) {
                 }
             } else {
                 // This should never occur because at termination the Go and Step buttons are disabled.
@@ -160,7 +158,7 @@ public class RunGoAction extends GuiAction {
                 break;
             case Simulator.EXCEPTION:
                 mainUI.getMessagesPane().postMarsMessage(
-                        pe.errors().generateErrorReport());
+                        Objects.requireNonNull(pe).errors().generateErrorReport());
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated with errors.\n\n");
                 break;

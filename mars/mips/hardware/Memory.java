@@ -85,10 +85,6 @@ public class Memory extends Observable {
      **/
     public static int userHighAddress = MemoryConfigurations.getDefaultUserHighAddress(); //0x7fffffff;
     /**
-     * kernel boundary.  Only OS can access this or higher address
-     **/
-    public static int kernelBaseAddress = MemoryConfigurations.getDefaultKernelBaseAddress(); //0x80000000;
-    /**
      * base address for kernel text segment: 0x80000000
      **/
     public static int kernelTextBaseAddress = MemoryConfigurations.getDefaultKernelTextBaseAddress(); //0x80000000;
@@ -118,7 +114,7 @@ public class Memory extends Observable {
      * Constant representing byte order of each memory word.  Little-endian means lowest
      * numbered byte is right most [3][2][1][0].
      */
-    public static final boolean LITTLE_ENDIAN = true;
+    private static final boolean LITTLE_ENDIAN = true;
     /**
      * Constant representing byte order of each memory word.  Big-endian means lowest
      * numbered byte is left most [0][1][2][3].
@@ -129,7 +125,7 @@ public class Memory extends Observable {
      **/
     private static boolean byteOrder = LITTLE_ENDIAN;
 
-    public static int heapAddress;
+    private static int heapAddress;
 
     // Memory will maintain a collection of observables.  Each one is associated
     // with a specific memory address or address range, and each will have at least
@@ -143,7 +139,7 @@ public class Memory extends Observable {
     // and high end of address range, but retrieval from the tree has to be based
     // on target address being ANYWHERE IN THE RANGE (not an exact key match).
 
-    Collection observables = getNewMemoryObserversCollection();
+    private Collection observables = getNewMemoryObserversCollection();
 
     // The data segment is allocated in blocks of 1024 ints (4096 bytes).  Each block is
     // referenced by a "block table" entry, and the table has 1024 entries.  The capacity
@@ -223,20 +219,20 @@ public class Memory extends Observable {
             BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
     public static int textLimitAddress = textBaseAddress +
             TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
-    public static int kernelDataSegmentLimitAddress = kernelDataBaseAddress +
+    private static int kernelDataSegmentLimitAddress = kernelDataBaseAddress +
             BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
     public static int kernelTextLimitAddress = kernelTextBaseAddress +
             TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
-    public static int stackLimitAddress = stackBaseAddress -
+    private static int stackLimitAddress = stackBaseAddress -
             BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
-    public static int memoryMapLimitAddress = memoryMapBaseAddress +
+    private static int memoryMapLimitAddress = memoryMapBaseAddress +
             BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES;
     // This will be a Singleton class, only one instance is ever created.  Since I know the 
     // Memory object is always needed, I'll go ahead and create it at the time of class loading.
     // (greedy rather than lazy instantiation).  The constructor is private and getInstance()
     // always returns this instance.
 
-    private static Memory uniqueMemoryInstance = new Memory();
+    private static final Memory uniqueMemoryInstance = new Memory();
 
 
     /*
@@ -269,7 +265,7 @@ public class Memory extends Observable {
      * address 0x00400000.  Configuration can be modified starting with MARS 3.7.
      */
 
-    public static void setConfiguration() {
+    private static void setConfiguration() {
         textBaseAddress = MemoryConfigurations.getCurrentConfiguration().getTextBaseAddress(); //0x00400000;
         dataSegmentBaseAddress = MemoryConfigurations.getCurrentConfiguration().getDataSegmentBaseAddress(); //0x10000000;
         externBaseAddress = MemoryConfigurations.getCurrentConfiguration().getExternBaseAddress(); //0x10000000;
@@ -279,7 +275,11 @@ public class Memory extends Observable {
         stackPointer = MemoryConfigurations.getCurrentConfiguration().getStackPointer(); //0x7fffeffc;
         stackBaseAddress = MemoryConfigurations.getCurrentConfiguration().getStackBaseAddress(); //0x7ffffffc;
         userHighAddress = MemoryConfigurations.getCurrentConfiguration().getUserHighAddress(); //0x7fffffff;
-        kernelBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelBaseAddress(); //0x80000000;
+        /*
+          kernel boundary.  Only OS can access this or higher address
+         */
+        //0x80000000;
+        int kernelBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelBaseAddress();
         kernelTextBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelTextBaseAddress(); //0x80000000;
         exceptionHandlerAddress = MemoryConfigurations.getCurrentConfiguration().getExceptionHandlerAddress(); //0x80000180;
         kernelDataBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelDataBaseAddress(); //0x90000000;
@@ -458,7 +458,7 @@ public class Memory extends Observable {
      * @return old value that was replaced by the set operation.
      * @throws AddressErrorException If address is not on word boundary.
      **/
-    public int setRawWord(int address, int value) throws AddressErrorException {
+    public void setRawWord(int address, int value) throws AddressErrorException {
         int relative, oldValue = 0;
         if (address % WORD_LENGTH_BYTES != 0) {
             throw new AddressErrorException("store address not aligned on word boundary ",
@@ -509,7 +509,6 @@ public class Memory extends Observable {
         if (Globals.getSettings().getBackSteppingEnabled()) {
             Globals.program.getBackStepper().addMemoryRestoreRawWord(address, oldValue);
         }
-        return oldValue;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -523,15 +522,17 @@ public class Memory extends Observable {
      * @return old value that was replaced by setWord operation.
      * @throws AddressErrorException If address is not on word boundary.
      **/
-    public int setWord(int address, int value) throws AddressErrorException {
+    public void setWord(int address, int value) throws AddressErrorException {
         if (address % WORD_LENGTH_BYTES != 0) {
             throw new AddressErrorException(
                     "store address not aligned on word boundary ",
                     Exceptions.ADDRESS_EXCEPTION_STORE, address);
         }
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addMemoryRestoreWord(address, set(address, value, WORD_LENGTH_BYTES))
-                : set(address, value, WORD_LENGTH_BYTES);
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addMemoryRestoreWord(address, set(address, value, WORD_LENGTH_BYTES));
+        } else {
+            set(address, value, WORD_LENGTH_BYTES);
+        }
     }
 
 
@@ -546,14 +547,16 @@ public class Memory extends Observable {
      * @return old value that was replaced by setHalf operation.
      * @throws AddressErrorException If address is not on halfword boundary.
      **/
-    public int setHalf(int address, int value) throws AddressErrorException {
+    public void setHalf(int address, int value) throws AddressErrorException {
         if (address % 2 != 0) {
             throw new AddressErrorException("store address not aligned on halfword boundary ",
                     Exceptions.ADDRESS_EXCEPTION_STORE, address);
         }
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addMemoryRestoreHalf(address, set(address, value, 2))
-                : set(address, value, 2);
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addMemoryRestoreHalf(address, set(address, value, 2));
+        } else {
+            set(address, value, 2);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -566,10 +569,12 @@ public class Memory extends Observable {
      * @return old value that was replaced by setByte operation.
      **/
 
-    public int setByte(int address, int value) throws AddressErrorException {
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addMemoryRestoreByte(address, set(address, value, 1))
-                : set(address, value, 1);
+    public void setByte(int address, int value) throws AddressErrorException {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addMemoryRestoreByte(address, set(address, value, 1));
+        } else {
+            set(address, value, 1);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -583,12 +588,11 @@ public class Memory extends Observable {
      * @param value   Value to be stored at that address.
      * @return old value that was replaced by setDouble operation.
      **/
-    public double setDouble(int address, double value) throws AddressErrorException {
+    public void setDouble(int address, double value) throws AddressErrorException {
         int oldHighOrder, oldLowOrder;
         long longValue = Double.doubleToLongBits(value);
         oldHighOrder = set(address + 4, Binary.highOrderLongToInt(longValue), 4);
         oldLowOrder = set(address, Binary.lowOrderLongToInt(longValue), 4);
-        return Double.longBitsToDouble(Binary.twoIntsToLong(oldHighOrder, oldLowOrder));
     }
 
 
@@ -619,7 +623,7 @@ public class Memory extends Observable {
     }
 
 
-    /********************************  THE GETTER METHODS  ******************************/
+    /*****************************  THE GETTER METHODS  ******************************/
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -639,7 +643,7 @@ public class Memory extends Observable {
 
     // Does the real work, but includes option to NOT notify observers.
     private int get(int address, int length, boolean notify) throws AddressErrorException {
-        int value = 0;
+        int value;
         int relativeByteAddress;
         if (inDataSegment(address)) {
             // in data segment.  Will read one byte at a time, w/o regard to boundaries.
@@ -701,7 +705,7 @@ public class Memory extends Observable {
     // Doing so would be detrimental to simulation runtime performance, so
     // I decided to keep the duplicate logic.
     public int getRawWord(int address) throws AddressErrorException {
-        int value = 0;
+        int value;
         int relative;
         if (address % WORD_LENGTH_BYTES != 0) {
             throw new AddressErrorException("address for fetch not aligned on word boundary",
@@ -787,9 +791,8 @@ public class Memory extends Observable {
             value = fetchWordOrNullFromTable(stackBlockTable, relative);
         } else if (inTextSegment(address) || inKernelTextSegment(address)) {
             try {
-                value = (getStatementNoNotify(address) == null) ? null : new Integer(getStatementNoNotify(address).getBinaryStatement());
-            } catch (AddressErrorException aee) {
-                value = null;
+                value = (getStatementNoNotify(address) == null) ? null : getStatementNoNotify(address).getBinaryStatement();
+            } catch (AddressErrorException ignored) {
             }
         } else if (inKernelDataSegment(address)) {
             // in kernel data segment
@@ -954,7 +957,7 @@ public class Memory extends Observable {
     //////////
 
     private ProgramStatement getStatement(int address, boolean notify) throws AddressErrorException {
-        if (!wordAligned(address)) {
+        if (wordNotAligned(address)) {
             throw new AddressErrorException(
                     "fetch address for text segment not aligned to word boundary ",
                     Exceptions.ADDRESS_EXCEPTION_LOAD, address);
@@ -974,7 +977,7 @@ public class Memory extends Observable {
     }
 
 
-    /*********************************  THE UTILITIES  *************************************/
+    /******************************  THE UTILITIES  *************************************/
 
     /**
      * Utility to determine if given address is word-aligned.
@@ -982,8 +985,8 @@ public class Memory extends Observable {
      * @param address the address to check
      * @return true if address is word-aligned, false otherwise
      */
-    public static boolean wordAligned(int address) {
-        return (address % WORD_LENGTH_BYTES == 0);
+    public static boolean wordNotAligned(int address) {
+        return (address % WORD_LENGTH_BYTES != 0);
     }
 
     /**
@@ -992,8 +995,8 @@ public class Memory extends Observable {
      * @param address the address to check
      * @return true if address is doubleword-aligned, false otherwise
      */
-    public static boolean doublewordAligned(int address) {
-        return (address % (WORD_LENGTH_BYTES + WORD_LENGTH_BYTES) == 0);
+    public static boolean doublewordNotAligned(int address) {
+        return (address % (WORD_LENGTH_BYTES + WORD_LENGTH_BYTES) != 0);
     }
 
     /**
@@ -1004,7 +1007,7 @@ public class Memory extends Observable {
      * @return address aligned to next word boundary (divisible by 4)
      */
     public static int alignToWordBoundary(int address) {
-        if (!wordAligned(address)) {
+        if (wordNotAligned(address)) {
             if (address > 0)
                 address += (4 - (address % WORD_LENGTH_BYTES));
             else
@@ -1162,9 +1165,8 @@ public class Memory extends Observable {
      * @param obs Observer to be removed
      */
     public void deleteObserver(Observer obs) {
-        Iterator it = observables.iterator();
-        while (it.hasNext()) {
-            ((MemoryObservable) it.next()).deleteObserver(obs);
+        for (Object observable : observables) {
+            ((MemoryObservable) observable).deleteObserver(obs);
         }
     }
 
@@ -1207,19 +1209,20 @@ public class Memory extends Observable {
     // Private class whose objects will represent an observable-observer pair
     // for a given memory address or range.
     private class MemoryObservable extends Observable implements Comparable {
-        private int lowAddress, highAddress;
+        private final int lowAddress;
+        private final int highAddress;
 
-        public MemoryObservable(Observer obs, int startAddr, int endAddr) {
+        MemoryObservable(Observer obs, int startAddr, int endAddr) {
             lowAddress = startAddr;
             highAddress = endAddr;
             this.addObserver(obs);
         }
 
-        public boolean match(int address) {
+        boolean match(int address) {
             return (address >= lowAddress && address <= highAddress - 1 + WORD_LENGTH_BYTES);
         }
 
-        public void notifyObserver(MemoryAccessNotice notice) {
+        void notifyObserver(MemoryAccessNotice notice) {
             this.setChanged();
             this.notifyObservers(notice);
         }
@@ -1234,7 +1237,7 @@ public class Memory extends Observable {
             if (this.lowAddress < mo.lowAddress || this.lowAddress == mo.lowAddress && this.highAddress < mo.highAddress) {
                 return -1;
             }
-            if (this.lowAddress > mo.lowAddress || this.lowAddress == mo.lowAddress && this.highAddress > mo.highAddress) {
+            if (this.lowAddress > mo.lowAddress || this.highAddress > mo.highAddress) {
                 return -1;
             }
             return 0;  // they have to be equal at this point.
@@ -1382,7 +1385,6 @@ public class Memory extends Observable {
         offset = relative % BLOCK_LENGTH_WORDS;
         if (blockTable[block] == null) {
             // first reference to an address in this block.  Assume initialized to 0.
-            value = 0;
         } else {
             value = blockTable[block][offset];
         }
@@ -1402,7 +1404,7 @@ public class Memory extends Observable {
     //
 
     private synchronized Integer fetchWordOrNullFromTable(int[][] blockTable, int relative) {
-        int value = 0;
+        int value;
         int block, offset;
         block = relative / BLOCK_LENGTH_WORDS;
         offset = relative % BLOCK_LENGTH_WORDS;
@@ -1412,7 +1414,7 @@ public class Memory extends Observable {
         } else {
             value = blockTable[block][offset];
         }
-        return new Integer(value);
+        return value;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////

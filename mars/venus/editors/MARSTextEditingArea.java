@@ -2,7 +2,6 @@ package mars.venus.editors;
 
 import javax.swing.text.*;
 import javax.swing.undo.*;
-import javax.swing.*;
 import java.awt.*;
 
 /*
@@ -92,7 +91,7 @@ public interface MARSTextEditingArea {
 
     Font getFont();
 
-    boolean requestFocusInWindow();
+    void requestFocusInWindow();
 
     FontMetrics getFontMetrics(Font f);
 

@@ -2,18 +2,13 @@ package mars.tools;
 
 import mars.*;
 import mars.util.*;
-import mars.assembler.*;
-import mars.mips.instructions.*;
 import mars.mips.hardware.*;
 
 import java.util.*;
-import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
-import javax.swing.text.html.*;
 
 	/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -51,8 +46,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * changing a few constants.
  */
 public class FloatRepresentation extends AbstractMarsToolAndApplication {
-    private static String version = "Version 1.1";
-    private static String heading = "32-bit IEEE 754 Floating Point Representation";
+    private static final String version = "Version 1.1";
+    private static final String heading = "32-bit IEEE 754 Floating Point Representation";
     private static final String title = "Floating Point Representation, ";
 
     private static final String defaultHex = "00000000";
@@ -81,7 +76,6 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
 
     private Register attachedRegister = null;
     private Register[] fpRegisters;
-    private FloatRepresentation thisFloatTool;
     // Panels to hold binary displays and decorations (labels, arrows)
     private JPanel binarySignDecoratedDisplay,
             binaryExponentDecoratedDisplay, binaryFractionDecoratedDisplay;
@@ -90,11 +84,11 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             binarySignDisplay, binaryExponentDisplay, binaryFractionDisplay;
     // Non-editable fields to display formula translating binary to decimal.
     private JLabel expansionDisplay;
-    private JLabel significandLabel = new JLabel(denormalizedLabel, JLabel.CENTER);
+    private final JLabel significandLabel = new JLabel(denormalizedLabel, JLabel.CENTER);
     private BinaryToDecimalFormulaGraphic binaryToDecimalFormulaGraphic;
     // Non-editable field to display instructions
     private InstructionsPane instructions;
-    private String defaultInstructions = "Modify any value then press the Enter key to update all values.";
+    private final String defaultInstructions = "Modify any value then press the Enter key to update all values.";
 
     /**
      * Simple constructor, likely used to run a stand-alone memory reference visualizer.
@@ -104,7 +98,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
      */
     public FloatRepresentation(String title, String heading) {
         super(title, heading);
-        thisFloatTool = this;
+        FloatRepresentation thisFloatTool = this;
     }
 
     /**
@@ -140,7 +134,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
      * If you use the inherited GUI buttons, this method is invoked when you click "Connect" button
      * on MarsTool or the "Assemble and Run" button on a Mars-based app.
      */
-    protected void addAsObserver() {
+    void addAsObserver() {
         addAsObserver(attachedRegister);
     }
 
@@ -151,7 +145,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
      * when the MIPS program execution triggered by the default "Assemble and run" on a stand-alone
      * Mars app terminates (e.g. when the button is re-enabled).
      */
-    protected void deleteAsObserver() {
+    void deleteAsObserver() {
         deleteAsObserver(attachedRegister);
     }
 
@@ -194,7 +188,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
     //////////////////////////////////////////////////////////////////////////////////////
     //  Private methods defined to support the above.
 
-    protected JComponent buildDisplayArea() {
+    private JComponent buildDisplayArea() {
         // Panel to hold all floating point dislay and editing components
         Box mainPanel = Box.createVerticalBox();
         JPanel leftPanel = new JPanel(new GridLayout(5, 1, 0, 0));
@@ -212,7 +206,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         hexDisplay.setToolTipText("" + maxLengthHex + "-digit hexadecimal (base 16) display");
         hexDisplay.setEditable(true);
         hexDisplay.revalidate();
-        hexDisplay.addKeyListener(new HexDisplayKeystrokeListener(8));
+        hexDisplay.addKeyListener(new HexDisplayKeystrokeListener());
 
         JPanel hexPanel = new JPanel();
         hexPanel.add(hexDisplay);
@@ -242,7 +236,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         binaryExponentDisplay.setEditable(true);
         binaryExponentDisplay.revalidate();
 
-        binaryFractionDisplay = new BinaryFractionDisplayTextField(defaultBinaryFraction, maxLengthBinaryFraction + 1);
+        binaryFractionDisplay = new BinaryFractionDisplayTextField();
         binaryFractionDisplay.setFont(binaryDisplayFont);
         binaryFractionDisplay.setForeground(binaryDisplayColor);
         binaryFractionDisplay.setHorizontalAlignment(JTextField.RIGHT);
@@ -358,25 +352,23 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         registerSelect.setSelectedIndex(0);  // No register attached
         registerSelect.setToolTipText("Attach to selected FP register");
         registerSelect.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        JComboBox cb = (JComboBox) e.getSource();
-                        int selectedIndex = cb.getSelectedIndex();
+                e -> {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    int selectedIndex = cb.getSelectedIndex();
+                    if (isObserving()) {
+                        deleteAsObserver();
+                    }
+                    if (selectedIndex == 0) {
+                        attachedRegister = null;
+                        updateDisplays(new FlavorsOfFloat());
+                        instructions.setText("The program is not attached to any MIPS floating point registers.");
+                    } else {
+                        attachedRegister = fpRegisters[selectedIndex - 1];
+                        updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
                         if (isObserving()) {
-                            deleteAsObserver();
+                            addAsObserver();
                         }
-                        if (selectedIndex == 0) {
-                            attachedRegister = null;
-                            updateDisplays(new FlavorsOfFloat());
-                            instructions.setText("The program is not attached to any MIPS floating point registers.");
-                        } else {
-                            attachedRegister = fpRegisters[selectedIndex - 1];
-                            updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
-                            if (isObserving()) {
-                                addAsObserver();
-                            }
-                            instructions.setText("The program and register " + attachedRegister.getName() + " will respond to each other when MIPS program connected or running.");
-                        }
+                        instructions.setText("The program and register " + attachedRegister.getName() + " will respond to each other when MIPS program connected or running.");
                     }
                 });
 
@@ -438,11 +430,11 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         if (flavors.binaryString.substring(maxLengthBinarySign, maxLengthBinarySign + maxLengthBinaryExponent)
                 .equals(zeroes.substring(maxLengthBinarySign, maxLengthBinarySign + maxLengthBinaryExponent))) {
             // Will change text only if it truly is changing....
-            if (significandLabel.getText().indexOf("deno") < 0) {
+            if (!significandLabel.getText().contains("deno")) {
                 significandLabel.setText(denormalizedLabel);
             }
         } else {
-            if (significandLabel.getText().indexOf("unde") < 0) {
+            if (!significandLabel.getText().contains("unde")) {
                 significandLabel.setText(normalizedLabel);
             }
         }
@@ -482,12 +474,12 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         }
 
         //  Assign all fields given a string representing 32 bit hex value.
-        public FlavorsOfFloat buildOneFromHexString(String hexString) {
+        FlavorsOfFloat buildOneFromHexString(String hexString) {
             this.hexString = "0x" + addLeadingZeroes(
                     ((hexString.indexOf("0X") == 0 || hexString.indexOf("0x") == 0)
                             ? hexString.substring(2) : hexString), maxLengthHex);
             this.binaryString = Binary.hexStringToBinaryString(this.hexString);
-            this.decimalString = new Float(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString))).toString();
+            this.decimalString = Float.toString(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString)));
             this.expansionString = buildExpansionFromBinaryString(this.binaryString);
             this.intValue = Binary.binaryStringToInt(this.binaryString);
             return this;
@@ -497,7 +489,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         private FlavorsOfFloat buildOneFromBinaryString() {
             this.binaryString = getFullBinaryStringFromDisplays();
             this.hexString = Binary.binaryStringToHexString(binaryString);
-            this.decimalString = new Float(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString))).toString();
+            this.decimalString = Float.toString(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString)));
             this.expansionString = buildExpansionFromBinaryString(this.binaryString);
             this.intValue = Binary.binaryStringToInt(this.binaryString);
             return this;
@@ -511,7 +503,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             } catch (NumberFormatException nfe) {
                 return null;
             }
-            this.decimalString = new Float(floatValue).toString();
+            this.decimalString = Float.toString(floatValue);
             this.intValue = Float.floatToIntBits(floatValue);// use floatToRawIntBits?
             this.binaryString = Binary.intToBinaryString(this.intValue);
             this.hexString = Binary.binaryStringToHexString(this.binaryString);
@@ -524,13 +516,13 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             this.intValue = intValue;
             this.binaryString = Binary.intToBinaryString(intValue);
             this.hexString = Binary.binaryStringToHexString(this.binaryString);
-            this.decimalString = new Float(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString))).toString();
+            this.decimalString = Float.toString(Float.intBitsToFloat(Binary.binaryStringToInt(this.binaryString)));
             this.expansionString = buildExpansionFromBinaryString(this.binaryString);
             return this;
         }
 
         //  Build binary expansion formula for display -- will not be editable.
-        public String buildExpansionFromBinaryString(String binaryString) {
+        String buildExpansionFromBinaryString(String binaryString) {
             int biasedExponent = Binary.binaryStringToInt(
                     binaryString.substring(maxLengthBinarySign, maxLengthBinarySign + maxLengthBinaryExponent));
             String stringExponent = Integer.toString(biasedExponent - exponentBias);
@@ -579,10 +571,10 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
     //
     private class HexDisplayKeystrokeListener extends KeyAdapter {
 
-        private int digitLength; // maximum number of digits long
+        private final int digitLength; // maximum number of digits long
 
-        public HexDisplayKeystrokeListener(int length) {
-            digitLength = length;
+        HexDisplayKeystrokeListener() {
+            digitLength = 8;
         }
 
 
@@ -654,9 +646,9 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
     //
     private class BinaryDisplayKeystrokeListener extends KeyAdapter {
 
-        private int bitLength;  // maximum number of bits permitted
+        private final int bitLength;  // maximum number of bits permitted
 
-        public BinaryDisplayKeystrokeListener(int length) {
+        BinaryDisplayKeystrokeListener(int length) {
             bitLength = length;
         }
 
@@ -830,8 +822,8 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         final int upperY = 50;
         int centerX, exponentCenterX;
         int subtractLabelWidth, subtractLabelHeight;
-        int centerY = (upperY - lowerY) / 2;
-        int upperYArrowHead = upperY - arrowHeadOffset;
+        final int centerY = (upperY - lowerY) / 2;
+        final int upperYArrowHead = upperY - arrowHeadOffset;
         int currentExponent = Binary.binaryStringToInt(defaultBinaryExponent);
 
         public void paintComponent(Graphics g) {
@@ -865,7 +857,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
         }
 
         // To be used only by "outsiders" to update the display of the exponent and bias.
-        public void drawSubtractLabel(int exponent) {
+        void drawSubtractLabel(int exponent) {
             if (exponent != currentExponent) { // no need to redraw if it hasn't changed...
                 currentExponent = exponent;
                 drawSubtractLabel(getGraphics(), buildSubtractLabel(exponent));
@@ -919,8 +911,8 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
     //
     class BinaryFractionDisplayTextField extends JTextField {
 
-        public BinaryFractionDisplayTextField(String value, int columns) {
-            super(value, columns);
+        BinaryFractionDisplayTextField() {
+            super(FloatRepresentation.defaultBinaryFraction, 24);
         }
 
         // This overrides inherited JPanel method.  Override is necessary to

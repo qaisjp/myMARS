@@ -8,7 +8,6 @@ import mars.mips.instructions.*;
 
 import java.util.*;
 import javax.swing.*;
-import java.awt.event.*;
 
 	/*
 Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
@@ -53,7 +52,7 @@ public class Simulator extends Observable {
     // to simulate keyboard and display interrupts.  The device is identified
     // by the address of its MMIO control register.  keyboard 0xFFFF0000 and
     // display 0xFFFF0008.  DPS 23 July 2008.
-    public static final int NO_DEVICE = 0;
+    private static final int NO_DEVICE = 0;
     public static volatile int externalInterruptingDevice = NO_DEVICE;
     /**
      * various reasons for simulate to end...
@@ -149,7 +148,7 @@ public class Simulator extends Observable {
         if (simulatorThread != null) {
             simulatorThread.setStop(actor);
             for (StopListener l : stopListeners) {
-                l.stopped(this);
+                l.stopped();
             }
             simulatorThread = null;
         }
@@ -160,10 +159,10 @@ public class Simulator extends Observable {
      * stop the execution. When that happens, it must unblock the
      * simulator thread. */
     public interface StopListener {
-        void stopped(Simulator s);
+        void stopped();
     }
 
-    private ArrayList<StopListener> stopListeners = new ArrayList<StopListener>(1);
+    private final ArrayList<StopListener> stopListeners = new ArrayList<>(1);
 
     public void addStopListener(StopListener l) {
         stopListeners.add(l);
@@ -204,14 +203,15 @@ public class Simulator extends Observable {
      */
 
     class SimThread extends SwingWorker {
-        private MIPSprogram p;
-        private int pc, maxSteps;
+        private final MIPSprogram p;
+        private final int pc;
+        private final int maxSteps;
         private int[] breakPoints;
         private boolean done;
         private ProcessingException pe;
         private volatile boolean stop = false;
         private volatile AbstractAction stopper;
-        private AbstractAction starter;
+        private final AbstractAction starter;
         private int constructReturnReason;
 
 
@@ -243,7 +243,7 @@ public class Simulator extends Observable {
          *
          * @param actor the Swing component responsible for this call.
          */
-        public void setStop(AbstractAction actor) {
+        void setStop(AbstractAction actor) {
             stop = true;
             stopper = actor;
         }
@@ -274,7 +274,7 @@ public class Simulator extends Observable {
             Simulator.getInstance().notifyObserversOfExecutionStart(maxSteps, pc);
 
             RegisterFile.initializeProgramCounter(pc);
-            ProgramStatement statement = null;
+            ProgramStatement statement;
             try {
                 statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
             } catch (AddressErrorException e) {
@@ -290,7 +290,7 @@ public class Simulator extends Observable {
                 this.done = true;
                 SystemIO.resetFiles(); // close any files opened in MIPS program
                 Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                return new Boolean(done);
+                return done;
             }
             int steps = 0;
 
@@ -359,7 +359,7 @@ public class Simulator extends Observable {
                             this.done = true;
                             SystemIO.resetFiles(); // close any files opened in MIPS program
                             Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                            return new Boolean(done); // execution completed without error.
+                            return done; // execution completed without error.
                         } else {
                             // See if an exception handler is present.  Assume this is the case
                             // if and only if memory location Memory.exceptionHandlerAddress
@@ -369,7 +369,7 @@ public class Simulator extends Observable {
                             ProgramStatement exceptionHandler = null;
                             try {
                                 exceptionHandler = Globals.memory.getStatement(Memory.exceptionHandlerAddress);
-                            } catch (AddressErrorException aee) {
+                            } catch (AddressErrorException ignored) {
                             } // will not occur with this well-known addres
                             if (exceptionHandler != null) {
                                 RegisterFile.setProgramCounter(Memory.exceptionHandlerAddress);
@@ -379,7 +379,7 @@ public class Simulator extends Observable {
                                 this.done = true;
                                 SystemIO.resetFiles(); // close any files opened in MIPS program
                                 Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                                return new Boolean(done);
+                                return done;
                             }
                         }
                     }
@@ -395,11 +395,11 @@ public class Simulator extends Observable {
 
                 // Volatile variable initialized false but can be set true by the main thread.
                 // Used to stop or pause a running MIPS program.  See stopSimulation() above.
-                if (stop == true) {
+                if (stop) {
                     this.constructReturnReason = PAUSE_OR_STOP;
                     this.done = false;
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done);
+                    return done;
                 }
                 //	Return if we've reached a breakpoint.
                 if ((breakPoints != null) &&
@@ -407,7 +407,7 @@ public class Simulator extends Observable {
                     this.constructReturnReason = BREAKPOINT;
                     this.done = false;
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done); // false;
+                    return done; // false;
                 }
                 // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
                 if (maxSteps > 0) {
@@ -416,7 +416,7 @@ public class Simulator extends Observable {
                         this.constructReturnReason = MAX_STEPS;
                         this.done = false;
                         Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                        return new Boolean(done);// false;
+                        return done;// false;
                     }
                 }
 
@@ -433,7 +433,7 @@ public class Simulator extends Observable {
                             RunSpeedPanel.getInstance().getRunSpeed() < RunSpeedPanel.UNLIMITED_SPEED) {
                         try {
                             Thread.sleep((int) (1000 / RunSpeedPanel.getInstance().getRunSpeed())); // make sure it's never zero!
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException ignored) {
                         }
                     }
                 }
@@ -456,7 +456,7 @@ public class Simulator extends Observable {
                     this.done = true;
                     SystemIO.resetFiles(); // close any files opened in MIPS program
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done);
+                    return done;
                 }
             }
             // DPS July 2007.  This "if" statement is needed for correct program
@@ -473,7 +473,7 @@ public class Simulator extends Observable {
             this.done = true;
             SystemIO.resetFiles(); // close any files opened in MIPS program
             Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-            return new Boolean(done); // true;  // execution completed
+            return done; // true;  // execution completed
         }
 
 
@@ -500,7 +500,7 @@ public class Simulator extends Observable {
                 if (done) {
                     ((RunGoAction) starter).stopped(pe, constructReturnReason);
                 } else if (constructReturnReason == BREAKPOINT) {
-                    ((RunGoAction) starter).paused(done, constructReturnReason, pe);
+                    ((RunGoAction) starter).paused(false, constructReturnReason, pe);
                 } else {
                     String stopperName = (String) stopper.getValue(AbstractAction.NAME);
                     if ("Pause".equals(stopperName)) {
@@ -510,7 +510,6 @@ public class Simulator extends Observable {
                     }
                 }
             }
-            return;
         }
 
     }

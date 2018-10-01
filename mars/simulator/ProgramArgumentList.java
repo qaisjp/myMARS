@@ -1,14 +1,9 @@
 package mars.simulator;
 
 import mars.*;
-import mars.venus.*;
-import mars.util.*;
 import mars.mips.hardware.*;
-import mars.mips.instructions.*;
 
 import java.util.*;
-import javax.swing.*;
-import java.awt.event.*;
 
 	/*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -49,7 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ProgramArgumentList {
 
-    ArrayList programArgumentList;
+    private final ArrayList programArgumentList;
 
     /**
      * Constructor that parses string to produce list.  Delimiters
@@ -79,15 +74,12 @@ public class ProgramArgumentList {
      * Constructor that gets list from section of String array, one
      * argument per element.
      *
-     * @param args          Array of String, each element containing one argument
      * @param startPosition Index of array element containing the first argument; all remaining
      *                      elements are assumed to contain an argument.
      */
     public ProgramArgumentList(String[] list, int startPosition) {
         programArgumentList = new ArrayList(list.length - startPosition);
-        for (int i = startPosition; i < list.length; i++) {
-            programArgumentList.add(list[i]);
-        }
+        programArgumentList.addAll(Arrays.asList(list).subList(startPosition, list.length));
     }
 
     /**
@@ -104,7 +96,6 @@ public class ProgramArgumentList {
      * Constructor that gets list from section of String ArrayList, one
      * argument per element.
      *
-     * @param args          ArrayList of String, each element containing one argument
      * @param startPosition Index of array element containing the first argument; all remaining
      *                      elements are assumed to contain an argument.
      */
@@ -201,7 +192,6 @@ public class ProgramArgumentList {
             System.out.println("Internal Error: Memory write error occurred while storing program arguments! " + aee);
             System.exit(0);
         }
-        return;
     }
 
 

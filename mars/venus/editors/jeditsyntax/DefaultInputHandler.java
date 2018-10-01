@@ -14,7 +14,6 @@ import java.awt.event.*;
 import java.awt.Toolkit;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Properties;
 
 /**
  * The default input handler. It maps sequences of keystrokes into actions
@@ -119,9 +118,8 @@ public class DefaultInputHandler extends InputHandler {
      * Removes a key binding from this input handler. This is not yet
      * implemented.
      *
-     * @param keyBinding The key binding
      */
-    public void removeKeyBinding(String keyBinding) {
+    public void removeKeyBinding() {
         throw new InternalError("Not yet implemented");
     }
 
@@ -187,18 +185,15 @@ public class DefaultInputHandler extends InputHandler {
                 // (mnemonic, accelerator).  DPS 4-may-2010
                 mars.Globals.getGui().dispatchEventToMenu(evt);
                 evt.consume();
-                return;
             } else if (o instanceof ActionListener) {
                 currentBindings = bindings;
                 executeAction(((ActionListener) o),
                         evt.getSource(), null);
 
                 evt.consume();
-                return;
             } else if (o instanceof Hashtable) {
                 currentBindings = (Hashtable) o;
                 evt.consume();
-                return;
             }
         }
     }
@@ -301,7 +296,7 @@ public class DefaultInputHandler extends InputHandler {
      *
      * @param keyStroke A string description of the key stroke
      */
-    public static KeyStroke parseKeyStroke(String keyStroke) {
+    private static KeyStroke parseKeyStroke(String keyStroke) {
         if (keyStroke == null)
             return null;
         int modifiers = 0;
@@ -352,7 +347,7 @@ public class DefaultInputHandler extends InputHandler {
     }
 
     // private members
-    private Hashtable bindings;
+    private final Hashtable bindings;
     private Hashtable currentBindings;
 
     private DefaultInputHandler(DefaultInputHandler copy) {

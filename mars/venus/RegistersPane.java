@@ -1,15 +1,6 @@
 package mars.venus;
 
-import mars.*;
-
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.undo.*;
-import java.text.*;
-import java.util.*;
-import java.io.*;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -47,20 +38,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class RegistersPane extends JTabbedPane {
-    RegistersWindow regsTab;
-    Coprocessor1Window cop1Tab;
-    Coprocessor0Window cop0Tab;
-
-    private VenusUI mainUI;
+    private final RegistersWindow regsTab;
+    private final Coprocessor1Window cop1Tab;
+    private final Coprocessor0Window cop0Tab;
 
     /**
      * Constructor for the RegistersPane class.
      **/
 
-    public RegistersPane(VenusUI appFrame, RegistersWindow regs, Coprocessor1Window cop1,
+    public RegistersPane(RegistersWindow regs, Coprocessor1Window cop1,
                          Coprocessor0Window cop0) {
         super();
-        this.mainUI = appFrame;
         regsTab = regs;
         cop1Tab = cop1;
         cop0Tab = cop0;

@@ -40,8 +40,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class SymbolTable {
-    private static String startLabel = "main";
-    private String filename;
+    private final String filename;
     private ArrayList table;
     // Note -1 is legal 32 bit address (0xFFFFFFFF) but it is the high address in
     // kernel address space so highly unlikely that any symbol will have this as
@@ -99,7 +98,6 @@ public class SymbolTable {
                 break;
             }
         }
-        return;
     }
 
 
@@ -110,9 +108,9 @@ public class SymbolTable {
      * @return The memory address of the label given, or NOT_FOUND if not found in symbol table.
      **/
     public int getAddress(String s) {
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getName().equals(s)) {
-                return ((Symbol) table.get(i)).getAddress();
+        for (Object aTable : table) {
+            if (((Symbol) aTable).getName().equals(s)) {
+                return ((Symbol) aTable).getAddress();
             }
         }
         return NOT_FOUND;
@@ -140,9 +138,9 @@ public class SymbolTable {
      **/
 
     public Symbol getSymbol(String s) {
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getName().equals(s)) {
-                return (Symbol) table.get(i);
+        for (Object aTable : table) {
+            if (((Symbol) aTable).getName().equals(s)) {
+                return (Symbol) aTable;
             }
         }
         return null;
@@ -155,16 +153,16 @@ public class SymbolTable {
      * @return Symbol object having requested address, null if address not found in symbol table.
      **/
 
-    public Symbol getSymbolGivenAddress(String s) {
-        int address = 0;
+    private Symbol getSymbolGivenAddress(String s) {
+        int address;
         try {
             address = mars.util.Binary.stringToInt(s);// DPS 2-Aug-2010: was Integer.parseInt(s) but croaked on hex    
         } catch (NumberFormatException e) {
             return null;
         }
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getAddress() == address) {
-                return (Symbol) table.get(i);
+        for (Object aTable : table) {
+            if (((Symbol) aTable).getAddress() == address) {
+                return (Symbol) aTable;
             }
         }
         return null;
@@ -191,9 +189,9 @@ public class SymbolTable {
 
     public ArrayList getDataSymbols() {
         ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) table.get(i)).getType()) {
-                list.add(table.get(i));
+        for (Object aTable : table) {
+            if (((Symbol) aTable).getType()) {
+                list.add(aTable);
             }
         }
         return list;
@@ -208,9 +206,9 @@ public class SymbolTable {
 
     public ArrayList getTextSymbols() {
         ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            if (!((Symbol) table.get(i)).getType()) {
-                list.add(table.get(i));
+        for (Object aTable : table) {
+            if (!((Symbol) aTable).getType()) {
+                list.add(aTable);
             }
         }
         return list;
@@ -223,11 +221,7 @@ public class SymbolTable {
      **/
 
     public ArrayList getAllSymbols() {
-        ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            list.add(table.get(i));
-        }
-        return list;
+        return new ArrayList(table);
     }
 
     /**
@@ -264,7 +258,6 @@ public class SymbolTable {
             label.setAddress(replacementAddress);
             label = getSymbolGivenAddress(Integer.toString(originalAddress));
         }
-        return;
     }
 
     /**
@@ -274,6 +267,6 @@ public class SymbolTable {
      * @return String containing global label whose text segment address is starting address for program execution.
      **/
     public static String getStartLabel() {
-        return startLabel;
+        return "main";
     }
 }

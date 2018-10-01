@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public final class Directives {
 
-    private static ArrayList directiveList = new ArrayList();
+    private static final ArrayList directiveList = new ArrayList();
     public static final Directives DATA = new Directives(".data", "Subsequent items stored in Data segment at next available address");
     public static final Directives TEXT = new Directives(".text", "Subsequent items (instructions) stored in Text segment at next available address");
     public static final Directives WORD = new Directives(".word", "Store the listed value(s) as 32 bit words on word boundary");
@@ -68,8 +68,8 @@ public final class Directives {
     public static final Directives INCLUDE = new Directives(".include", "Insert the contents of the specified file.  Put filename in quotes.");
 
 
-    private String descriptor;
-    private String description; // help text
+    private final String descriptor;
+    private final String description; // help text
 
     private Directives() {
         // private ctor assures no objects can be created other than those above.
@@ -93,8 +93,8 @@ public final class Directives {
 
     public static Directives matchDirective(String str) {
         Directives match;
-        for (int i = 0; i < directiveList.size(); i++) {
-            match = (Directives) directiveList.get(i);
+        for (Object aDirectiveList : directiveList) {
+            match = (Directives) aDirectiveList;
             if (str.equalsIgnoreCase(match.descriptor)) {
                 return match;
             }
@@ -113,12 +113,12 @@ public final class Directives {
 
     public static ArrayList prefixMatchDirectives(String str) {
         ArrayList matches = null;
-        for (int i = 0; i < directiveList.size(); i++) {
-            if (((Directives) directiveList.get(i)).descriptor.toLowerCase().startsWith(str.toLowerCase())) {
+        for (Object aDirectiveList : directiveList) {
+            if (((Directives) aDirectiveList).descriptor.toLowerCase().startsWith(str.toLowerCase())) {
                 if (matches == null) {
                     matches = new ArrayList();
                 }
-                matches.add(directiveList.get(i));
+                matches.add(aDirectiveList);
             }
         }
         return matches;

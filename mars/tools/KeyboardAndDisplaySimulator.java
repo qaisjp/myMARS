@@ -11,7 +11,6 @@ import java.awt.event.*;
 import java.util.*;
 
 import mars.Globals;
-import mars.venus.RunSpeedPanel;
 import mars.mips.hardware.*;
 import mars.simulator.Exceptions;
 
@@ -72,13 +71,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication {
 
-    private static String version = "Version 1.4";
-    private static String heading = "Keyboard and Display MMIO Simulator";
+    private static final String version = "Version 1.4";
+    private static final String heading = "Keyboard and Display MMIO Simulator";
     private static String displayPanelTitle, keyboardPanelTitle;
-    private static char VT_FILL = ' ';  // fill character for virtual terminal (random access mode)
 
-    public static Dimension preferredTextAreaDimension = new Dimension(400, 200);
-    private static Insets textAreaInsets = new Insets(4, 4, 4, 4);
+    private static final Dimension preferredTextAreaDimension = new Dimension(400, 200);
+    private static final Insets textAreaInsets = new Insets(4, 4, 4, 4);
 
     // Time delay to process Transmitter Data is simulated by counting instruction executions.
     // After this many executions, the Transmitter Controller Ready bit set to 1.
@@ -87,10 +85,10 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             new UniformlyDistributedDelay(),
             new NormallyDistributedDelay()
     };
-    public static int RECEIVER_CONTROL;    // keyboard Ready in low-order bit
-    public static int RECEIVER_DATA;       // keyboard character in low-order byte
-    public static int TRANSMITTER_CONTROL; // display Ready in low-order bit
-    public static int TRANSMITTER_DATA;    // display character in low-order byte
+    private static int RECEIVER_CONTROL;    // keyboard Ready in low-order bit
+    private static int RECEIVER_DATA;       // keyboard character in low-order byte
+    private static int TRANSMITTER_CONTROL; // display Ready in low-order bit
+    private static int TRANSMITTER_DATA;    // display character in low-order byte
     // These are used to track instruction counts to simulate driver delay of Transmitter Data
     private boolean countingInstructions;
     private int instructionCount;
@@ -107,22 +105,15 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     private boolean displayRandomAccessMode = false;
     private int rows, columns;
     private DisplayResizeAdapter updateDisplayBorder;
-    private KeyboardAndDisplaySimulator simulator;
+    private final KeyboardAndDisplaySimulator simulator;
 
-    // Major GUI components
-    private JPanel keyboardAndDisplay;
-    private JScrollPane displayScrollPane;
     private JTextArea display;
-    private JPanel displayPanel, displayOptions;
+    private JPanel displayPanel;
     private JComboBox delayTechniqueChooser;
     private DelayLengthPanel delayLengthPanel;
-    private JSlider delayLengthSlider;
     private JCheckBox displayAfterDelayCheckBox;
-    private JPanel keyboardPanel;
-    private JScrollPane keyAccepterScrollPane;
     private JTextArea keyEventAccepter;
-    private JButton fontButton;
-    private Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+    private final Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
     /**
      * Simple constructor, likely used to run a stand-alone keyboard/display simulator.
@@ -223,7 +214,8 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         // display positioning feature.  Previously, both the display and the keyboard
         // text areas were equal in size and there was no way for the user to change that.
         // DPS 17-July-2014
-        keyboardAndDisplay = new JPanel(new BorderLayout());
+        // Major GUI components
+        JPanel keyboardAndDisplay = new JPanel(new BorderLayout());
         JSplitPane both = new JSplitPane(JSplitPane.VERTICAL_SPLIT, buildDisplay(), buildKeyboard());
         both.setResizeWeight(0.5);
         keyboardAndDisplay.add(both);
@@ -238,11 +230,9 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
 
     /**
      * Update display when connected MIPS program accesses (data) memory.
-     *
-     * @param memory       the attached memory
-     * @param accessNotice information provided by memory in MemoryAccessNotice object
+     *  @param accessNotice information provided by memory in MemoryAccessNotice object
      */
-    protected void processMIPSUpdate(Observable memory, AccessNotice accessNotice) {
+    protected void processMIPSUpdate(AccessNotice accessNotice) {
         MemoryAccessNotice notice = (MemoryAccessNotice) accessNotice;
         // If MIPS program has just read (loaded) the receiver (keyboard) data register,
         // then clear the Ready bit to indicate there is no longer a keystroke available.
@@ -313,7 +303,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             // displays will replace, not append, in the text.
             if (!displayRandomAccessMode) {
                 displayRandomAccessMode = true;
-                initializeDisplay(displayRandomAccessMode);
+                initializeDisplay(true);
             }
             // For SET_CURSOR_X_Y, we need data from the rest of the word.
             // High order 3 bytes are split in half to store (X,Y) value.
@@ -321,9 +311,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             int x = (intWithCharacterToDisplay & 0xFFF00000) >>> 20;
             int y = (intWithCharacterToDisplay & 0x000FFF00) >>> 8;
             // If X or Y values are outside current range, set to range limit.
-            if (x < 0) x = 0;
             if (x >= columns) x = columns - 1;
-            if (y < 0) y = 0;
             if (y >= rows) y = rows - 1;
             // display is a JTextArea whose character positioning in the text is linear.
             // Converting (row,column) to linear position requires knowing how many columns
@@ -392,11 +380,13 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             rows = (int) textDimensions.getHeight();
             repaintDisplayPanelBorder();
             char[] charArray = new char[columns];
+            // fill character for virtual terminal (random access mode)
+            char VT_FILL = ' ';
             Arrays.fill(charArray, VT_FILL);
             String row = new String(charArray);
-            StringBuffer str = new StringBuffer(row);
+            StringBuilder str = new StringBuilder(row);
             for (int i = 1; i < rows; i++) {
-                str.append("\n" + row);
+                str.append("\n").append(row);
             }
             initialText = str.toString();
         }
@@ -411,7 +401,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         int cols = (int) size.getWidth();
         int rows = (int) size.getHeight();
         int caretPosition = display.getCaretPosition();
-        String stringCaretPosition = "";
+        String stringCaretPosition;
         // display position as stream or 2D depending on random access
         if (displayRandomAccessMode) {
             //             if ( caretPosition == rows*(columns+1)+1) {
@@ -547,52 +537,48 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                         "Contact Pete Sanderson at psanderson@otterbein.edu with questions or comments.\n";
         JButton help = new JButton("Help");
         help.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        JTextArea ja = new JTextArea(helpContent);
-                        ja.setRows(30);
-                        ja.setColumns(60);
-                        ja.setLineWrap(true);
-                        ja.setWrapStyleWord(true);
-                        // Make the Help dialog modeless (can remain visible while working with other components).
-                        // Unfortunately, JOptionPane.showMessageDialog() cannot be made modeless.  I found two
-                        // workarounds:
-                        //  (1) Use JDialog and the additional work that requires
-                        //  (2) create JOptionPane object, get JDialog from it, make the JDialog modeless
-                        // Solution 2 is shorter but requires Java 1.6.  Trying to keep MARS at 1.5.  So we
-                        // do it the hard way.  DPS 16-July-2014
-                        final JDialog d;
-                        final String title = "Simulating the Keyboard and Display";
-                        // The following is necessary because there are different JDialog constructors for Dialog and
-                        // Frame and theWindow is declared a Window, superclass for both.
-                        d = (theWindow instanceof Dialog) ? new JDialog((Dialog) theWindow, title, false)
-                                : new JDialog((Frame) theWindow, title, false);
-                        d.setSize(ja.getPreferredSize());
-                        d.getContentPane().setLayout(new BorderLayout());
-                        d.getContentPane().add(new JScrollPane(ja), BorderLayout.CENTER);
-                        JButton b = new JButton("Close");
-                        b.addActionListener(
-                                new ActionListener() {
-                                    public void actionPerformed(ActionEvent ev) {
-                                        d.setVisible(false);
-                                        d.dispose();
-                                    }
-                                });
-                        JPanel p = new JPanel(); // Flow layout will center button.
-                        p.add(b);
-                        d.getContentPane().add(p, BorderLayout.SOUTH);
-                        d.setLocationRelativeTo(theWindow);
-                        d.setVisible(true);
-                        // This alternative technique is simpler than the above but requires java 1.6!  DPS 16-July-2014
-                        //       JOptionPane theStuff = new JOptionPane(new JScrollPane(ja),JOptionPane.INFORMATION_MESSAGE,
-                        //            JOptionPane.DEFAULT_OPTION, null, new String[]{"Close"} );
-                        //       JDialog theDialog = theStuff.createDialog(theWindow, "Simulating the Keyboard and Display");
-                        //       theDialog.setModal(false);
-                        //       theDialog.setVisible(true);
-                        // The original code. Cannot be made modeless.
-                        //       JOptionPane.showMessageDialog(theWindow, new JScrollPane(ja),
-                        //           "Simulating the Keyboard and Display", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                e -> {
+                    JTextArea ja = new JTextArea(helpContent);
+                    ja.setRows(30);
+                    ja.setColumns(60);
+                    ja.setLineWrap(true);
+                    ja.setWrapStyleWord(true);
+                    // Make the Help dialog modeless (can remain visible while working with other components).
+                    // Unfortunately, JOptionPane.showMessageDialog() cannot be made modeless.  I found two
+                    // workarounds:
+                    //  (1) Use JDialog and the additional work that requires
+                    //  (2) create JOptionPane object, get JDialog from it, make the JDialog modeless
+                    // Solution 2 is shorter but requires Java 1.6.  Trying to keep MARS at 1.5.  So we
+                    // do it the hard way.  DPS 16-July-2014
+                    final JDialog d;
+                    final String title = "Simulating the Keyboard and Display";
+                    // The following is necessary because there are different JDialog constructors for Dialog and
+                    // Frame and theWindow is declared a Window, superclass for both.
+                    d = (theWindow instanceof Dialog) ? new JDialog((Dialog) theWindow, title, false)
+                            : new JDialog((Frame) theWindow, title, false);
+                    d.setSize(ja.getPreferredSize());
+                    d.getContentPane().setLayout(new BorderLayout());
+                    d.getContentPane().add(new JScrollPane(ja), BorderLayout.CENTER);
+                    JButton b = new JButton("Close");
+                    b.addActionListener(
+                            ev -> {
+                                d.setVisible(false);
+                                d.dispose();
+                            });
+                    JPanel p = new JPanel(); // Flow layout will center button.
+                    p.add(b);
+                    d.getContentPane().add(p, BorderLayout.SOUTH);
+                    d.setLocationRelativeTo(theWindow);
+                    d.setVisible(true);
+                    // This alternative technique is simpler than the above but requires java 1.6!  DPS 16-July-2014
+                    //       JOptionPane theStuff = new JOptionPane(new JScrollPane(ja),JOptionPane.INFORMATION_MESSAGE,
+                    //            JOptionPane.DEFAULT_OPTION, null, new String[]{"Close"} );
+                    //       JDialog theDialog = theStuff.createDialog(theWindow, "Simulating the Keyboard and Display");
+                    //       theDialog.setModal(false);
+                    //       theDialog.setVisible(true);
+                    // The original code. Cannot be made modeless.
+                    //       JOptionPane.showMessageDialog(theWindow, new JScrollPane(ja),
+                    //           "Simulating the Keyboard and Display", JOptionPane.INFORMATION_MESSAGE);
                 });
         return help;
     }
@@ -619,11 +605,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         display.addComponentListener(updateDisplayBorder);
         // 	To update display of caret position in the Display text area when caret position changes.
         display.addCaretListener(
-                new CaretListener() {
-                    public void caretUpdate(CaretEvent e) {
-                        simulator.repaintDisplayPanelBorder();
-                    }
-                }
+                e -> simulator.repaintDisplayPanelBorder()
         );
 
         // 2011-07-29: Patrik Lundin, patrik@lundin.info
@@ -632,31 +614,23 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         // end added autoscrolling
 
-        displayScrollPane = new JScrollPane(display);
+        JScrollPane displayScrollPane = new JScrollPane(display);
         displayScrollPane.setPreferredSize(preferredTextAreaDimension);
 
         displayPanel.add(displayScrollPane);
-        displayOptions = new JPanel();
+        JPanel displayOptions = new JPanel();
         delayTechniqueChooser = new JComboBox(delayTechniques);
         delayTechniqueChooser.setToolTipText("Technique for determining simulated transmitter device processing delay");
         delayTechniqueChooser.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        transmitDelayInstructionCountLimit = generateDelay();
-                    }
-                });
+                e -> transmitDelayInstructionCountLimit = generateDelay());
         delayLengthPanel = new DelayLengthPanel();
         displayAfterDelayCheckBox = new JCheckBox("DAD", true);
         displayAfterDelayCheckBox.setToolTipText("Display After Delay: if checked, transmitter data not displayed until after delay");
         displayAfterDelayCheckBox.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        displayAfterDelay = displayAfterDelayCheckBox.isSelected();
-                    }
-                });
+                e -> displayAfterDelay = displayAfterDelayCheckBox.isSelected());
 
         //font button to display font
-        fontButton = new JButton("Font");
+        JButton fontButton = new JButton("Font");
         fontButton.setToolTipText("Select the font for the display panel");
         fontButton.addActionListener(new FontChanger());
         displayOptions.add(fontButton);
@@ -671,12 +645,12 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     //////////////////////////////////////////////////////////////////////////////////////
     // UI components and layout for lower part of GUI, where simulated keyboard is located.
     private JComponent buildKeyboard() {
-        keyboardPanel = new JPanel(new BorderLayout());
+        JPanel keyboardPanel = new JPanel(new BorderLayout());
         keyEventAccepter = new JTextArea();
         keyEventAccepter.setEditable(true);
         keyEventAccepter.setFont(defaultFont);
         keyEventAccepter.setMargin(textAreaInsets);
-        keyAccepterScrollPane = new JScrollPane(keyEventAccepter);
+        JScrollPane keyAccepterScrollPane = new JScrollPane(keyEventAccepter);
         keyAccepterScrollPane.setPreferredSize(preferredTextAreaDimension);
         keyEventAccepter.addKeyListener(new KeyboardKeyListener());
         keyboardPanel.add(keyAccepterScrollPane);
@@ -704,7 +678,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     // This one does the work: update the MMIO Control and optionally the Data register as well
     // NOTE: last argument TRUE means update only the MMIO Control register; FALSE means update both Control and Data.
     private synchronized void updateMMIOControlAndData(int controlAddr, int controlValue, int dataAddr, int dataValue, boolean controlOnly) {
-        if (!this.isBeingUsedAsAMarsTool || (this.isBeingUsedAsAMarsTool && connectButton.isConnected())) {
+        if (!this.isBeingUsedAsAMarsTool || connectButton.isConnected()) {
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
                     Globals.memory.setRawWord(controlAddr, controlValue);
@@ -783,7 +757,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     private int generateDelay() {
         double sliderValue = delayLengthPanel.getDelayLength();
         TransmitterDelayTechnique technique = (TransmitterDelayTechnique) delayTechniqueChooser.getSelectedItem();
-        return technique.generateDelay(sliderValue);
+        return Objects.requireNonNull(technique).generateDelay(sliderValue);
     }
 
 
@@ -825,18 +799,18 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         private final static int DELAY_INDEX_MIN = 0;
         private final static int DELAY_INDEX_MAX = 40;
         private final static int DELAY_INDEX_INIT = 4;
-        private double[] delayTable = {
+        private final double[] delayTable = {
                 1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100,  // 0-10
                 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000,  //11-20
                 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,  //21-30
                 20000, 40000, 60000, 80000, 100000, 200000, 400000, 600000, 800000, 1000000//31-40
         };
-        private JLabel sliderLabel = null;
+        private final JLabel sliderLabel;
         private volatile int delayLengthIndex = DELAY_INDEX_INIT;
 
-        public DelayLengthPanel() {
+        DelayLengthPanel() {
             super(new BorderLayout());
-            delayLengthSlider = new JSlider(JSlider.HORIZONTAL, DELAY_INDEX_MIN, DELAY_INDEX_MAX, DELAY_INDEX_INIT);
+            JSlider delayLengthSlider = new JSlider(JSlider.HORIZONTAL, DELAY_INDEX_MIN, DELAY_INDEX_MAX, DELAY_INDEX_INIT);
             delayLengthSlider.setSize(new Dimension(100, (int) delayLengthSlider.getSize().getHeight()));
             delayLengthSlider.setMaximumSize(delayLengthSlider.getSize());
             delayLengthSlider.addChangeListener(new DelayLengthListener());
@@ -849,7 +823,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         }
 
         // returns current delay length setting, in instructions.
-        public double getDelayLength() {
+        double getDelayLength() {
             return delayTable[delayLengthIndex];
         }
 
@@ -897,9 +871,9 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     // Randomly pick value from range 1 to slider setting, uniform distribution
     // (each value has equal probability of being chosen).
     private class UniformlyDistributedDelay implements TransmitterDelayTechnique {
-        Random randu;
+        final Random randu;
 
-        public UniformlyDistributedDelay() {
+        UniformlyDistributedDelay() {
             randu = new Random();
         }
 
@@ -917,9 +891,9 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     // value, take absolute value to make sure we don't get negative,
     // add 1 to make sure we don't get 0.
     private class NormallyDistributedDelay implements TransmitterDelayTechnique {
-        Random randn;
+        final Random randn;
 
-        public NormallyDistributedDelay() {
+        NormallyDistributedDelay() {
             randn = new Random();
         }
 
@@ -941,8 +915,8 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     private class FontSettingDialog extends AbstractFontSettingDialog {
         private boolean resultOK;
 
-        public FontSettingDialog(Frame owner, String title, Font currentFont) {
-            super(owner, title, true, currentFont);
+        FontSettingDialog(Font currentFont) {
+            super(null, "Select Text Font", currentFont);
         }
 
         private Font showDialog() {
@@ -967,27 +941,19 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             Box controlPanel = Box.createHorizontalBox();
             JButton okButton = new JButton("OK");
             okButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            apply(getFont());
-                            closeDialog();
-                        }
+                    e -> {
+                        apply(getFont());
+                        closeDialog();
                     });
             JButton cancelButton = new JButton("Cancel");
             cancelButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performCancel();
-                            closeDialog();
-                        }
+                    e -> {
+                        performCancel();
+                        closeDialog();
                     });
             JButton resetButton = new JButton("Reset");
             resetButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            reset();
-                        }
-                    });
+                    e -> reset());
             controlPanel.add(Box.createHorizontalGlue());
             controlPanel.add(okButton);
             controlPanel.add(Box.createHorizontalGlue());
@@ -1009,7 +975,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     private class FontChanger implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JButton button = (JButton) e.getSource();
-            FontSettingDialog fontDialog = new FontSettingDialog(null, "Select Text Font", display.getFont());
+            FontSettingDialog fontDialog = new FontSettingDialog(display.getFont());
             Font newFont = fontDialog.showDialog();
         }
     }

@@ -1,9 +1,7 @@
 package mars.assembler;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
-import mars.ErrorList;
 import mars.MIPSprogram;
 
 /*
@@ -35,9 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Stores information of macros defined by now. <br>
  * Will be used in first pass of assembling MIPS source code. When reached
  * <code>.macro</code> directive, parser calls
- * {@link MacroPool#BeginMacro(String, int)} and skips source code lines until
+ *  and skips source code lines until
  * reaches <code>.end_macro</code> directive. then calls
- * {@link MacroPool#CommitMacro(int)} and the macro information stored in a
+ *  and the macro information stored in a
  * {@link Macro} instance will be added to {@link #macroList}. <br>
  * Each {@link MIPSprogram} will have one {@link MacroPool}<br>
  * NOTE: Forward referencing macros (macro expansion before its definition in
@@ -47,17 +45,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author M.H.Sekhavat <sekhavat17@gmail.com>
  */
 public class MacroPool {
-    private MIPSprogram program;
+    private final MIPSprogram program;
     /**
      * List of macros defined by now
      */
-    private ArrayList<Macro> macroList;
+    private final ArrayList<Macro> macroList;
     /**
-     * @see #BeginMacro(String, int)
      */
     private Macro current;
-    private ArrayList<Integer> callStack;
-    private ArrayList<Integer> callStackOrigLines;
+    private final ArrayList<Integer> callStack;
+    private final ArrayList<Integer> callStackOrigLines;
     /**
      * @see #getNextCounter()
      */
@@ -71,9 +68,9 @@ public class MacroPool {
      */
     public MacroPool(MIPSprogram mipsProgram) {
         this.program = mipsProgram;
-        macroList = new ArrayList<Macro>();
-        callStack = new ArrayList<Integer>();
-        callStackOrigLines = new ArrayList<Integer>();
+        macroList = new ArrayList<>();
+        callStack = new ArrayList<>();
+        callStackOrigLines = new ArrayList<>();
         current = null;
         counter = 0;
     }
@@ -83,7 +80,7 @@ public class MacroPool {
      * directive.<br>
      * Instantiates a new {@link Macro} object and stores it in {@link #current}
      * . {@link #current} will be added to {@link #macroList} by
-     * {@link #CommitMacro(int)}
+     *
      *
      * @param nameToken Token containing name of macro after <code>.macro</code> directive
      */
@@ -119,7 +116,7 @@ public class MacroPool {
      * @return {@link Macro} object matching the name and argument count of
      * tokens passed
      */
-    public Macro getMatchingMacro(TokenList tokens, int callerLine) {
+    public Macro getMatchingMacro(TokenList tokens) {
         if (tokens.size() < 1)
             return null;
         Macro ret = null;
@@ -189,12 +186,12 @@ public class MacroPool {
 
 
     public String getExpansionHistory() {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         for (int i = 0; i < callStackOrigLines.size(); i++) {
             if (i > 0)
-                ret += "->";
-            ret += callStackOrigLines.get(i).toString();
+                ret.append("->");
+            ret.append(callStackOrigLines.get(i).toString());
         }
-        return ret;
+        return ret.toString();
     }
 }

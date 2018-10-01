@@ -51,7 +51,7 @@ public abstract class AccessNotice {
     private int accessType;
     private Thread thread;
 
-    protected AccessNotice(int type) {
+    AccessNotice(int type) {
         if (type != READ && type != WRITE) {
             throw new IllegalArgumentException();
         }

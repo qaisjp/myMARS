@@ -13,7 +13,6 @@ import mars.venus.editors.jeditsyntax.tokenmarker.*;
 
 import javax.swing.event.*;
 import javax.swing.text.*;
-import javax.swing.undo.UndoableEdit;
 
 /**
  * A document implementation that can be tokenized by the syntax highlighting
@@ -53,8 +52,8 @@ public class SyntaxDocument extends PlainDocument {
      * marker. This should be called after the document is first
      * loaded.
      */
-    public void tokenizeLines() {
-        tokenizeLines(0, getDefaultRootElement().getElementCount());
+    private void tokenizeLines() {
+        tokenizeLines(getDefaultRootElement().getElementCount());
     }
 
     /**
@@ -62,20 +61,19 @@ public class SyntaxDocument extends PlainDocument {
      * token marker. This should be called after a large quantity of
      * text is first inserted.
      *
-     * @param start The first line to parse
      * @param len   The number of lines, after the first one to parse
      */
-    public void tokenizeLines(int start, int len) {
+    private void tokenizeLines(int len) {
         if (tokenMarker == null || !tokenMarker.supportsMultilineTokens())
             return;
 
         Segment lineSegment = new Segment();
         Element map = getDefaultRootElement();
 
-        len += start;
+        len += 0;
 
         try {
-            for (int i = start; i < len; i++) {
+            for (int i = 0; i < len; i++) {
                 Element lineElement = map.getElement(i);
                 int lineStart = lineElement.getStartOffset();
                 getText(lineStart, lineElement.getEndOffset()
@@ -109,14 +107,13 @@ public class SyntaxDocument extends PlainDocument {
      * Adds an undoable edit to this document's undo list. The edit
      * should be ignored if something is currently being undone.
      *
-     * @param edit The undoable edit
      * @since jEdit 2.2pre1
      */
-    public void addUndoableEdit(UndoableEdit edit) {
+    public void addUndoableEdit() {
     }
 
     // protected members
-    protected TokenMarker tokenMarker;
+    private TokenMarker tokenMarker;
 
     /**
      * We overwrite this method to update the token marker

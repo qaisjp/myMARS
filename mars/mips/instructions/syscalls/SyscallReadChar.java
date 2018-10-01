@@ -51,7 +51,7 @@ public class SyscallReadChar extends AbstractSyscall {
      * Performs syscall function to read a character from input console into $a0
      */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int value = 0;
+        int value;
         try {
             value = SystemIO.readChar(this.getNumber());
         } catch (IndexOutOfBoundsException e) // means null input

@@ -2,7 +2,6 @@ package mars.mips.instructions.syscalls;
 
 import mars.util.*;
 import mars.mips.hardware.*;
-import mars.simulator.*;
 import mars.*;
 
 /*
@@ -71,7 +70,7 @@ public class SyscallOpen extends AbstractSyscall {
         // NO MODES IMPLEMENTED  -- MODE IS IGNORED
         // Returns in $v0: a "file descriptor" in the range 0 to SystemIO.SYSCALL_MAXFILES-1,
         // or -1 if error
-        String filename = new String(); // = "";
+        String filename = ""; // = "";
         int byteAddress = RegisterFile.getValue(4);
         char ch[] = {' '}; // Need an array to convert to String
         try {

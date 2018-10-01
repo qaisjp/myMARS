@@ -55,7 +55,7 @@ import javax.swing.table.AbstractTableModel;
  */
 
 //@SuppressWarnings("serial")
-public class BHTableModel extends AbstractTableModel {
+class BHTableModel extends AbstractTableModel {
 
     /**
      * vector holding the entries of the BHT
@@ -68,20 +68,15 @@ public class BHTableModel extends AbstractTableModel {
     private int m_entryCnt;
 
     /**
-     * number of past branch events to remember
-     */
-    private int m_historySize;
-
-    /**
      * name of the table columns
      */
-    private String m_columnNames[] = {"Index", "History", "Prediction", "Correct", "Incorrect", "Precision"};
+    private final String[] m_columnNames = {"Index", "History", "Prediction", "Correct", "Incorrect", "Precision"};
 
     /**
      * type of the table columns
      */
     //@SuppressWarnings("unchecked")
-    private Class m_columnClasses[] = {Integer.class, String.class, String.class, Integer.class, Integer.class, Double.class};
+    private final Class[] m_columnClasses = {Integer.class, String.class, String.class, Integer.class, Integer.class, Double.class};
 
 
     /**
@@ -160,12 +155,12 @@ public class BHTableModel extends AbstractTableModel {
         BHTEntry e = (BHTEntry) m_entries.elementAt(row);
         if (e == null) return "";
 
-        if (col == 0) return new Integer(row);
+        if (col == 0) return row;
         if (col == 1) return e.getHistoryAsStr();
         if (col == 2) return e.getPredictionAsStr();
-        if (col == 3) return new Integer(e.getStatsPredCorrect());
-        if (col == 4) return new Integer(e.getStatsPredIncorrect());
-        if (col == 5) return new Double(e.getStatsPredPrecision());
+        if (col == 3) return e.getStatsPredCorrect();
+        if (col == 4) return e.getStatsPredIncorrect();
+        if (col == 5) return e.getStatsPredPrecision();
 
         return "";
     }
@@ -188,12 +183,14 @@ public class BHTableModel extends AbstractTableModel {
             throw new IllegalArgumentException("Only history sizes of 1 or 2 supported.");
 
         m_entryCnt = numEntries;
-        m_historySize = historySize;
+        /*
+          number of past branch events to remember
+         */
 
         m_entries = new Vector();
 
         for (int i = 0; i < m_entryCnt; i++) {
-            m_entries.add(new BHTEntry(m_historySize, initVal));
+            m_entries.add(new BHTEntry(historySize, initVal));
         }
 
         // refresh the table(s)

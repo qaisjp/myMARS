@@ -9,10 +9,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import java.io.*;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -47,11 +44,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class SettingsMemoryConfigurationAction extends GuiAction {
 
-    JDialog configDialog;
     JComboBox fontFamilySelector, fontStyleSelector;
     JSlider fontSizeSelector;
     JTextField fontSizeDisplay;
-    SettingsMemoryConfigurationAction thisAction;
+    private final SettingsMemoryConfigurationAction thisAction;
 
     // Used to determine upon OK, whether or not anything has changed.
     String initialFontFamily, initialFontStyle, initialFontSize;
@@ -70,7 +66,7 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
      * editor settings.
      */
     public void actionPerformed(ActionEvent e) {
-        configDialog = new MemoryConfigurationDialog(Globals.getGui(), "MIPS Memory Configuration", true);
+        JDialog configDialog = new MemoryConfigurationDialog(Globals.getGui());
         configDialog.setVisible(true);
     }
 
@@ -83,8 +79,8 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
         JLabel[] nameDisplay;
         ConfigurationButton selectedConfigurationButton, initialConfigurationButton;
 
-        public MemoryConfigurationDialog(Frame owner, String title, boolean modality) {
-            super(owner, title, modality);
+        MemoryConfigurationDialog(Frame owner) {
+            super(owner, "MIPS Memory Configuration", true);
             this.setContentPane(buildDialogPanel());
             this.setDefaultCloseOperation(
                     JDialog.DO_NOTHING_ON_CLOSE);
@@ -181,36 +177,22 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
             JButton okButton = new JButton("Apply and Close");
             okButton.setToolTipText(SettingsHighlightingAction.CLOSE_TOOL_TIP_TEXT);
             okButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performApply();
-                            performClose();
-                        }
+                    e -> {
+                        performApply();
+                        performClose();
                     });
             JButton applyButton = new JButton("Apply");
             applyButton.setToolTipText(SettingsHighlightingAction.APPLY_TOOL_TIP_TEXT);
             applyButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performApply();
-                        }
-                    });
+                    e -> performApply());
             JButton cancelButton = new JButton("Cancel");
             cancelButton.setToolTipText(SettingsHighlightingAction.CANCEL_TOOL_TIP_TEXT);
             cancelButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performClose();
-                        }
-                    });
+                    e -> performClose());
             JButton resetButton = new JButton("Reset");
             resetButton.setToolTipText(SettingsHighlightingAction.RESET_TOOL_TIP_TEXT);
             resetButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            performReset();
-                        }
-                    });
+                    e -> performReset());
             controlPanel.add(Box.createHorizontalGlue());
             controlPanel.add(okButton);
             controlPanel.add(Box.createHorizontalGlue());
@@ -283,14 +265,14 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
 
     // Handy class to connect button to its configuration...
     private class ConfigurationButton extends JRadioButton {
-        private MemoryConfiguration configuration;
+        private final MemoryConfiguration configuration;
 
-        public ConfigurationButton(MemoryConfiguration config) {
+        ConfigurationButton(MemoryConfiguration config) {
             super(config.getConfigurationName(), config == MemoryConfigurations.getCurrentConfiguration());
             this.configuration = config;
         }
 
-        public MemoryConfiguration getConfiguration() {
+        MemoryConfiguration getConfiguration() {
             return configuration;
         }
 

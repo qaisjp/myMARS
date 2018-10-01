@@ -2,9 +2,6 @@ package mars.tools;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-
-import mars.*;
 
 	
 /*
@@ -40,8 +37,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class IntroToTools extends AbstractMarsToolAndApplication {
 
-    private static String heading = "Introduction to MARS Tools and Applications";
-    private static String version = " Version 1.0";
+    private static final String heading = "Introduction to MARS Tools and Applications";
+    private static final String version = " Version 1.0";
 
     /**
      * Simple constructor, likely used to run a stand-alone memory reference visualizer.

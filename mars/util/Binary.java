@@ -41,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Binary {
 
     // Using int value 0-15 as index, yields equivalent hex digit as char.
-    private static char[] chars =
+    private static final char[] chars =
             {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     // Use this to produce String equivalent of unsigned int value (add it to int value, result is long)
     private static final long UNSIGNED_BASE = (long) 0x7FFFFFFF + (long) 0x7FFFFFFF + (long) 2; //0xFFFFFFFF+1
@@ -85,7 +85,7 @@ public class Binary {
      * @return String consisting of '1' and '0' characters corresponding to the requested binary sequence.
      **/
 
-    public static String longToBinaryString(long value, int length) {
+    private static String longToBinaryString(long value, int length) {
         char[] result = new char[length];
         int index = length - 1;
         for (int i = 0; i < length; i++) {
@@ -134,7 +134,7 @@ public class Binary {
      * @return long whose binary value corresponds to decoded String.
      **/
 
-    public static long binaryStringToLong(String value) {
+    private static long binaryStringToLong(String value) {
         long result = value.charAt(0) - 48;
         for (int i = 1; i < value.length(); i++) {
             result = (result << 1) | (value.charAt(i) - 48);
@@ -186,7 +186,7 @@ public class Binary {
      * @return String with equivalent value in binary.
      **/
     public static String hexStringToBinaryString(String value) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         // slice off leading Ox or 0X
         if (value.indexOf("0x") == 0 || value.indexOf("0X") == 0) {
             value = value.substring(2);
@@ -194,62 +194,62 @@ public class Binary {
         for (int digs = 0; digs < value.length(); digs++) {
             switch (value.charAt(digs)) {
                 case '0':
-                    result += "0000";
+                    result.append("0000");
                     break;
                 case '1':
-                    result += "0001";
+                    result.append("0001");
                     break;
                 case '2':
-                    result += "0010";
+                    result.append("0010");
                     break;
                 case '3':
-                    result += "0011";
+                    result.append("0011");
                     break;
                 case '4':
-                    result += "0100";
+                    result.append("0100");
                     break;
                 case '5':
-                    result += "0101";
+                    result.append("0101");
                     break;
                 case '6':
-                    result += "0110";
+                    result.append("0110");
                     break;
                 case '7':
-                    result += "0111";
+                    result.append("0111");
                     break;
                 case '8':
-                    result += "1000";
+                    result.append("1000");
                     break;
                 case '9':
-                    result += "1001";
+                    result.append("1001");
                     break;
                 case 'a':
                 case 'A':
-                    result += "1010";
+                    result.append("1010");
                     break;
                 case 'b':
                 case 'B':
-                    result += "1011";
+                    result.append("1011");
                     break;
                 case 'c':
                 case 'C':
-                    result += "1100";
+                    result.append("1100");
                     break;
                 case 'd':
                 case 'D':
-                    result += "1101";
+                    result.append("1101");
                     break;
                 case 'e':
                 case 'E':
-                    result += "1110";
+                    result.append("1110");
                     break;
                 case 'f':
                 case 'F':
-                    result += "1111";
+                    result.append("1111");
                     break;
             }
         }
-        return result;
+        return result.toString();
     }
 
     /**
@@ -284,8 +284,8 @@ public class Binary {
      * @return String containing '0', '1', ...'F' which form hexadecimal equivalent of int.
      */
     public static String intToHexString(int d) {
-        String leadingZero = new String("0");
-        String leadingX = new String("0x");
+        String leadingZero = "0";
+        String leadingX = "0x";
         String t = Integer.toHexString(d);
         while (t.length() < 8)
             t = leadingZero.concat(t);
@@ -305,8 +305,8 @@ public class Binary {
      * @return String containing '0', '1', ...'F' which form hexadecimal equivalent of int.
      */
     public static String intToHalfHexString(int d) {
-        String leadingZero = new String("0");
-        String leadingX = new String("0x");
+        String leadingZero = "0";
+        String leadingX = "0x";
         String t = Integer.toHexString(d);
         if (t.length() > 4) {
             t = t.substring(t.length() - 4);
@@ -374,13 +374,13 @@ public class Binary {
      */
 
     public static int stringToInt(String s) throws NumberFormatException {
-        String work = new String(s);
+        String work = s;
         int result = 0;
         // First, use Integer.decode().  This will validate most, but it flags
         // valid hex two's complement values as exceptions.  We'll catch those and
         // do our own validation.
         try {
-            result = Integer.decode(s).intValue();
+            result = Integer.decode(s);
         } catch (NumberFormatException nfe) {
             // Multistep process toward validation of hex two's complement. 3-step test:
             //   (1) exactly 10 characters long,
@@ -388,7 +388,7 @@ public class Binary {
             //   (3) last 8 characters are valid hex digits.
             work = work.toLowerCase();
             if (work.length() == 10 && work.startsWith("0x")) {
-                String bitString = "";
+                StringBuilder bitString = new StringBuilder();
                 int index;
                 // while testing characters, build bit string to set up for binaryStringToInt
                 for (int i = 2; i < 10; i++) {
@@ -396,9 +396,9 @@ public class Binary {
                     if (index < 0) {
                         throw new NumberFormatException();
                     }
-                    bitString = bitString + intToBinaryString(index, 4);
+                    bitString.append(intToBinaryString(index, 4));
                 }
-                result = binaryStringToInt(bitString);
+                result = binaryStringToInt(bitString.toString());
             }
                /*  The following "else" composed by Jose Baiocchi Paredes, Oct 2009.  This new code 
                    will correctly translate a string representing an unsigned decimal (not hex) 
@@ -408,7 +408,6 @@ public class Binary {
                	 under certain conditions.
                 */
             else if (!work.startsWith("0x")) {
-                result = 0;
                 for (int i = 0; i < work.length(); i++) {
                     char c = work.charAt(i);
                     if ('0' <= c && c <= '9') {
@@ -440,13 +439,13 @@ public class Binary {
      */
 
     public static long stringToLong(String s) throws NumberFormatException {
-        String work = new String(s);
-        long result = 0;
+        String work = s;
+        long result;
         // First, use Long.decode().  This will validate most, but it flags
         // valid hex two's complement values as exceptions.  We'll catch those and
         // do our own validation.
         try {
-            result = Long.decode(s).longValue();
+            result = Long.decode(s);
         } catch (NumberFormatException nfe) {
             // Multistep process toward validation of hex two's complement. 3-step test:
             //   (1) exactly 18 characters long,
@@ -454,7 +453,7 @@ public class Binary {
             //   (3) last 16 characters are valid hex digits.
             work = work.toLowerCase();
             if (work.length() == 18 && work.startsWith("0x")) {
-                String bitString = "";
+                StringBuilder bitString = new StringBuilder();
                 int index;
                 // while testing characters, build bit string to set up for binaryStringToInt
                 for (int i = 2; i < 18; i++) {
@@ -462,9 +461,9 @@ public class Binary {
                     if (index < 0) {
                         throw new NumberFormatException();
                     }
-                    bitString = bitString + intToBinaryString(index, 4);
+                    bitString.append(intToBinaryString(index, 4));
                 }
-                result = binaryStringToLong(bitString);
+                result = binaryStringToLong(bitString.toString());
             } else {
                 throw new NumberFormatException();
             }
@@ -531,7 +530,7 @@ public class Binary {
      * @return 0 if the bit position contains 0, and 1 otherwise.
      **/
 
-    public static int bitValue(long value, int bit) {
+    private static int bitValue(long value, int bit) {
 
         return (int) (1L & (value >> bit));
     }
@@ -654,18 +653,14 @@ public class Binary {
             if (isHex(v))
                 return false; // String starts with "0" but continues "0x", so not octal
 
-            if ((v.charAt(0) == '-') &&   // sign is optional but if present can only be -
-                    (v.charAt(1) == '0') &&
-                    (v.length() > 1))  // Has to have more digits than the leading zero
+            if (v.charAt(0) == '-' && v.charAt(1) == '0')  // Has to have more digits than the leading zero
                 return true;  // Form is Sign 0.... and the entire string is parseable as a number
 
             else if ((v.charAt(0) == '0') &&
                     (v.length() > 1))  // Has to have more digits than the leading zero
                 return true;  // Form is 0.... and the entire string is parseable as a number
 
-        } catch (StringIndexOutOfBoundsException e) {
-            return false;
-        } catch (NumberFormatException e) {
+        } catch (StringIndexOutOfBoundsException | NumberFormatException e) {
             return false;
         }
 

@@ -1,8 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.util.*;
 import mars.mips.hardware.*;
-import mars.simulator.*;
 import mars.*;
 
 import javax.swing.JOptionPane;
@@ -61,7 +59,7 @@ public class SyscallMessageDialog extends AbstractSyscall {
         //       other: plain message
         // Output: none
 
-        String message = new String(); // = "";
+        String message = ""; // = "";
         int byteAddress = RegisterFile.getValue(4);
         char ch[] = {' '}; // Need an array to convert to String
         try {

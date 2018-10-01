@@ -133,8 +133,8 @@ public class RunAssembleAction extends GuiAction {
                         name + ": operation completed with errors.\n\n");
                 // Select editor line containing first error, and corresponding error message.
                 ArrayList errorMessages = pe.errors().getErrorMessages();
-                for (int i = 0; i < errorMessages.size(); i++) {
-                    ErrorMessage em = (ErrorMessage) errorMessages.get(i);
+                for (Object errorMessage : errorMessages) {
+                    ErrorMessage em = (ErrorMessage) errorMessage;
                     // No line or position may mean File Not Found (e.g. exception file). Don't try to open. DPS 3-Oct-2010
                     if (em.getLine() == 0 && em.getPosition() == 0) {
                         continue;
@@ -147,7 +147,7 @@ public class RunAssembleAction extends GuiAction {
                         // this method (actionPerformed) explicitly with null argument.  Thus e!=null test.
                         // DPS 9-Aug-2010
                         if (e != null) {
-                            Globals.getGui().getMessagesPane().selectEditorTextLine(em.getFilename(), em.getLine(), em.getPosition());
+                            Globals.getGui().getMessagesPane().selectEditorTextLine(em.getFilename(), em.getLine());
                         }
                         break;
                     }
@@ -161,14 +161,14 @@ public class RunAssembleAction extends GuiAction {
     // Handy little utility for building comma-separated list of filenames
     // while not letting line length get out of hand.
     private String buildFileNameList(String preamble, ArrayList programList) {
-        String result = preamble;
+        StringBuilder result = new StringBuilder(preamble);
         int lineLength = result.length();
         for (int i = 0; i < programList.size(); i++) {
             String filename = ((MIPSprogram) programList.get(i)).getFilename();
-            result += filename + ((i < programList.size() - 1) ? ", " : "");
+            result.append(filename).append((i < programList.size() - 1) ? ", " : "");
             lineLength += filename.length();
             if (lineLength > LINE_LENGTH_LIMIT) {
-                result += "\n";
+                result.append("\n");
                 lineLength = 0;
             }
         }

@@ -39,7 +39,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class ErrorList {
-    private ArrayList messages;
+    private final ArrayList messages;
     private int errorCount;
     private int warningCount;
     public static final String ERROR_MESSAGE_PREFIX = "Error";
@@ -102,7 +102,7 @@ public class ErrorList {
      * @param mess  ErrorMessage object to be added to end of error list.
      * @param index position in error list
      **/
-    public void add(ErrorMessage mess, int index) {
+    private void add(ErrorMessage mess, int index) {
         if (errorCount > getErrorLimit()) {
             return;
         }
@@ -157,7 +157,7 @@ public class ErrorList {
      * @return error limit.
      **/
 
-    public int getErrorLimit() {
+    private int getErrorLimit() {
         return Globals.maximumErrorMessages;
     }
 
@@ -190,10 +190,10 @@ public class ErrorList {
 
     // Produces either error or warning report.
     private String generateReport(boolean isWarning) {
-        StringBuffer report = new StringBuffer();
+        StringBuilder report = new StringBuilder();
         String reportLine;
-        for (int i = 0; i < messages.size(); i++) {
-            ErrorMessage m = (ErrorMessage) messages.get(i);
+        for (Object message : messages) {
+            ErrorMessage m = (ErrorMessage) message;
             if ((isWarning && m.isWarning()) || (!isWarning && !m.isWarning())) {
                 reportLine = ((isWarning) ? WARNING_MESSAGE_PREFIX : ERROR_MESSAGE_PREFIX) + FILENAME_PREFIX;
                 if (m.getFilename().length() > 0)

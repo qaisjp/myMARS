@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.util.*;
 import mars.simulator.*;
 import mars.mips.hardware.*;
 import mars.*;
@@ -51,7 +50,7 @@ public class SyscallSbrk extends AbstractSyscall {
      * Performs syscall function to allocate amount of heap memory specified in $a0, putting address into $v0.
      */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int address = 0;
+        int address;
         try {
             address = Globals.memory.allocateBytesFromHeap(RegisterFile.getValue(4));
         } catch (IllegalArgumentException iae) {

@@ -49,11 +49,11 @@ public class SyscallPrintChar extends AbstractSyscall {
     /**
      * Performs syscall function to print on the console the character stored in $a0.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         // mask off the lower byte of register $a0.
         // Convert to a one-character string and use the string technique.
         char t = (char) (RegisterFile.getValue(4) & 0x000000ff);
-        SystemIO.printString(new Character(t).toString());
+        SystemIO.printString(Character.toString(t));
     }
 
 }

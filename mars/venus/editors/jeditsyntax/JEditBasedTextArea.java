@@ -7,7 +7,6 @@ import mars.*;
 
 import java.awt.*;
 import javax.swing.event.*;
-import javax.swing.text.*;
 import javax.swing.undo.*;
 import javax.swing.*;
 
@@ -25,12 +24,11 @@ import javax.swing.*;
 
 public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditingArea, CaretListener {
 
-    private EditPane editPane;
-    private UndoManager undoManager;
-    private UndoableEditListener undoableEditListener;
+    private final EditPane editPane;
+    private final UndoManager undoManager;
     private boolean isCompoundEdit = false;
     private CompoundEdit compoundEdit;
-    private JEditBasedTextArea sourceCode;
+    private final JEditBasedTextArea sourceCode;
 
 
     public JEditBasedTextArea(EditPane editPain, JComponent lineNumbers) {
@@ -41,19 +39,16 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
         this.sourceCode = this;
 
         // Needed to support unlimited undo/redo capability
-        undoableEditListener =
-                new UndoableEditListener() {
-                    public void undoableEditHappened(UndoableEditEvent e) {
-                        //Remember the edit and update the menus.
-                        if (isCompoundEdit) {
-                            compoundEdit.addEdit(e.getEdit());
-                        } else {
-                            undoManager.addEdit(e.getEdit());
-                            editPane.updateUndoState();
-                            editPane.updateRedoState();
-                        }
-                    }
-                };
+        UndoableEditListener undoableEditListener = e -> {
+            //Remember the edit and update the menus.
+            if (isCompoundEdit) {
+                compoundEdit.addEdit(e.getEdit());
+            } else {
+                undoManager.addEdit(e.getEdit());
+                editPane.updateUndoState();
+                editPane.updateRedoState();
+            }
+        };
         this.getDocument().addUndoableEditListener(undoableEditListener);
         this.setFont(Globals.getSettings().getEditorFont());
         this.setTokenMarker(new MIPSTokenMarker());
@@ -244,7 +239,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
      */
     public int doFindText(String find, boolean caseSensitive) {
         int findPosn = sourceCode.getCaretPosition();
-        int nextPosn = 0;
+        int nextPosn;
         nextPosn = nextIndex(sourceCode.getText(), find, findPosn, caseSensitive);
         if (nextPosn >= 0) {
             sourceCode.requestFocus(); // guarantees visibility of the blue highlight 
@@ -268,7 +263,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
      * @param caseSensitive true for case sensitive. false to ignore case
      * @return next indexed position of found text or -1 if not found
      */
-    public int nextIndex(String input, String find, int start, boolean caseSensitive) {
+    private int nextIndex(String input, String find, int start, boolean caseSensitive) {
         int textPosn = -1;
         if (input != null && find != null && start < input.length()) {
             if (caseSensitive) { // indexOf() returns -1 if not found
@@ -307,7 +302,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
      * successful and there is at least one additional match.
      */
     public int doReplace(String find, String replace, boolean caseSensitive) {
-        int nextPosn = 0;
+        int nextPosn;
         int posn;
         // Will perform a "find" and return, unless positioned at the end of
         // a selected "find" result.

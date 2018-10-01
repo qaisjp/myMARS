@@ -39,7 +39,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Team JSpim
  **/
 
-public class FileStatus {
+class FileStatus {
     /**
      * initial state or after close
      */
@@ -235,22 +235,17 @@ public class FileStatus {
      * Create a FileStatus object with FileStatis.NO_FILE for status and null for file getters.
      */
     public FileStatus() {
-        this(FileStatus.NO_FILE, null);
+        this(FileStatus.NO_FILE);
     }
 
     /**
      * Create a FileStatus object with given status and file pathname.
+     *  @param status   Initial file status.  See FileStatus static constants.
      *
-     * @param status   Initial file status.  See FileStatus static constants.
-     * @param pathname Full file pathname. See setPathname(String newPath) below.
      */
-    public FileStatus(int status, String pathname) {
+    private FileStatus(int status) {
         this.status = status;
-        if (pathname == null) {
-            this.file = null;
-        } else {
-            setPathname(pathname);
-        }
+        this.file = null;
     }
 
     /**

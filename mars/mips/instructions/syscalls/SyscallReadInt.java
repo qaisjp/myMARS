@@ -51,7 +51,7 @@ public class SyscallReadInt extends AbstractSyscall {
      * Performs syscall function to read an integer from input console into $v0
      */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int value = 0;
+        int value;
         try {
             value = SystemIO.readInteger(this.getNumber());
         } catch (NumberFormatException e) {

@@ -1,13 +1,8 @@
 package mars.venus;
 
-import mars.*;
-
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
-import java.awt.print.*;
-import java.util.*;
  
  /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -69,29 +64,28 @@ public class FilePrintAction extends GuiAction {
             return;
         }
         BufferedReader in = new BufferedReader(new StringReader(editPane.getSource()));
-        int lineNumberDigits = new Integer(editPane.getSourceLineCount()).toString().length();
-        String line;
-        String lineNumberString = "";
+        int lineNumberDigits = Integer.toString(editPane.getSourceLineCount()).length();
+        StringBuilder line;
+        StringBuilder lineNumberString = new StringBuilder();
         int lineNumber = 0;
         int numchars;
         try {
-            line = in.readLine();
-            while (line != null) {
+            line = new StringBuilder(in.readLine());
+            while (true) {
                 if (editPane.showingLineNumbers()) {
                     lineNumber++;
-                    lineNumberString = new Integer(lineNumber).toString() + ": ";
+                    lineNumberString = new StringBuilder(Integer.toString(lineNumber) + ": ");
                     while (lineNumberString.length() < lineNumberDigits) {
-                        lineNumberString = lineNumberString + " ";
+                        lineNumberString.append(" ");
                     }
                 }
-                line = lineNumberString + line + "\n";
-                out.write(line.toCharArray(), 0, line.length());
-                line = in.readLine();
+                line = new StringBuilder(lineNumberString.toString() + line + "\n");
+                out.write(line.toString().toCharArray(), 0, line.length());
+                line = new StringBuilder(in.readLine());
             }
             in.close();
             out.close();
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         }
-        return;
     }
 }

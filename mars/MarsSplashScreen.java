@@ -36,9 +36,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Adapted from http://www.java-tips.org/content/view/1267/2/<br>
  */
 
-public class MarsSplashScreen extends JWindow {
+class MarsSplashScreen extends JWindow {
 
-    private int duration;
+    private final int duration;
 
     public MarsSplashScreen(int d) {
         duration = d;
@@ -89,7 +89,7 @@ public class MarsSplashScreen extends JWindow {
         // Wait a little while, maybe while loading resources
         try {
             Thread.sleep(duration);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         setVisible(false);
     }
@@ -97,7 +97,7 @@ public class MarsSplashScreen extends JWindow {
     class ImageBackgroundPanel extends JPanel {
         Image image;
 
-        public ImageBackgroundPanel() {
+        ImageBackgroundPanel() {
             try {
                 image = new ImageIcon(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Globals.imagesPath + "MarsSurfacePathfinder.jpg"))).getImage();
             } catch (Exception e) {

@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-public class OperandFormat {
+class OperandFormat {
 
     private OperandFormat() {
     }
@@ -74,8 +74,8 @@ public class OperandFormat {
             return null;
         if (instrMatches.size() == 1)
             return (Instruction) instrMatches.get(0);
-        for (int i = 0; i < instrMatches.size(); i++) {
-            Instruction potentialMatch = (Instruction) instrMatches.get(i);
+        for (Object instrMatche : instrMatches) {
+            Instruction potentialMatch = (Instruction) instrMatche;
             if (tokenOperandMatch(tokenList, potentialMatch, new ErrorList()))
                 return potentialMatch;
         }
@@ -169,8 +169,8 @@ public class OperandFormat {
             }
         }
 
-        /********  nice little debugging code to see which operand format
-         ********  the operands for this source code instruction matched.
+        /*****  nice little debugging code to see which operand format
+         the operands for this source code instruction matched.
          System.out.print("Candidate: ");
          for (int i=1; i<spec.size(); i++) {
          System.out.print(cand.get(i).getValue()+" ");
@@ -189,7 +189,6 @@ public class OperandFormat {
     private static void generateMessage(Token token, String mess, ErrorList errors) {
         errors.add(new ErrorMessage(token.getSourceMIPSprogram(), token.getSourceLine(), token.getStartPos(),
                 "\"" + token.getValue() + "\": " + mess));
-        return;
     }
 
 }

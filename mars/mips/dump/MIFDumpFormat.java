@@ -1,9 +1,5 @@
 package mars.mips.dump;
 
-import mars.Globals;
-import mars.mips.hardware.*;
-
-import java.io.*;
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
 
@@ -57,13 +53,8 @@ public class MIFDumpFormat { //extends AbstractDumpFormat {
      * Write MIPS memory contents according to the Memory Initialization File
      * (MIF) specification.
      *
-     * @param file         File in which to store MIPS memory contents.
-     * @param firstAddress first (lowest) memory address to dump.  In bytes but
-     *                     must be on word boundary.
-     * @param lastAddress  last (highest) memory address to dump.  In bytes but
-     *                     must be on word boundary.  Will dump the word that starts at this address.
      */
-    public void dumpMemoryRange(File file, int firstAddress, int lastAddress) {
+    public void dumpMemoryRange() {
 
     }
 }

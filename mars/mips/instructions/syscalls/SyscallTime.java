@@ -50,7 +50,7 @@ public class SyscallTime extends AbstractSyscall {
      * Performs syscall function to place current system time into $a0 (low order 32 bits)
      * and $a1 (high order 32 bits).
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         long value = new java.util.Date().getTime();
         RegisterFile.updateRegister(4, Binary.lowOrderLongToInt(value)); // $a0
         RegisterFile.updateRegister(5, Binary.highOrderLongToInt(value)); // $a1

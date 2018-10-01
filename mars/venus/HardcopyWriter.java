@@ -28,7 +28,6 @@
 package mars.venus;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -41,33 +40,32 @@ import java.util.*;
  * A character output stream that sends output to a printer.  I made only
  * a couple minor changes -- Pete Sanderson
  **/
-public class HardcopyWriter extends Writer {
+class HardcopyWriter extends Writer {
     // These are the instance variables for the class
-    protected PrintJob job; // The PrintJob object in use
-    protected Graphics page; // Graphics object for current page
-    protected String jobname; // The name of the print job
-    protected int fontsize; // Point size of the font
-    protected String time; // Current time (appears in header)
-    protected Dimension pagesize; // Size of the page (in dots)
-    protected int pagedpi; // Page resolution in dots per inch
-    protected Font font, headerfont; // Body font and header font
-    protected FontMetrics metrics; // Metrics for the body font
-    protected FontMetrics headermetrics; // Metrics for the header font
-    protected int x0, y0; // Upper-left corner inside margin
-    protected int width, height; // Size (in dots) inside margins
-    protected int headery; // Baseline of the page header
-    protected int charwidth; // The width of each character
-    protected int lineheight; // The height of each line
-    protected int lineascent; // Offset of font baseline
-    protected int chars_per_line; // Number of characters per line
-    protected int lines_per_page; // Number of lines per page
-    protected int chars_per_tab = 4; // Added by Pete Sanderson 8-17-04
-    protected int charnum = 0, linenum = 0; // Current column and line position
-    protected int pagenum = 0; // Current page number
+    private final PrintJob job; // The PrintJob object in use
+    private Graphics page; // Graphics object for current page
+    private String jobname; // The name of the print job
+    private int fontsize; // Point size of the font
+    private String time; // Current time (appears in header)
+    private Font font;
+    private Font headerfont; // Body font and header font
+    private FontMetrics headermetrics; // Metrics for the header font
+    private int x0;
+    private int y0; // Upper-left corner inside margin
+    private int width;
+    private int headery; // Baseline of the page header
+    private int charwidth; // The width of each character
+    private int lineheight; // The height of each line
+    private int lineascent; // Offset of font baseline
+    private int chars_per_line; // Number of characters per line
+    private int lines_per_page; // Number of lines per page
+    private int charnum = 0;
+    private int linenum = 0; // Current column and line position
+    private int pagenum = 0; // Current page number
     // A field to save state between invocations of the write( ) method
     private boolean last_char_was_return = false;
     // A static variable that holds user preferences between print jobs
-    protected static Properties printprops = new Properties();
+    private static final Properties printprops = new Properties();
 
     /**
      * The constructor for this class has a bunch of arguments:
@@ -98,8 +96,8 @@ public class HardcopyWriter extends Writer {
             //*******************************************
         }
         if (job == null)
-            throw new PrintCanceledException("User cancelled print request");
-        /*******************************************************
+            throw new PrintCanceledException();
+        /****************************************************
          SANDERSON OVERRIDE 8-17-2004:
          I didn't like the results produced by the code below, so am commenting
          it out and just setting pagedpi to 72.  This assures, among other things,
@@ -120,10 +118,12 @@ public class HardcopyWriter extends Writer {
          // (1 point = 1/72 of an inch) but Windows measures it in pixels.
          fontsize = fontsize * pagedpi / 72;
          }
-         ***********************************/
+         */
 
-        pagedpi = 72;
-        pagesize = new Dimension((int) (8.5 * pagedpi), 11 * pagedpi);
+        // Page resolution in dots per inch
+        int pagedpi = 72;
+        // Size of the page (in dots)
+        Dimension pagesize = new Dimension((int) (8.5 * pagedpi), 11 * pagedpi);
         fontsize = fontsize * pagedpi / 72;
 
 
@@ -133,10 +133,12 @@ public class HardcopyWriter extends Writer {
         x0 = (int) (leftmargin * pagedpi);
         y0 = (int) (topmargin * pagedpi);
         width = pagesize.width - (int) ((leftmargin + rightmargin) * pagedpi);
-        height = pagesize.height - (int) ((topmargin + bottommargin) * pagedpi);
+        // Size (in dots) inside margins
+        int height = pagesize.height - (int) ((topmargin + bottommargin) * pagedpi);
         // Get body font and font size
         font = new Font("Monospaced", Font.PLAIN, fontsize);
-        metrics = frame.getFontMetrics(font);
+        // Metrics for the body font
+        FontMetrics metrics = frame.getFontMetrics(font);
         lineheight = metrics.getHeight();
         lineascent = metrics.getAscent();
         charwidth = metrics.charWidth('0'); // Assumes a monospaced font!
@@ -197,6 +199,8 @@ public class HardcopyWriter extends Writer {
                 // It is inefficient to draw only one character at a time, but
                 // because our FontMetrics don't match up exactly to what the
                 // printer uses, we need to position each character individually
+                // Added by Pete Sanderson 8-17-04
+                int chars_per_tab = 4;
                 if (Character.isSpaceChar(buffer[i])) charnum++;
                 else if (buffer[i] == '\t') charnum += chars_per_tab - (charnum % chars_per_tab);
                 else {
@@ -239,8 +243,7 @@ public class HardcopyWriter extends Writer {
             Font current = font;
             try {
                 font = new Font("Monospaced", style, fontsize);
-            } catch (Exception e) {
-                font = current;
+            } catch (Exception ignored) {
             }
             // If a page is pending, set the new font. Otherwise newpage( ) will
             if (page != null) page.setFont(font);
@@ -273,7 +276,7 @@ public class HardcopyWriter extends Writer {
     /**
      * This internal method begins a new line
      */
-    protected void newline() {
+    private void newline() {
         charnum = 0; // Reset character number to 0
         linenum++; // Increment line number
         if (linenum >= lines_per_page) { // If we've reached the end of page
@@ -285,7 +288,7 @@ public class HardcopyWriter extends Writer {
     /**
      * This internal method begins a new page and prints the header.
      */
-    protected void newpage() {
+    private void newpage() {
         page = job.getGraphics(); // Begin the new page
         linenum = 0;
         charnum = 0; // Reset line and char number
@@ -309,8 +312,8 @@ public class HardcopyWriter extends Writer {
      * throws when the user clicks "Cancel" in the print dialog box.
      **/
     public static class PrintCanceledException extends Exception {
-        public PrintCanceledException(String msg) {
-            super(msg);
+        PrintCanceledException() {
+            super("User cancelled print request");
         }
     }
 

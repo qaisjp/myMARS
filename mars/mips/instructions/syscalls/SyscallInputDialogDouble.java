@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.util.*;
 import mars.mips.hardware.*;
 import mars.simulator.*;
 import mars.*;
@@ -61,7 +60,7 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
         //       -3: OK was chosen but no data had been input into field
 
 
-        String message = new String(); // = "";
+        String message = ""; // = "";
         int byteAddress = RegisterFile.getValue(4);
         char ch[] = {' '}; // Need an array to convert to String
         try {
@@ -80,7 +79,7 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
         // A null return value means that "Cancel" was chosen rather than OK.
         // An empty string returned (that is, inputValue.length() of zero)
         // means that OK was chosen but no string was input.
-        String inputValue = null;
+        String inputValue;
         inputValue = JOptionPane.showInputDialog(message);
 
         try {

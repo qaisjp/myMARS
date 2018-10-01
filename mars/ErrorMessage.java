@@ -39,12 +39,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class ErrorMessage {
-    private boolean isWarning; // allow for warnings too (added Nov 2006)
-    private String filename; // name of source file  (added Oct 2006)
-    private int line;     // line in source code where error detected
-    private int position; // position in source line where error detected
-    private String message;
-    private String macroExpansionHistory;
+    private final boolean isWarning; // allow for warnings too (added Nov 2006)
+    private final String filename; // name of source file  (added Oct 2006)
+    private final int line;     // line in source code where error detected
+    private final int position; // position in source line where error detected
+    private final String message;
+    private final String macroExpansionHistory;
 
     /**
      * Constant to indicate this message is warning not error
@@ -198,8 +198,8 @@ public class ErrorMessage {
     private ArrayList<Integer> parseMacroHistory(String string) {
         Pattern pattern = Pattern.compile("<\\d+>");
         Matcher matcher = pattern.matcher(string);
-        String verify = new String(string).trim();
-        ArrayList<Integer> macroHistory = new ArrayList<Integer>();
+        String verify = string.trim();
+        ArrayList<Integer> macroHistory = new ArrayList<>();
         while (matcher.find()) {
             String match = matcher.group();
             if (verify.indexOf(match) == 0) {
