@@ -8,9 +8,7 @@ import mars.venus.editors.jeditsyntax.JEditBasedTextArea;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.undo.*;
-import java.text.*;
 import java.util.*;
 import java.io.*;
 
@@ -53,16 +51,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class EditPane extends JPanel implements Observer {
 
-    private MARSTextEditingArea sourceCode;
-    private VenusUI mainUI;
-    private String currentDirectoryPath;
-    private JLabel caretPositionLabel;
-    private JCheckBox showLineNumbers;
-    private JLabel lineNumbers;
+    private final MARSTextEditingArea sourceCode;
+    private final VenusUI mainUI;
+    private final JLabel caretPositionLabel;
+    private final JCheckBox showLineNumbers;
+    private final JLabel lineNumbers;
     private static int count = 0;
     private boolean isCompoundEdit = false;
     private CompoundEdit compoundEdit;
-    private FileStatus fileStatus;
+    private final FileStatus fileStatus;
 
     /**
      * Constructor for the EditPane class.
@@ -72,7 +69,7 @@ public class EditPane extends JPanel implements Observer {
         super(new BorderLayout());
         this.mainUI = appFrame;
         // user.dir, user's current working directory, is guaranteed to have a value
-        currentDirectoryPath = System.getProperty("user.dir");
+        String currentDirectoryPath = System.getProperty("user.dir");
         // mainUI.editor = new Editor(mainUI);
         // We want to be notified of editor font changes! See update() below.
         Globals.getSettings().addObserver(this);
@@ -158,21 +155,19 @@ public class EditPane extends JPanel implements Observer {
 
         // Listener fires when "Show Line Numbers" check box is clicked.
         showLineNumbers.addItemListener(
-                new ItemListener() {
-                    public void itemStateChanged(ItemEvent e) {
-                        if (showLineNumbers.isSelected()) {
-                            lineNumbers.setText(getLineNumbersList(sourceCode.getDocument()));
-                            lineNumbers.setVisible(true);
-                        } else {
-                            lineNumbers.setText("");
-                            lineNumbers.setVisible(false);
-                        }
-                        sourceCode.revalidate(); // added 16 Jan 2012 to assure label redrawn.
-                        Globals.getSettings().setEditorLineNumbersDisplayed(showLineNumbers.isSelected());
-                        // needed because caret disappears when checkbox clicked
-                        sourceCode.setCaretVisible(true);
-                        sourceCode.requestFocusInWindow();
+                e -> {
+                    if (showLineNumbers.isSelected()) {
+                        lineNumbers.setText(getLineNumbersList(sourceCode.getDocument()));
+                        lineNumbers.setVisible(true);
+                    } else {
+                        lineNumbers.setText("");
+                        lineNumbers.setVisible(false);
                     }
+                    sourceCode.revalidate(); // added 16 Jan 2012 to assure label redrawn.
+                    Globals.getSettings().setEditorLineNumbersDisplayed(showLineNumbers.isSelected());
+                    // needed because caret disappears when checkbox clicked
+                    sourceCode.setCaretVisible(true);
+                    sourceCode.requestFocusInWindow();
                 });
 
         JPanel editInfo = new JPanel(new BorderLayout());
@@ -216,17 +211,17 @@ public class EditPane extends JPanel implements Observer {
      */
     private static final String spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-    public String getLineNumbersList(javax.swing.text.Document doc) {
-        StringBuffer lineNumberList = new StringBuffer("<html>");
+    private String getLineNumbersList(javax.swing.text.Document doc) {
+        StringBuilder lineNumberList = new StringBuilder("<html>");
         int lineCount = doc.getDefaultRootElement().getElementCount(); //this.getSourceLineCount();
         int digits = Integer.toString(lineCount).length();
         for (int i = 1; i <= lineCount; i++) {
             String lineStr = Integer.toString(i);
             int leadingSpaces = digits - lineStr.length();
             if (leadingSpaces == 0) {
-                lineNumberList.append(lineStr + "&nbsp;<br>");
+                lineNumberList.append(lineStr).append("&nbsp;<br>");
             } else {
-                lineNumberList.append(spaces.substring(0, leadingSpaces * 6) + lineStr + "&nbsp;<br>");
+                lineNumberList.append(spaces, 0, leadingSpaces * 6).append(lineStr).append("&nbsp;<br>");
             }
         }
         lineNumberList.append("<br></html>");
@@ -252,7 +247,7 @@ public class EditPane extends JPanel implements Observer {
             while (bufStringReader.readLine() != null) {
                 lineNums++;
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return lineNums;
     }
@@ -260,7 +255,7 @@ public class EditPane extends JPanel implements Observer {
     /**
      * Get source code text
      *
-     * @return Sting containing source code
+     * @return String containing source code
      */
     public String getSource() {
         return sourceCode.getText();
@@ -271,7 +266,6 @@ public class EditPane extends JPanel implements Observer {
      * Set the editing status for this EditPane's associated document.
      * For the argument, use one of the constants from class FileStatus.
      *
-     * @param FileStatus the status constant from class FileStatus
      */
     public void setFileStatus(int fileStatus) {
         this.fileStatus.setFileStatus(fileStatus);
@@ -436,7 +430,6 @@ public class EditPane extends JPanel implements Observer {
     /**
      * enable or disable checkbox that controls display of line numbers
      *
-     * @param enable True to enable box, false to disable.
      */
     public void setShowLineNumbersEnabled(boolean enabled) {
         showLineNumbers.setEnabled(enabled);
@@ -467,17 +460,15 @@ public class EditPane extends JPanel implements Observer {
      * Given byte stream position in text being edited, calculate its column and line
      * number coordinates.
      *
-     * @param stream position of character
+     //* @param stream position of character
      * @return position Its column and line number coordinate as a Point.
      */
-    private static final char newline = '\n';
-
-    public Point convertStreamPositionToLineColumn(int position) {
+    private Point convertStreamPositionToLineColumn(int position) {
         String textStream = sourceCode.getText();
         int line = 1;
         int column = 1;
         for (int i = 0; i < position; i++) {
-            if (textStream.charAt(i) == newline) {
+            if (textStream.charAt(i) == '\n') {
                 line++;
                 column = 1;
             } else {
@@ -492,19 +483,18 @@ public class EditPane extends JPanel implements Observer {
      * its byte stream position in text being edited.
      *
      * @param line   Line number in file (starts with 1)
-     * @param column Position within that line (starts with 1)
      * @return corresponding stream position.  Returns -1 if there is no corresponding position.
      */
-    public int convertLineColumnToStreamPosition(int line, int column) {
+    private int convertLineColumnToStreamPosition(int line) {
         String textStream = sourceCode.getText();
         int textLength = textStream.length();
         int textLine = 1;
         int textColumn = 1;
         for (int i = 0; i < textLength; i++) {
-            if (textLine == line && textColumn == column) {
+            if (textLine == line) {
                 return i;
             }
-            if (textStream.charAt(i) == newline) {
+            if (textStream.charAt(i) == '\n') {
                 textLine++;
                 textColumn = 1;
             } else {
@@ -523,8 +513,8 @@ public class EditPane extends JPanel implements Observer {
      */
     public void selectLine(int line) {
         if (line > 0) {
-            int lineStartPosition = convertLineColumnToStreamPosition(line, 1);
-            int lineEndPosition = convertLineColumnToStreamPosition(line + 1, 1) - 1;
+            int lineStartPosition = convertLineColumnToStreamPosition(line);
+            int lineEndPosition = convertLineColumnToStreamPosition(line + 1) - 1;
             if (lineEndPosition < 0) { // DPS 19 Sept 2012.  Happens if "line" is last line of file.
 
                 lineEndPosition = sourceCode.getText().length() - 1;
@@ -537,20 +527,19 @@ public class EditPane extends JPanel implements Observer {
     }
 
 
-    /**
-     * Select the specified editor text line.  Lines are numbered starting with 1, consistent
-     * with line numbers displayed by the editor.
-     *
-     * @param line   The desired line number of this TextPane's text.  Numbering starts at 1, and
+    /*
+      Select the specified editor text line.  Lines are numbered starting with 1, consistent
+      with line numbers displayed by the editor.
+       @param line   The desired line number of this TextPane's text.  Numbering starts at 1, and
      *               nothing will happen if the parameter value is less than 1
-     * @param column Desired column at which to place the cursor.
+
      */
-    public void selectLine(int line, int column) {
-        selectLine(line);
+    //public void selectLine(int line) {
+    //    selectLine(line);
         // Made one attempt at setting cursor; didn't work but here's the attempt
         // (imagine using it in the one-parameter overloaded method above)
         //sourceCode.setCaretPosition(lineStartPosition+column-1);
-    }
+    //}
 
     /**
      * Finds next occurrence of text in a forward search of a string. Search begins

@@ -50,16 +50,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class MessagesPane extends JTabbedPane {
-    JTextArea assemble, run;
-    JPanel assembleTab, runTab;
+    private final JTextArea assemble;
+    private final JTextArea run;
+    private final JPanel assembleTab;
+    final JPanel runTab;
     // These constants are designed to keep scrolled contents of the
     // two message areas from becoming overwhelmingly large (which
     // seems to slow things down as new text is appended).  Once it
     // reaches MAXIMUM_SCROLLED_CHARACTERS in length then cut off
     // the first NUMBER_OF_CHARACTERS_TO_CUT characters.  The latter
     // must obviously be smaller than the former.
-    public static final int MAXIMUM_SCROLLED_CHARACTERS = Globals.maximumMessageCharacters;
-    public static final int NUMBER_OF_CHARACTERS_TO_CUT = Globals.maximumMessageCharacters / 10; // 10%
+    private static final int MAXIMUM_SCROLLED_CHARACTERS = Globals.maximumMessageCharacters;
+    private static final int NUMBER_OF_CHARACTERS_TO_CUT = Globals.maximumMessageCharacters / 10; // 10%
 
     /**
      * Constructor for the class, sets up two fresh tabbed text areas for program feedback.
@@ -83,11 +85,7 @@ public class MessagesPane extends JTabbedPane {
         JButton assembleTabClearButton = new JButton("Clear");
         assembleTabClearButton.setToolTipText("Clear the Mars Messages area");
         assembleTabClearButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        assemble.setText("");
-                    }
-                });
+                e -> assemble.setText(""));
         assembleTab = new JPanel(new BorderLayout());
         assembleTab.add(createBoxForButton(assembleTabClearButton), BorderLayout.WEST);
         assembleTab.add(new JScrollPane(assemble, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -131,13 +129,11 @@ public class MessagesPane extends JTabbedPane {
                                 int column = 0;
                                 try {
                                     line = Integer.parseInt(lineString);
-                                } catch (NumberFormatException nfe) {
-                                    line = 0;
+                                } catch (NumberFormatException ignored) {
                                 }
                                 try {
                                     column = Integer.parseInt(columnString);
-                                } catch (NumberFormatException nfe) {
-                                    column = 0;
+                                } catch (NumberFormatException ignored) {
                                 }
                                 // everything between FILENAME_PREFIX and LINE_PREFIX is filename.
                                 int fileNameStart = text.indexOf(ErrorList.FILENAME_PREFIX) + ErrorList.FILENAME_PREFIX.length();
@@ -146,8 +142,8 @@ public class MessagesPane extends JTabbedPane {
                                 if (fileNameStart < fileNameEnd && fileNameStart >= ErrorList.FILENAME_PREFIX.length()) {
                                     fileName = text.substring(fileNameStart, fileNameEnd).trim();
                                 }
-                                if (fileName != null && fileName.length() > 0) {
-                                    selectEditorTextLine(fileName, line, column);
+                                if (fileName.length() > 0) {
+                                    selectEditorTextLine(fileName, line);
                                     selectErrorMessage(fileName, line, column);
                                 }
                             }
@@ -158,11 +154,7 @@ public class MessagesPane extends JTabbedPane {
         JButton runTabClearButton = new JButton("Clear");
         runTabClearButton.setToolTipText("Clear the Run I/O area");
         runTabClearButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        run.setText("");
-                    }
-                });
+                e -> run.setText(""));
         runTab = new JPanel(new BorderLayout());
         runTab.add(createBoxForButton(runTabClearButton), BorderLayout.WEST);
         runTab.add(new JScrollPane(run, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -200,9 +192,9 @@ public class MessagesPane extends JTabbedPane {
         String errorReportSubstring = new java.io.File(fileName).getName() + ErrorList.LINE_PREFIX + line + ErrorList.POSITION_PREFIX + column;
         int textPosition = assemble.getText().lastIndexOf(errorReportSubstring);
         if (textPosition >= 0) {
-            int textLine = 0;
-            int lineStart = 0;
-            int lineEnd = 0;
+            int textLine;
+            int lineStart;
+            int lineEnd;
             try {
                 textLine = assemble.getLineOfOffset(textPosition);
                 lineStart = assemble.getLineStartOffset(textLine);
@@ -223,12 +215,10 @@ public class MessagesPane extends JTabbedPane {
      * but not current, its tab will be made current.  If the file is not open,
      * it will be opened in a new tab and made current, however the line will
      * not be selected (apparent apparent problem with JEditTextArea).
-     *
-     * @param fileName A String containing the file path name.
+     *  @param fileName A String containing the file path name.
      * @param line     Line number for error message
-     * @param column   Column number for error message
      */
-    public void selectEditorTextLine(String fileName, int line, int column) {
+    public void selectEditorTextLine(String fileName, int line) {
         EditTabbedPane editTabbedPane = (EditTabbedPane) Globals.getGui().getMainPane().getEditTabbedPane();
         EditPane editPane, currentPane = null;
         editPane = editTabbedPane.getEditPaneForFile(new java.io.File(fileName).getPath());
@@ -245,8 +235,8 @@ public class MessagesPane extends JTabbedPane {
         // If editPane == null, it means the desired file was not open.  Line selection
         // does not properly with the JEditTextArea editor in this situation (it works
         // fine for the original generic editor).  So we just won't do it. DPS 9-Aug-2010
-        if (editPane != null && currentPane != null) {
-            currentPane.selectLine(line, column);
+        if (editPane != null) {
+            currentPane.selectLine(line);
         }
     }
 
@@ -303,19 +293,17 @@ public class MessagesPane extends JTabbedPane {
     public void postRunMessage(String message) {
         final String mess = message;
         SwingUtilities.invokeLater(
-                new Runnable() {
-                    public void run() {
-                        setSelectedComponent(runTab);
-                        run.append(mess);
-                        // can do some crude cutting here.  If the document gets "very large",
-                        // let's cut off the oldest text. This will limit scrolling but the limit
-                        // can be set reasonably high.
-                        if (run.getDocument().getLength() > MAXIMUM_SCROLLED_CHARACTERS) {
-                            try {
-                                run.getDocument().remove(0, NUMBER_OF_CHARACTERS_TO_CUT);
-                            } catch (BadLocationException ble) {
-                                // only if NUMBER_OF_CHARACTERS_TO_CUT > MAXIMUM_SCROLLED_CHARACTERS
-                            }
+                () -> {
+                    setSelectedComponent(runTab);
+                    run.append(mess);
+                    // can do some crude cutting here.  If the document gets "very large",
+                    // let's cut off the oldest text. This will limit scrolling but the limit
+                    // can be set reasonably high.
+                    if (run.getDocument().getLength() > MAXIMUM_SCROLLED_CHARACTERS) {
+                        try {
+                            run.getDocument().remove(0, NUMBER_OF_CHARACTERS_TO_CUT);
+                        } catch (BadLocationException ble) {
+                            // only if NUMBER_OF_CHARACTERS_TO_CUT > MAXIMUM_SCROLLED_CHARACTERS
                         }
                     }
                 });
@@ -381,9 +369,9 @@ public class MessagesPane extends JTabbedPane {
     // Thread class for obtaining user input in the Run I/O window (MessagesPane)
     // Written by Ricardo Fern�ndez Pascual [rfernandez@ditec.um.es] December 2009.
     class Asker implements Runnable {
-        ArrayBlockingQueue<String> resultQueue = new ArrayBlockingQueue<String>(1);
+        final ArrayBlockingQueue<String> resultQueue = new ArrayBlockingQueue<>(1);
         int initialPos;
-        int maxLen;
+        final int maxLen;
 
         Asker(int maxLen) {
             this.maxLen = maxLen;
@@ -394,39 +382,35 @@ public class MessagesPane extends JTabbedPane {
                 new DocumentListener() {
                     public void insertUpdate(final DocumentEvent e) {
                         EventQueue.invokeLater(
-                                new Runnable() {
-                                    public void run() {
-                                        try {
-                                            String inserted = e.getDocument().getText(e.getOffset(), e.getLength());
-                                            int i = inserted.indexOf('\n');
-                                            if (i >= 0) {
-                                                int offset = e.getOffset() + i;
-                                                if (offset + 1 == e.getDocument().getLength()) {
-                                                    returnResponse();
-                                                } else {
-                                                    // remove the '\n' and put it at the end
-                                                    e.getDocument().remove(offset, 1);
-                                                    e.getDocument().insertString(e.getDocument().getLength(), "\n", null);
-                                                    // insertUpdate will be called again, since we have inserted the '\n' at the end
-                                                }
-                                            } else if (maxLen >= 0 && e.getDocument().getLength() - initialPos >= maxLen) {
+                                () -> {
+                                    try {
+                                        String inserted = e.getDocument().getText(e.getOffset(), e.getLength());
+                                        int i = inserted.indexOf('\n');
+                                        if (i >= 0) {
+                                            int offset = e.getOffset() + i;
+                                            if (offset + 1 == e.getDocument().getLength()) {
                                                 returnResponse();
+                                            } else {
+                                                // remove the '\n' and put it at the end
+                                                e.getDocument().remove(offset, 1);
+                                                e.getDocument().insertString(e.getDocument().getLength(), "\n", null);
+                                                // insertUpdate will be called again, since we have inserted the '\n' at the end
                                             }
-                                        } catch (BadLocationException ex) {
+                                        } else if (maxLen >= 0 && e.getDocument().getLength() - initialPos >= maxLen) {
                                             returnResponse();
                                         }
+                                    } catch (BadLocationException ex) {
+                                        returnResponse();
                                     }
                                 });
                     }
 
                     public void removeUpdate(final DocumentEvent e) {
                         EventQueue.invokeLater(
-                                new Runnable() {
-                                    public void run() {
-                                        if ((e.getDocument().getLength() < initialPos || e.getOffset() < initialPos) && e instanceof UndoableEdit) {
-                                            ((UndoableEdit) e).undo();
-                                            run.setCaretPosition(e.getOffset() + e.getLength());
-                                        }
+                                () -> {
+                                    if ((e.getDocument().getLength() < initialPos || e.getOffset() < initialPos) && e instanceof UndoableEdit) {
+                                        ((UndoableEdit) e).undo();
+                                        run.setCaretPosition(e.getOffset() + e.getLength());
                                     }
                                 });
                     }
@@ -451,11 +435,7 @@ public class MessagesPane extends JTabbedPane {
                     }
                 };
         final Simulator.StopListener stopListener =
-                new Simulator.StopListener() {
-                    public void stopped(Simulator s) {
-                        returnResponse();
-                    }
-                };
+                this::returnResponse;
 
         public void run() { // must be invoked from the GUI thread
             setSelectedComponent(runTab);
@@ -470,14 +450,12 @@ public class MessagesPane extends JTabbedPane {
 
         void cleanup() { // not required to be called from the GUI thread
             EventQueue.invokeLater(
-                    new Runnable() {
-                        public void run() {
-                            run.getDocument().removeDocumentListener(listener);
-                            run.setEditable(false);
-                            run.setNavigationFilter(null);
-                            run.setCaretPosition(run.getDocument().getLength());
-                            Simulator.getInstance().removeStopListener(stopListener);
-                        }
+                    () -> {
+                        run.getDocument().removeDocumentListener(listener);
+                        run.setEditable(false);
+                        run.setNavigationFilter(null);
+                        run.setCaretPosition(run.getDocument().getLength());
+                        Simulator.getInstance().removeStopListener(stopListener);
                     });
         }
 

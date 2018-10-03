@@ -30,7 +30,6 @@ package mars.tools;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Observable;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -58,17 +57,17 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
     /**
      * name of the tool
      */
-    private static String NAME = "Instruction Statistics";
+    private static final String NAME = "Instruction Statistics";
 
     /**
      * version and author information of the tool
      */
-    private static String VERSION = "Version 1.0 (Ingo Kofler)";
+    private static final String VERSION = "Version 1.0 (Ingo Kofler)";
 
     /**
      * heading of the tool
      */
-    private static String HEADING = "";
+    private static final String HEADING = "";
 
 
     /**
@@ -126,12 +125,12 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
     /**
      * array of counter variables - one for each instruction category
      */
-    private int m_counters[] = new int[MAX_CATEGORY];
+    private final int[] m_counters = new int[MAX_CATEGORY];
 
     /**
      * names of the instruction categories as array
      */
-    private String m_categoryLabels[] = {"ALU", "Jump", "Branch", "Memory", "Other"};
+    private final String[] m_categoryLabels = {"ALU", "Jump", "Branch", "Memory", "Other"};
 
 
     // From Felipe Lessa's instruction counter.  Prevent double-counting of instructions 
@@ -141,7 +140,7 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
      * program to execute twice the same instruction is to enter an infinite
      * loop, which is not insteresting in the POV of counting instructions.
      */
-    protected int lastAddress = -1;
+    private int lastAddress = -1;
 
     /**
      * Simple constructor, likely used to run a stand-alone enhanced instruction counter.
@@ -247,7 +246,7 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
      * @see InstructionStatistics#CATEGORY_MEM
      * @see InstructionStatistics#CATEGORY_OTHER
      */
-    protected int getInstructionCategory(ProgramStatement stmt) {
+    private int getInstructionCategory(ProgramStatement stmt) {
 
         int opCode = stmt.getBinaryStatement() >>> (32 - 6);
         int funct = stmt.getBinaryStatement() & 0x1F;
@@ -259,12 +258,12 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
                 return InstructionStatistics.CATEGORY_ALU; // srl, sra, sllv, srlv, srav
             if (funct == 0x08 || funct == 0x09)
                 return InstructionStatistics.CATEGORY_JUMP; // jr, jalr
-            if (0x10 <= funct && funct <= 0x2F)
+            if (0x10 <= funct)
                 return InstructionStatistics.CATEGORY_ALU; // mfhi, mthi, mflo, mtlo, mult, multu, div, divu, add, addu, sub, subu, and, or, xor, nor, slt, sltu
             return InstructionStatistics.CATEGORY_OTHER;
         }
         if (opCode == 0x01) {
-            if (0x00 <= funct && funct <= 0x07)
+            if (funct <= 0x07)
                 return InstructionStatistics.CATEGORY_BRANCH; // bltz, bgez, bltzl, bgezl
             if (0x10 <= funct && funct <= 0x13)
                 return InstructionStatistics.CATEGORY_BRANCH; // bltzal, bgezal, bltzall, bgczall
@@ -272,9 +271,9 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
         }
         if (opCode == 0x02 || opCode == 0x03)
             return InstructionStatistics.CATEGORY_JUMP; // j, jal
-        if (0x04 <= opCode && opCode <= 0x07)
+        if (opCode <= 0x07)
             return InstructionStatistics.CATEGORY_BRANCH; // beq, bne, blez, bgtz
-        if (0x08 <= opCode && opCode <= 0x0F)
+        if (opCode <= 0x0F)
             return InstructionStatistics.CATEGORY_ALU; // addi, addiu, slti, sltiu, andi, ori, xori, lui
         if (0x14 <= opCode && opCode <= 0x17)
             return InstructionStatistics.CATEGORY_BRANCH; // beql, bnel, blezl, bgtzl
@@ -293,10 +292,9 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
      * This memory access is observed and the corresponding instruction is decoded and categorized by the tool.
      * According to the category the counter values are increased and the display gets updated.
      *
-     * @param resource the observed resource
      * @param notice   signals the type of access (memory, register etc.)
      */
-    protected void processMIPSUpdate(Observable resource, AccessNotice notice) {
+    protected void processMIPSUpdate(AccessNotice notice) {
 
         if (!notice.accessIsFromMIPS())
             return;
@@ -360,7 +358,7 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
     /**
      * updates the text fields and progress bars according to the current counter values.
      */
-    protected void updateDisplay() {
+    void updateDisplay() {
         m_tfTotalCounter.setText(String.valueOf(m_totalCounter));
 
         for (int i = 0; i < InstructionStatistics.MAX_CATEGORY; i++) {

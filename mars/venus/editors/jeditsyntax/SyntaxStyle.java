@@ -10,7 +10,6 @@
 package mars.venus.editors.jeditsyntax;
 
 import java.awt.*;
-import java.util.StringTokenizer;
 
 /**
  * A simple text style class. It can specify the color, italic flag,
@@ -79,7 +78,7 @@ public class SyntaxStyle {
      * Returns the specified font, but with the style's bold and
      * italic flags applied.
      */
-    public Font getStyledFont(Font font) {
+    private Font getStyledFont(Font font) {
         if (font == null)
             throw new NullPointerException("font param must not"
                     + " be null");
@@ -136,9 +135,9 @@ public class SyntaxStyle {
     }
 
     // private members
-    private Color color;
-    private boolean italic;
-    private boolean bold;
+    private final Color color;
+    private final boolean italic;
+    private final boolean bold;
     private Font lastFont;
     private Font lastStyledFont;
     private FontMetrics fontMetrics;

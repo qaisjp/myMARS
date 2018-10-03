@@ -49,7 +49,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Coprocessor0Window extends JPanel implements Observer {
     private static JTable table;
     private static Register[] registers;
-    private Object[][] tableData;
     private boolean highlighting;
     private int highlightRow;
     private ExecutePane executePane;
@@ -72,9 +71,9 @@ public class Coprocessor0Window extends JPanel implements Observer {
         table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(25);
         table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
         // Display register values (String-ified) right-justified in mono font
-        table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
-        table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.LEFT));
+        table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.RIGHT));
+        table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(SwingConstants.RIGHT));
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
         this.setLayout(new BorderLayout());  // table display will occupy entire width if widened
         this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
@@ -86,14 +85,14 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @return The array object with the data for the window.
      **/
 
-    public Object[][] setupWindow() {
+    private Object[][] setupWindow() {
         registers = Coprocessor0.getRegisters();
-        tableData = new Object[registers.length][3];
+        Object[][] tableData = new Object[registers.length][3];
         rowGivenRegNumber = new int[32]; // maximum number of registers
         for (int i = 0; i < registers.length; i++) {
             rowGivenRegNumber[registers[i].getNumber()] = i;
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = new Integer(registers[i].getNumber());
+            tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
         }
         return tableData;
@@ -140,10 +139,10 @@ public class Coprocessor0Window extends JPanel implements Observer {
      *
      * @param base number base for display (10 or 16)
      */
-    public void updateRegisters(int base) {
+    private void updateRegisters(int base) {
         registers = Coprocessor0.getRegisters();
-        for (int i = 0; i < registers.length; i++) {
-            this.updateRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
+        for (Register register : registers) {
+            this.updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
     }
 
@@ -154,9 +153,9 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    public void updateRegisterValue(int number, int val, int base) {
+    private void updateRegisterValue(int number, int val, int base) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number], 2);
+                NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number]);
     }
 
 
@@ -206,7 +205,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
      *
      * @param register Register object corresponding to row to be selected.
      */
-    void highlightCellForRegister(Register register) {
+    private void highlightCellForRegister(Register register) {
         int registerRow = Coprocessor0.getRegisterPosition(register);
         if (registerRow < 0)
             return; // not valid coprocessor0 register
@@ -220,12 +219,12 @@ public class Coprocessor0Window extends JPanel implements Observer {
     * all columns.
     */
     private class RegisterCellRenderer extends DefaultTableCellRenderer {
-        private Font font;
-        private int alignment;
+        private final Font font;
+        private final int alignment;
 
-        public RegisterCellRenderer(Font font, int alignment) {
+        RegisterCellRenderer(int alignment) {
             super();
-            this.font = font;
+            this.font = MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT;
             this.alignment = alignment;
         }
 
@@ -255,9 +254,9 @@ public class Coprocessor0Window extends JPanel implements Observer {
 
     class RegTableModel extends AbstractTableModel {
         final String[] columnNames = {"Name", "Number", "Value"};
-        Object[][] data;
+        final Object[][] data;
 
-        public RegTableModel(Object[][] d) {
+        RegTableModel(Object[][] d) {
             data = d;
         }
 
@@ -292,11 +291,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            if (col == VALUE_COLUMN) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN;
         }
 
 
@@ -306,7 +301,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
       	* value is valid, MIPS register is updated.
          */
         public void setValueAt(Object value, int row, int col) {
-            int val = 0;
+            int val;
             try {
                 val = Binary.stringToInt((String) value);
             } catch (NumberFormatException nfe) {
@@ -322,16 +317,15 @@ public class Coprocessor0Window extends JPanel implements Observer {
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
-            return;
         }
 
 
         /**
          * Update cell contents in table model.  Does not affect MIPS register.
          */
-        private void setDisplayAndModelValueAt(Object value, int row, int col) {
-            data[row][col] = value;
-            fireTableCellUpdated(row, col);
+        private void setDisplayAndModelValueAt(Object value, int row) {
+            data[row][2] = value;
+            fireTableCellUpdated(row, 2);
         }
 
 
@@ -365,7 +359,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
             this.setSelectionBackground(Color.GREEN);
         }
 
-        private String[] regToolTips = {
+        private final String[] regToolTips = {
             /* $8  */  "Memory address at which address exception occurred",  
             /* $12 */  "Interrupt mask and enable bits",
             /* $13 */  "Exception type and pending interrupt bits",
@@ -374,7 +368,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
 
         //Implement table cell tool tips.
         public String getToolTipText(MouseEvent e) {
-            String tip = null;
+            String tip;
             java.awt.Point p = e.getPoint();
             int rowIndex = rowAtPoint(p);
             int colIndex = columnAtPoint(p);
@@ -394,7 +388,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
             return tip;
         }
 
-        private String[] columnToolTips = {
+        private final String[] columnToolTips = {
             /* name */   "Each register has a tool tip describing its usage convention",
             /* number */ "Register number.  In your program, precede it with $",
             /* value */  "Current 32 bit value"

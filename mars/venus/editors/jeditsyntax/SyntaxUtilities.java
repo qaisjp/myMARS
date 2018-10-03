@@ -13,7 +13,6 @@ import mars.venus.editors.jeditsyntax.tokenmarker.*;
 import mars.Globals;
 
 import javax.swing.text.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -145,8 +144,8 @@ public class SyntaxUtilities {
      * @param y The y co-ordinate
      * @return The x co-ordinate, plus the width of the painted string
      */
-    public static boolean popupShowing = false;
-    public static Popup popup;
+    //private static final boolean popupShowing = false;
+    //public static Popup popup;
 
     public static int paintSyntaxLine(Segment line, Token tokens,
                                       SyntaxStyle[] styles, TabExpander expander, Graphics gfx,
@@ -170,37 +169,32 @@ public class SyntaxUtilities {
                 styles[id].setGraphicsFlags(gfx, defaultFont);
             line.count = length;
 
-            if (id == Token.KEYWORD1) {
-                //System.out.println("Instruction: "+line);
-                if (!popupShowing) {// System.out.println("creating popup");
-//                   JComponent paintArea = (JComponent) expander;
-//                   JToolTip tip = paintArea.createToolTip();
-//                   tip.setTipText("Instruction: "+line);
-//                   Point screenLocation = paintArea.getLocationOnScreen();
-//                   PopupFactory popupFactory = PopupFactory.getSharedInstance();
-//                   popup = popupFactory.getPopup(paintArea, tip, screenLocation.x + x, screenLocation.y + y); 
-//                   popupShowing = true;
-//                   popup.show();
-//                   int delay = 200; //milliseconds 
-//                   ActionListener taskPerformer = 
-//                       new ActionListener() { 
-//                          public void actionPerformed(ActionEvent evt) { 
-//                            //popupShowing = false;
-//                            if (popup!= null) {
-//                               popup.hide();
-//                            }
-//                         } 
-//                      }; 
-//                   Timer popupTimer = new Timer(delay, taskPerformer);
-//                   popupTimer.setRepeats(false);
-//                   popupTimer.start();
-
-                }
-
-                // ToolTipManager.sharedInstance().mouseMoved(
-                //	   new MouseEvent((Component)expander, MouseEvent.MOUSE_MOVED, new java.util.Date().getTime(), 0, x, y, 0, false));
-                //    new InstructionMouseEvent((Component)expander, x, y, line));
-            }
+            //System.out.println("Instruction: "+line);
+            // System.out.println("creating popup");
+            //                   JComponent paintArea = (JComponent) expander;
+            //                   JToolTip tip = paintArea.createToolTip();
+            //                   tip.setTipText("Instruction: "+line);
+            //                   Point screenLocation = paintArea.getLocationOnScreen();
+            //                   PopupFactory popupFactory = PopupFactory.getSharedInstance();
+            //                   popup = popupFactory.getPopup(paintArea, tip, screenLocation.x + x, screenLocation.y + y);
+            //                   popupShowing = true;
+            //                   popup.show();
+            //                   int delay = 200; //milliseconds
+            //                   ActionListener taskPerformer =
+            //                       new ActionListener() {
+            //                          public void actionPerformed(ActionEvent evt) {
+            //                            //popupShowing = false;
+            //                            if (popup!= null) {
+            //                               popup.hide();
+            //                            }
+            //                         }
+            //                      };
+            //                   Timer popupTimer = new Timer(delay, taskPerformer);
+            //                   popupTimer.setRepeats(false);
+            //                   popupTimer.start();
+            // ToolTipManager.sharedInstance().mouseMoved(
+            //	   new MouseEvent((Component)expander, MouseEvent.MOUSE_MOVED, new java.util.Date().getTime(), 0, x, y, 0, false));
+            //    new InstructionMouseEvent((Component)expander, x, y, line));
 
             x = Utilities.drawTabbedText(line, x, y, gfx, expander, 0);
             line.offset += length;
@@ -218,7 +212,7 @@ public class SyntaxUtilities {
 }
 
 class InstructionMouseEvent extends MouseEvent {
-    private Segment line;
+    private final Segment line;
 
     public InstructionMouseEvent(Component component, int x, int y, Segment line) {
         super(component, MouseEvent.MOUSE_MOVED, new java.util.Date().getTime(), 0, x, y, 0, false);

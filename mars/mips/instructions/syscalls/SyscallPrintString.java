@@ -51,12 +51,12 @@ public class SyscallPrintString extends AbstractSyscall {
      */
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int byteAddress = RegisterFile.getValue(4);
-        char ch = 0;
+        char ch;
         try {
             ch = (char) Globals.memory.getByte(byteAddress);
             // won't stop until NULL byte reached!
             while (ch != 0) {
-                SystemIO.printString(new Character(ch).toString());
+                SystemIO.printString(Character.toString(ch));
                 byteAddress++;
                 ch = (char) Globals.memory.getByte(byteAddress);
             }

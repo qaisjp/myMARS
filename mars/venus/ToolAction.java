@@ -42,8 +42,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version August 2005
  */
 
-public class ToolAction extends AbstractAction {
-    private Class toolClass; //MarsTool tool;
+class ToolAction extends AbstractAction {
+    private final Class toolClass; //MarsTool tool;
 
     /**
      * Simple constructor.
@@ -68,7 +68,7 @@ public class ToolAction extends AbstractAction {
             // already successfully creating an instance from the same Class object
             // in ToolLoader's loadMarsTools() method.
             ((MarsTool) this.toolClass.newInstance()).action();
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
     }
 }

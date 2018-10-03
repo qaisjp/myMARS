@@ -61,7 +61,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * @author ingo.kofler@itec.uni-klu.ac.at
  */
 //@SuppressWarnings("serial")
-public class BHTSimGUI extends JPanel {
+class BHTSimGUI extends JPanel {
 
     /**
      * text field presenting the most recent branch instruction
@@ -96,7 +96,7 @@ public class BHTSimGUI extends JPanel {
     /**
      * the table representing the BHT
      */
-    private JTable m_tabBHT;
+    private final JTable m_tabBHT;
 
     /**
      * text field for log output
@@ -126,7 +126,7 @@ public class BHTSimGUI extends JPanel {
     /**
      * constant for the String representing "do not take the branch"
      */
-    public final static String BHT_DO_NOT_TAKE_BRANCH = "NOT TAKE";
+    private final static String BHT_DO_NOT_TAKE_BRANCH = "NOT TAKE";
 
 
     /**
@@ -158,7 +158,7 @@ public class BHTSimGUI extends JPanel {
 
         // create a default renderer for double values (percentage)
         DefaultTableCellRenderer doubleRenderer = new DefaultTableCellRenderer() {
-            private DecimalFormat formatter = new DecimalFormat("##0.00");
+            private final DecimalFormat formatter = new DecimalFormat("##0.00");
 
             public void setValue(Object value) {
                 setText((value == null) ? "" : formatter.format(value));
@@ -242,13 +242,13 @@ public class BHTSimGUI extends JPanel {
         JPanel panel = new JPanel();
 
         Vector sizes = new Vector();
-        sizes.add(new Integer(8));
-        sizes.add(new Integer(16));
-        sizes.add(new Integer(32));
+        sizes.add(8);
+        sizes.add(16);
+        sizes.add(32);
 
         Vector bits = new Vector();
-        bits.add(new Integer(1));
-        bits.add(new Integer(2));
+        bits.add(1);
+        bits.add(2);
 
         Vector initVals = new Vector();
         initVals.add(BHTSimGUI.BHT_DO_NOT_TAKE_BRANCH);

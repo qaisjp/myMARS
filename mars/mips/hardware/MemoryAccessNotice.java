@@ -37,9 +37,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class MemoryAccessNotice extends AccessNotice {
-    private int address;
-    private int length;
-    private int value;
+    private final int address;
+    private final int length;
+    private final int value;
 
     /**
      * Constructor will be called only within this package, so assume

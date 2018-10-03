@@ -1,8 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.util.*;
 import mars.mips.hardware.*;
-import mars.simulator.*;
 import mars.*;
 
 import javax.swing.JOptionPane;
@@ -63,7 +61,7 @@ public class SyscallInputDialogString extends AbstractSyscall {
         //       -3: OK was chosen but no data had been input into field
 
 
-        String message = new String(); // = "";
+        String message = ""; // = "";
         int byteAddress = RegisterFile.getValue(4); // byteAddress of string is in $a0
         char ch[] = {' '}; // Need an array to convert to String
         try {
@@ -82,7 +80,7 @@ public class SyscallInputDialogString extends AbstractSyscall {
         // A null return value means that "Cancel" was chosen rather than OK.
         // An empty string returned (that is, inputString.length() of zero)
         // means that OK was chosen but no string was input.
-        String inputString = null;
+        String inputString;
         inputString = JOptionPane.showInputDialog(message);
         byteAddress = RegisterFile.getValue(5); // byteAddress of string is in $a1
         int maxLength = RegisterFile.getValue(6); // input buffer size for input string is in $a2
@@ -102,9 +100,9 @@ public class SyscallInputDialogString extends AbstractSyscall {
                             inputString.charAt(index));
                 }
                 if (inputString.length() < maxLength - 1) {
-                    Globals.memory.setByte(byteAddress + (int) Math.min(inputString.length(), maxLength - 2), '\n');  // newline at string end
+                    Globals.memory.setByte(byteAddress + Math.min(inputString.length(), maxLength - 2), '\n');  // newline at string end
                 }
-                Globals.memory.setByte(byteAddress + (int) Math.min((inputString.length() + 1), maxLength - 1), 0);  // null char to end string
+                Globals.memory.setByte(byteAddress + Math.min((inputString.length() + 1), maxLength - 1), 0);  // null char to end string
 
                 if (inputString.length() > maxLength - 1) {
                     //  length of the input string exceeded the specified maximum

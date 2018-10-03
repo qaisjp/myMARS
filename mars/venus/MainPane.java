@@ -5,11 +5,6 @@ import mars.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.undo.*;
-import java.text.*;
-import java.util.*;
-import java.io.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 	
@@ -50,10 +45,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class MainPane extends JTabbedPane {
     EditPane editTab;
-    ExecutePane executeTab;
-    EditTabbedPane editTabbedPane;
-
-    private VenusUI mainUI;
+    private final ExecutePane executeTab;
+    private final EditTabbedPane editTabbedPane;
 
     /**
      * Constructor for the MainPane class.
@@ -62,7 +55,6 @@ public class MainPane extends JTabbedPane {
     public MainPane(VenusUI appFrame, Editor editor, RegistersWindow regs,
                     Coprocessor1Window cop1Regs, Coprocessor0Window cop0Regs) {
         super();
-        this.mainUI = appFrame;
         this.setTabPlacement(JTabbedPane.TOP); //LEFT);
         if (this.getUI() instanceof BasicTabbedPaneUI) {
             BasicTabbedPaneUI ui = (BasicTabbedPaneUI) this.getUI();
@@ -75,14 +67,14 @@ public class MainPane extends JTabbedPane {
         Icon executeTabIcon = null;//new ImageIcon(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Globals.imagesPath+"Execute_tab.jpg")));
 
         this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        this.addTab(editTabTitle, editTabIcon, editTabbedPane);
+        this.addTab(editTabTitle, null, editTabbedPane);
 
         // this.addTab("<html><center>&nbsp;<br>P<br>r<br>o<br>j<br>&nbsp;<br>1<br&nbsp;</center></html>", null, new JTabbedPane());
         // this.addTab("<html><center>&nbsp;<br>P<br>r<br>o<br>j<br>&nbsp;<br>2<br&nbsp;</center></html>", null, new JTabbedPane());
         // this.addTab("<html><center>&nbsp;<br>P<br>r<br>o<br>j<br>&nbsp;<br>3<br&nbsp;</center></html>", null, new JTabbedPane());
         // this.addTab("<html><center>&nbsp;<br>P<br>r<br>o<br>j<br>&nbsp;<br>4<br&nbsp;</center></html>", null, new JTabbedPane());
 
-        this.addTab(executeTabTitle, executeTabIcon, executeTab);
+        this.addTab(executeTabTitle, null, executeTab);
 
         this.setToolTipTextAt(0, "Text editor for composing MIPS programs.");
         this.setToolTipTextAt(1, "View and control assembly language program execution.  Enabled upon successful assemble.");

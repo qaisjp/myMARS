@@ -36,11 +36,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * option.
  */
 
-public class GuiAction extends AbstractAction {
-    protected VenusUI mainUI;
+class GuiAction extends AbstractAction {
+    final VenusUI mainUI;
 
-    protected GuiAction(String name, Icon icon, String descrip,
-                        Integer mnemonic, KeyStroke accel, VenusUI gui) {
+    GuiAction(String name, Icon icon, String descrip,
+              Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon);
         putValue(SHORT_DESCRIPTION, descrip);
         putValue(MNEMONIC_KEY, mnemonic);

@@ -1,7 +1,5 @@
 package mars.util;
 
-import mars.*;
-
 import java.util.*;
 import java.io.*;
 
@@ -57,10 +55,9 @@ public class PropertiesFile {
         try {
             InputStream is = PropertiesFile.class.getResourceAsStream("/" + file + ".properties");
             properties.load(is);
-        } catch (IOException ioe) {
+        } catch (IOException | NullPointerException ignored) {
         } // If it doesn't work, properties will be empty
-        catch (NullPointerException npe) {
-        }
+
         return properties;
     }
 }

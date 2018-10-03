@@ -5,11 +5,9 @@ import mars.simulator.*;
 import mars.mips.hardware.*;
 import mars.util.*;
 
-import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 import javax.swing.*;
-import java.io.*;
 
 	/*
 Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
@@ -44,8 +42,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunGoAction extends GuiAction {
 
-    public static int defaultMaxSteps = -1; // "forever", formerly 10000000; // 10 million
-    public static int maxSteps = defaultMaxSteps;
+    private static final int defaultMaxSteps = -1; // "forever", formerly 10000000; // 10 million
+    private static int maxSteps = defaultMaxSteps;
     private String name;
     private ExecutePane executePane;
 
@@ -61,12 +59,12 @@ public class RunGoAction extends GuiAction {
         name = this.getValue(Action.NAME).toString();
         executePane = mainUI.getMainPane().getExecutePane();
         if (FileStatus.isAssembled()) {
-            if (!mainUI.getStarted()) {
+            if (!VenusUI.getStarted()) {
                 processProgramArgumentsIfAny();  // DPS 17-July-2008
             }
-            if (mainUI.getReset() || mainUI.getStarted()) {
+            if (VenusUI.getReset() || VenusUI.getStarted()) {
 
-                mainUI.setStarted(true);  // added 8/27/05
+                VenusUI.setStarted(true);  // added 8/27/05
 
                 mainUI.messagesPane.postMarsMessage(
                         name + ": running " + FileStatus.getFile().getName() + "\n\n");
@@ -78,11 +76,11 @@ public class RunGoAction extends GuiAction {
                 try {
                     int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
                     boolean done = Globals.program.simulateFromPC(breakPoints, maxSteps, this);
-                } catch (ProcessingException pe) {
+                } catch (ProcessingException ignored) {
                 }
             } else {
                 // This should never occur because at termination the Go and Step buttons are disabled.
-                JOptionPane.showMessageDialog(mainUI, "reset " + mainUI.getReset() + " started " + mainUI.getStarted());//"You must reset before you can execute the program again.");
+                JOptionPane.showMessageDialog(mainUI, "reset " + VenusUI.getReset() + " started " + VenusUI.getStarted());//"You must reset before you can execute the program again.");
             }
         } else {
             // note: this should never occur since "Go" is only enabled after successful assembly.
@@ -118,7 +116,7 @@ public class RunGoAction extends GuiAction {
         executePane.getCoprocessor0Window().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
         FileStatus.set(FileStatus.RUNNABLE);
-        mainUI.setReset(false);
+        VenusUI.setReset(false);
     }
 
     /**
@@ -160,7 +158,7 @@ public class RunGoAction extends GuiAction {
                 break;
             case Simulator.EXCEPTION:
                 mainUI.getMessagesPane().postMarsMessage(
-                        pe.errors().generateErrorReport());
+                        Objects.requireNonNull(pe).errors().generateErrorReport());
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated with errors.\n\n");
                 break;
@@ -178,7 +176,7 @@ public class RunGoAction extends GuiAction {
                 break;
         }
         RunGoAction.resetMaxSteps();
-        mainUI.setReset(false);
+        VenusUI.setReset(false);
     }
 
     /**

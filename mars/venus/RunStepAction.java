@@ -4,7 +4,6 @@ import mars.*;
 import mars.simulator.*;
 import mars.mips.hardware.*;
 
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -41,8 +40,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunStepAction extends GuiAction {
 
-    String name;
-    ExecutePane executePane;
+    private String name;
+    private ExecutePane executePane;
 
     public RunStepAction(String name, Icon icon, String descrip,
                          Integer mnemonic, KeyStroke accel, VenusUI gui) {
@@ -57,15 +56,15 @@ public class RunStepAction extends GuiAction {
         executePane = mainUI.getMainPane().getExecutePane();
         boolean done = false;
         if (FileStatus.isAssembled()) {
-            if (!mainUI.getStarted()) {  // DPS 17-July-2008
+            if (!VenusUI.getStarted()) {  // DPS 17-July-2008
                 processProgramArgumentsIfAny();
             }
-            mainUI.setStarted(true);
+            VenusUI.setStarted(true);
             mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             try {
                 done = Globals.program.simulateStepAtPC(this);
-            } catch (ProcessingException ev) {
+            } catch (ProcessingException ignored) {
             }
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
@@ -111,7 +110,7 @@ public class RunStepAction extends GuiAction {
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
         }
-        mainUI.setReset(false);
+        VenusUI.setReset(false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////

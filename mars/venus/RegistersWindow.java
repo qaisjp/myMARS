@@ -49,7 +49,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class RegistersWindow extends JPanel implements Observer {
     private static JTable table;
     private static Register[] registers;
-    private Object[][] tableData;
     private boolean highlighting;
     private int highlightRow;
     private ExecutePane executePane;
@@ -58,6 +57,13 @@ public class RegistersWindow extends JPanel implements Observer {
     private static final int VALUE_COLUMN = 2;
     private static final int ASCII_COLUMN = 3;
     private static final int NOTE_COLUMN = 4;
+
+    private static final int NAME_COLUMN_WIDTH = 50;
+    private static final int NUMBER_COLUMN_WIDTH = 40;
+    private static final int VALUE_COLUMN_WIDTH = 80;
+    private static final int ASCII_COLUMN_WIDTH = 40;
+    private static final int NOTE_COLUMN_WIDTH = 30;
+
     private static Settings settings;
 
     /**
@@ -79,32 +85,32 @@ public class RegistersWindow extends JPanel implements Observer {
         TableColumn col; // current column being edited
 
         col = table.getColumnModel().getColumn(NAME_COLUMN);
-        col.setPreferredWidth(40);
-        col.setWidth(40);
-        col.setMaxWidth(40);
+        col.setPreferredWidth(NAME_COLUMN_WIDTH);
+        col.setWidth(NAME_COLUMN_WIDTH);
+        col.setMaxWidth(NAME_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoLeft);
 
         col = table.getColumnModel().getColumn(NUMBER_COLUMN);
-        col.setPreferredWidth(25);
-        col.setWidth(25);
-        col.setMaxWidth(25);
+        col.setPreferredWidth(NUMBER_COLUMN_WIDTH);
+        col.setWidth(NUMBER_COLUMN_WIDTH);
+        col.setMaxWidth(NUMBER_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(VALUE_COLUMN);
-        col.setPreferredWidth(80);
-        col.setWidth(80);
-        col.setMaxWidth(80);
+        col.setPreferredWidth(VALUE_COLUMN_WIDTH);
+        col.setWidth(VALUE_COLUMN_WIDTH);
+        col.setMaxWidth(VALUE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(ASCII_COLUMN);
-        col.setPreferredWidth(25);
-        col.setWidth(25);
-        col.setMaxWidth(25);
+        col.setPreferredWidth(ASCII_COLUMN_WIDTH);
+        col.setWidth(ASCII_COLUMN_WIDTH);
+        col.setMaxWidth(ASCII_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(NOTE_COLUMN);
-        col.setPreferredWidth(12);
-        col.setWidth(12);
+        col.setPreferredWidth(NOTE_COLUMN_WIDTH);
+        col.setWidth(NOTE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererRegularLeft);
 
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
@@ -118,13 +124,13 @@ public class RegistersWindow extends JPanel implements Observer {
      * @return The array object with the data for the window.
      **/
 
-    public Object[][] setupWindow() {
+    private Object[][] setupWindow() {
         int valueBase = NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex());
-        tableData = new Object[35][5];
+        Object[][] tableData = new Object[35][5];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = new Integer(registers[i].getNumber());
+            tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
             tableData[i][3] = Character.toString((char) registers[i].getValue());
             tableData[i][4] = "";
@@ -139,13 +145,13 @@ public class RegistersWindow extends JPanel implements Observer {
         tableData[33][1] = "";//new Integer(33);
         tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
         tableData[33][3] = "?";
-        tableData[33][4] = "hi";
+        tableData[33][4] = "";
 
         tableData[34][0] = "lo";
         tableData[34][1] = "";//new Integer(34);
         tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
         tableData[34][3] = "?";
-        tableData[34][4] = "?";
+        tableData[34][4] = "";
 
         return tableData;
     }
@@ -191,12 +197,12 @@ public class RegistersWindow extends JPanel implements Observer {
      *
      * @param base desired number base
      */
-    public void updateRegisters(int base) {
+    private void updateRegisters(int base) {
         registers = RegisterFile.getRegisters();
-        for (int i = 0; i < registers.length; i++) {
-            updateRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
+        for (Register register : registers) {
+            updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
-        updateRegisterUnsignedValue(32, RegisterFile.getProgramCounter(), base);
+        updateRegisterUnsignedValue(RegisterFile.getProgramCounter(), base);
         updateRegisterValue(33, RegisterFile.getValue(33), base);
         updateRegisterValue(34, RegisterFile.getValue(34), base);
     }
@@ -208,7 +214,7 @@ public class RegistersWindow extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    public void updateRegisterValue(int number, int val, int base) {
+    private void updateRegisterValue(int number, int val, int base) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(val, base), number, 2);
 
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, 3);
@@ -217,8 +223,8 @@ public class RegistersWindow extends JPanel implements Observer {
     }
 
 
-    private void updateRegisterUnsignedValue(int number, int val, int base) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(val, base), number, 2);
+    private void updateRegisterUnsignedValue(int val, int base) {
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(val, base), 32, 2);
     }
 
     /**
@@ -264,7 +270,7 @@ public class RegistersWindow extends JPanel implements Observer {
      *
      * @param register Register object corresponding to row to be selected.
      */
-    void highlightCellForRegister(Register register) {
+    private void highlightCellForRegister(Register register) {
         this.highlightRow = register.getNumber();
         // Tell the system that table contents have changed.  This will trigger re-rendering
         // during which cell renderers are obtained.  The row of interest (identified by
@@ -280,9 +286,9 @@ public class RegistersWindow extends JPanel implements Observer {
     */
     private class RegisterCellRenderer extends DefaultTableCellRenderer {
         private Font font;
-        private int alignment;
+        private final int alignment;
 
-        public RegisterCellRenderer(Font font, int alignment) {
+        RegisterCellRenderer(Font font, int alignment) {
             super();
             if (font != null) {
                 this.font = font;
@@ -319,9 +325,9 @@ public class RegistersWindow extends JPanel implements Observer {
 
     class RegTableModel extends AbstractTableModel {
         final String[] columnNames = {"Name", "Num", "Value", "ASCII", "Note"};
-        Object[][] data;
+        final Object[][] data;
 
-        public RegTableModel(Object[][] d) {
+        RegTableModel(Object[][] d) {
             data = d;
         }
 
@@ -361,11 +367,7 @@ public class RegistersWindow extends JPanel implements Observer {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
             // these registers are not editable: $zero (0), $pc (32), $ra (31)
-            if (col == VALUE_COLUMN && row != 0 && row != 32 && row != 31) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN && row != 0 && row != 32 && row != 31;
         }
 
 
@@ -376,11 +378,11 @@ public class RegistersWindow extends JPanel implements Observer {
          */
         public void setValueAt(Object value, int row, int col) {
             if (col == NOTE_COLUMN) {
-                data[row][col] = (String) value;
+                data[row][col] = value;
                 fireTableCellUpdated(row, col);
                 return;
             }
-            int val = 0;
+            int val;
             try {
                 val = Binary.stringToInt((String) value);
             } catch (NumberFormatException nfe) {
@@ -396,7 +398,6 @@ public class RegistersWindow extends JPanel implements Observer {
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
-            return;
         }
 
 
@@ -439,7 +440,7 @@ public class RegistersWindow extends JPanel implements Observer {
             this.setSelectionBackground(Color.GREEN);
         }
 
-        private String[] regToolTips = {
+        private final String[] regToolTips = {
             /* $zero */  "constant 0",  
             /* $at   */  "reserved for assembler",
             /* $v0   */  "expression evaluation and results of a function",
@@ -479,7 +480,7 @@ public class RegistersWindow extends JPanel implements Observer {
 
         //Implement table cell tool tips.
         public String getToolTipText(MouseEvent e) {
-            String tip = null;
+            String tip;
             java.awt.Point p = e.getPoint();
             int rowIndex = rowAtPoint(p);
             int colIndex = columnAtPoint(p);
@@ -499,7 +500,7 @@ public class RegistersWindow extends JPanel implements Observer {
             return tip;
         }
 
-        private String[] columnToolTips = {
+        private final String[] columnToolTips = {
                 "Each register has a tool tip describing its usage convention", // name
                 "Corresponding register number", // register number
                 "Current 32 bit value", // value

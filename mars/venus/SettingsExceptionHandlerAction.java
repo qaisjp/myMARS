@@ -1,13 +1,10 @@
 package mars.venus;
 
-import mars.simulator.*;
 import mars.*;
 
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
 import javax.swing.border.*;
 import java.io.*;
 
@@ -44,13 +41,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class SettingsExceptionHandlerAction extends GuiAction {
 
-    JDialog exceptionHandlerDialog;
-    JCheckBox exceptionHandlerSetting;
-    JButton exceptionHandlerSelectionButton;
-    JTextField exceptionHandlerDisplay;
+    private JDialog exceptionHandlerDialog;
+    private JCheckBox exceptionHandlerSetting;
+    private JButton exceptionHandlerSelectionButton;
+    private JTextField exceptionHandlerDisplay;
 
-    boolean initialSelected; // state of check box when dialog initiated.
-    String initialPathname;  // selected exception handler when dialog initiated.
+    private boolean initialSelected; // state of check box when dialog initiated.
+    private String initialPathname;  // selected exception handler when dialog initiated.
 
     public SettingsExceptionHandlerAction(String name, Icon icon, String descrip,
                                           Integer mnemonic, KeyStroke accel, VenusUI gui) {
@@ -100,19 +97,13 @@ public class SettingsExceptionHandlerAction extends GuiAction {
         Box controlPanel = Box.createHorizontalBox();
         JButton okButton = new JButton("OK");
         okButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        performOK();
-                        closeDialog();
-                    }
+                e -> {
+                    performOK();
+                    closeDialog();
                 });
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        closeDialog();
-                    }
-                });
+                e -> closeDialog());
         controlPanel.add(Box.createHorizontalGlue());
         controlPanel.add(okButton);
         controlPanel.add(Box.createHorizontalGlue());

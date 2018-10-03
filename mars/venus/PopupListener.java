@@ -37,8 +37,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Menu selections themselves are handled separately.
 // Code below is adapted from Java Tutorial on working with menus.
 
-public class PopupListener extends MouseAdapter {
-    private JPopupMenu popup;
+class PopupListener extends MouseAdapter {
+    private final JPopupMenu popup;
 
     public PopupListener(JPopupMenu p) {
         popup = p;

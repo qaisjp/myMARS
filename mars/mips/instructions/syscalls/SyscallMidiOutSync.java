@@ -1,8 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.util.*;
 import mars.mips.hardware.*;
-import mars.simulator.*;
 import mars.*;
 
 /*
@@ -53,8 +51,8 @@ public class SyscallMidiOutSync extends AbstractSyscall {
 
     // Endpoints of ranges for the three "byte" parameters.  The duration
     // parameter is limited at the high end only by the int range.
-    static final int rangeLowEnd = 0;
-    static final int rangeHighEnd = 127;
+    private static final int rangeLowEnd = 0;
+    private static final int rangeHighEnd = 127;
 
     /**
      * Build an instance of the MIDI (simulated) out syscall.  Default service number
@@ -78,7 +76,7 @@ public class SyscallMidiOutSync extends AbstractSyscall {
      * instrument and volume value ranges 0-127 are from javax.sound.midi; actual MIDI instruments
      * use the range 1-128.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int pitch = RegisterFile.getValue(4); // $a0
         int duration = RegisterFile.getValue(5); // $a1
         int instrument = RegisterFile.getValue(6); // $a2

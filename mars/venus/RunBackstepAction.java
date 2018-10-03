@@ -3,7 +3,6 @@ package mars.venus;
 import mars.*;
 import mars.mips.hardware.*;
 
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -40,9 +39,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunBackstepAction extends GuiAction {
 
-    String name;
-    ExecutePane executePane;
-
     public RunBackstepAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel, gui);
@@ -52,15 +48,15 @@ public class RunBackstepAction extends GuiAction {
      * perform next simulated instruction step.
      */
     public void actionPerformed(ActionEvent e) {
-        name = this.getValue(Action.NAME).toString();
-        executePane = mainUI.getMainPane().getExecutePane();
+        String name = this.getValue(Action.NAME).toString();
+        ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         boolean done = false;
         if (!FileStatus.isAssembled()) {
             // note: this should never occur since backstepping is only enabled after successful assembly.
             JOptionPane.showMessageDialog(mainUI, "The program must be assembled before it can be run.");
             return;
         }
-        mainUI.setStarted(true);
+        VenusUI.setStarted(true);
         mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
         executePane.getTextSegmentWindow().setCodeHighlighting(true);
 
@@ -97,7 +93,7 @@ public class RunBackstepAction extends GuiAction {
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter()-4);
          }
          */
-            mainUI.setReset(false);
+            VenusUI.setReset(false);
         }
     }
 }

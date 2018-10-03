@@ -34,10 +34,10 @@ package mars.venus.editors.jeditsyntax;
  * tool tip item.
  */
 public class PopupHelpItem {
-    private String tokenText;
+    private final String tokenText;
     private String example;
     private String description;
-    private boolean exact;        // from exact match?
+    private final boolean exact;        // from exact match?
     private int exampleLength;
     private static final String spaces = "                                        "; // 40 spaces
 
@@ -76,7 +76,7 @@ public class PopupHelpItem {
     }
 
     /**
-     * The document text that mached this item
+     * The document text that matched this item
      */
     public String getTokenText() {
         return this.tokenText;
@@ -101,13 +101,13 @@ public class PopupHelpItem {
         return this.exact;
     }
 
-    public int getExampleLength() {
+    private int getExampleLength() {
         return this.exampleLength;
     }
 
     // for performance purposes, length limited to example length + 40
     public String getExamplePaddedToLength(int length) {
-        String result = null;
+        String result;
         if (length > this.exampleLength) {
             int numSpaces = length - this.exampleLength;
             if (numSpaces > spaces.length()) {
@@ -136,8 +136,7 @@ public class PopupHelpItem {
     public static int maxExampleLength(java.util.ArrayList matches) {
         int length = 0;
         if (matches != null) {
-            for (int i = 0; i < matches.size(); i++) {
-                Object match = matches.get(i);
+            for (Object match : matches) {
                 if (match instanceof PopupHelpItem) {
                     length = Math.max(length, ((PopupHelpItem) match).getExampleLength());
                 }

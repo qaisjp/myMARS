@@ -49,13 +49,6 @@ public class FileDumpMemoryAction extends GuiAction {
     private JDialog dumpDialog;
     private static final String title = "Dump Memory To File";
 
-    // A series of parallel arrays representing the memory segments that can be dumped.
-    private String[] segmentArray;
-    private int[] baseAddressArray;
-    private int[] limitAddressArray;
-    private int[] highAddressArray;
-    // These three are allocated and filled by buildDialogPanel() and used by action listeners.
-    private String[] segmentListArray;
     private int[] segmentListBaseArray;
     private int[] segmentListHighArray;
 
@@ -75,12 +68,11 @@ public class FileDumpMemoryAction extends GuiAction {
 
     /* Save the memory segment in a supported format.
    */
-    private boolean dumpMemory() {
+    private void dumpMemory() {
         dumpDialog = createDumpDialog();
         dumpDialog.pack();
         dumpDialog.setLocationRelativeTo(Globals.getGui());
         dumpDialog.setVisible(true);
-        return true;
         /////////////////////////////////////////////////////////////////////
     }
 
@@ -105,13 +97,15 @@ public class FileDumpMemoryAction extends GuiAction {
         JPanel contents = new JPanel(new BorderLayout(20, 20));
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        segmentArray = MemoryDump.getSegmentNames();
-        baseAddressArray = MemoryDump.getBaseAddresses(segmentArray);
-        limitAddressArray = MemoryDump.getLimitAddresses(segmentArray);
-        highAddressArray = new int[segmentArray.length];
+        // A series of parallel arrays representing the memory segments that can be dumped.
+        String[] segmentArray = MemoryDump.getSegmentNames();
+        int[] baseAddressArray = MemoryDump.getBaseAddresses();
+        int[] limitAddressArray = MemoryDump.getLimitAddresses();
+        int[] highAddressArray = new int[segmentArray.length];
 
 
-        segmentListArray = new String[segmentArray.length];
+        // These three are allocated and filled by buildDialogPanel() and used by action listeners.
+        String[] segmentListArray = new String[segmentArray.length];
         segmentListBaseArray = new int[segmentArray.length];
         segmentListHighArray = new int[segmentArray.length];
 
@@ -150,11 +144,7 @@ public class FileDumpMemoryAction extends GuiAction {
             contents.add(new Label("There is nothing to dump!"), BorderLayout.NORTH);
             JButton OKButton = new JButton("OK");
             OKButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            closeDialog();
-                        }
-                    });
+                    e -> closeDialog());
             contents.add(OKButton, BorderLayout.SOUTH);
             return contents;
         }
@@ -188,22 +178,16 @@ public class FileDumpMemoryAction extends GuiAction {
         Box controlPanel = Box.createHorizontalBox();
         JButton dumpButton = new JButton("Dump To File...");
         dumpButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        if (performDump(segmentListBaseArray[segmentListSelector.getSelectedIndex()],
-                                segmentListHighArray[segmentListSelector.getSelectedIndex()],
-                                (DumpFormat) formatListSelector.getSelectedItem())) {
-                            closeDialog();
-                        }
+                e -> {
+                    if (performDump(segmentListBaseArray[segmentListSelector.getSelectedIndex()],
+                            segmentListHighArray[segmentListSelector.getSelectedIndex()],
+                            (DumpFormat) formatListSelector.getSelectedItem())) {
+                        closeDialog();
                     }
                 });
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        closeDialog();
-                    }
-                });
+                e -> closeDialog());
         controlPanel.add(Box.createHorizontalGlue());
         controlPanel.add(dumpButton);
         controlPanel.add(Box.createHorizontalGlue());
@@ -216,8 +200,8 @@ public class FileDumpMemoryAction extends GuiAction {
     // User has clicked "Dump" button, so launch a file chooser then get
     // segment (memory range) and format selections and save to the file.
     private boolean performDump(int firstAddress, int lastAddress, DumpFormat format) {
-        File theFile = null;
-        JFileChooser saveDialog = null;
+        File theFile;
+        JFileChooser saveDialog;
         boolean operationOK = false;
 
         saveDialog = new JFileChooser(mainUI.getEditor().getCurrentSaveDirectory());
@@ -250,9 +234,8 @@ public class FileDumpMemoryAction extends GuiAction {
             if (operationOK) {
                 try {
                     format.dumpMemoryRange(theFile, firstAddress, lastAddress);
-                } catch (AddressErrorException aee) {
+                } catch (AddressErrorException | IOException ignored) {
 
-                } catch (IOException ioe) {
                 }
             }
         }
@@ -270,9 +253,9 @@ public class FileDumpMemoryAction extends GuiAction {
     // http://forum.java.sun.com/thread.jspa?threadID=488762&messageID=2292482
 
     private class DumpFormatComboBoxRenderer extends BasicComboBoxRenderer {
-        private JComboBox myMaster;
+        private final JComboBox myMaster;
 
-        public DumpFormatComboBoxRenderer(JComboBox myMaster) {
+        DumpFormatComboBoxRenderer(JComboBox myMaster) {
             super();
             this.myMaster = myMaster;
         }

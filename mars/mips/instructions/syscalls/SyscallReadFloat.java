@@ -51,7 +51,7 @@ public class SyscallReadFloat extends AbstractSyscall {
      * Performs syscall function to read the bits of input float into $f0
      */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        float floatValue = 0;
+        float floatValue;
         try {
             floatValue = SystemIO.readFloat(this.getNumber());
         } catch (NumberFormatException e) {

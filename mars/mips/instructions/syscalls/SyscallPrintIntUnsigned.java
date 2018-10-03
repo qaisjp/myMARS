@@ -50,7 +50,7 @@ public class SyscallPrintIntUnsigned extends AbstractSyscall {
      * Performs syscall function to print on the console the integer stored in $a0.
      * The value is treated as unsigned.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         SystemIO.printString(
                 Binary.unsignedIntToIntString(RegisterFile.getValue(4)));
     }

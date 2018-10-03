@@ -49,7 +49,7 @@ public class SyscallPrintIntHex extends AbstractSyscall {
     /**
      * Performs syscall function to print on the console the integer stored in $a0, in hexadecimal format.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         SystemIO.printString(Binary.intToHexString(RegisterFile.getValue(4)));
     }
 }

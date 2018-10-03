@@ -42,7 +42,7 @@ public class KeywordMap {
      * @param mapLength  The number of `buckets' to create.
      *                   A value of 52 will give good performance for most maps.
      */
-    public KeywordMap(boolean ignoreCase, int mapLength) {
+    private KeywordMap(boolean ignoreCase, int mapLength) {
         this.mapLength = mapLength;
         this.ignoreCase = ignoreCase;
         map = new Keyword[mapLength];
@@ -78,7 +78,7 @@ public class KeywordMap {
      * Adds a key-value mapping.
      *
      * @param keyword The key
-     * @Param id The value
+     * @param id The value
      */
     public void add(String keyword, byte id) {
         int key = getStringMapKey(keyword);
@@ -104,15 +104,15 @@ public class KeywordMap {
     }
 
     // protected members
-    protected int mapLength;
+    private final int mapLength;
 
-    protected int getStringMapKey(String s) {
+    private int getStringMapKey(String s) {
         return (Character.toUpperCase(s.charAt(0)) +
                 Character.toUpperCase(s.charAt(s.length() - 1)))
                 % mapLength;
     }
 
-    protected int getSegmentMapKey(Segment s, int off, int len) {
+    private int getSegmentMapKey(Segment s, int off, int len) {
         return (Character.toUpperCase(s.array[off]) +
                 Character.toUpperCase(s.array[off + len - 1]))
                 % mapLength;
@@ -120,17 +120,17 @@ public class KeywordMap {
 
     // private members
     class Keyword {
-        public Keyword(char[] keyword, byte id, Keyword next) {
+        Keyword(char[] keyword, byte id, Keyword next) {
             this.keyword = keyword;
             this.id = id;
             this.next = next;
         }
 
-        public char[] keyword;
-        public byte id;
-        public Keyword next;
+        final char[] keyword;
+        final byte id;
+        final Keyword next;
     }
 
-    private Keyword[] map;
+    private final Keyword[] map;
     private boolean ignoreCase;
 }

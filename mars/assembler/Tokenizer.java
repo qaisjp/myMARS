@@ -72,7 +72,7 @@ public class Tokenizer {
      *
      * @param program A previously-existing MIPSprogram object or null if none.
      */
-    public Tokenizer(MIPSprogram program) {
+    private Tokenizer(MIPSprogram program) {
         errors = new ErrorList();
         sourceMIPSprogram = program;
     }
@@ -88,10 +88,10 @@ public class Tokenizer {
 
     public ArrayList tokenize(MIPSprogram p) throws ProcessingException {
         sourceMIPSprogram = p;
-        equivalents = new HashMap<String, String>(); // DPS 11-July-2012
+        equivalents = new HashMap<>(); // DPS 11-July-2012
         ArrayList tokenList = new ArrayList();
         //ArrayList source = p.getSourceList();
-        ArrayList<SourceLine> source = processIncludes(p, new HashMap<String, String>()); // DPS 9-Jan-2013
+        ArrayList<SourceLine> source = processIncludes(p, new HashMap<>()); // DPS 9-Jan-2013
         p.setSourceLineList(source);
         TokenList currentLineTokens;
         String sourceLine;
@@ -104,7 +104,7 @@ public class Tokenizer {
             // not the same object as the original line.  Thus I can use != instead of !equals()
             // This IF statement will replace original source with source modified by .eqv substitution.
             // Not needed by assembler, but looks better in the Text Segment Display.
-            if (sourceLine.length() > 0 && sourceLine != currentLineTokens.getProcessedLine()) {
+            if (sourceLine.length() > 0 && !Objects.equals(sourceLine, currentLineTokens.getProcessedLine())) {
                 source.set(i, new SourceLine(currentLineTokens.getProcessedLine(), source.get(i).getMIPSprogram(), source.get(i).getLineNumber()));
             }
         }
@@ -124,7 +124,7 @@ public class Tokenizer {
     // DPS 11-Jan-2013
     private ArrayList<SourceLine> processIncludes(MIPSprogram program, Map<String, String> inclFiles) throws ProcessingException {
         ArrayList source = program.getSourceList();
-        ArrayList<SourceLine> result = new ArrayList<SourceLine>(source.size());
+        ArrayList<SourceLine> result = new ArrayList<>(source.size());
         for (int i = 0; i < source.size(); i++) {
             String line = (String) source.get(i);
             TokenList tl = tokenizeLine(program, i + 1, line, false);
@@ -217,7 +217,7 @@ public class Tokenizer {
     */
 
     // Modified for release 4.3, to preserve existing API.
-    public TokenList tokenizeLine(int lineNum, String theLine) {
+    private TokenList tokenizeLine(int lineNum, String theLine) {
         return tokenizeLine(sourceMIPSprogram, lineNum, theLine, true);
     }
 
@@ -248,7 +248,6 @@ public class Tokenizer {
      * @param lineNum          line number from source code (used in error message)
      * @param theLine          String containing source code
      * @param callerErrorList  errors will go into this list instead of tokenizer's list.
-     * @param doEqvSubstitutse boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
     public TokenList tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList, boolean doEqvSubstitutes) {
@@ -270,7 +269,7 @@ public class Tokenizer {
      * @param doEqvSubstitutes boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
-    public TokenList tokenizeLine(MIPSprogram program, int lineNum, String theLine, boolean doEqvSubstitutes) {
+    private TokenList tokenizeLine(MIPSprogram program, int lineNum, String theLine, boolean doEqvSubstitutes) {
         TokenTypes tokenType;
         TokenList result = new TokenList();
         if (theLine.length() == 0)
@@ -300,7 +299,6 @@ public class Tokenizer {
                     case '#':  // # denotes comment that takes remainder of line
                         if (tokenPos > 0) {
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
-                            tokenPos = 0;
                         }
                         tokenStartPos = linePos + 1;
                         tokenPos = line.length - linePos;
@@ -337,7 +335,7 @@ public class Tokenizer {
                         }
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
-                        if (!((result.isEmpty() || ((Token) result.get(result.size() - 1)).getType() != TokenTypes.IDENTIFIER) &&
+                        if (!((result.isEmpty() || result.get(result.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
                                 (line.length >= linePos + 2 && Character.isDigit(line[linePos + 1])))) {
                             // treat it as binary.....
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
@@ -430,7 +428,6 @@ public class Tokenizer {
         }  // while
         if (tokenPos > 0) {
             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
-            tokenPos = 0;
         }
         if (doEqvSubstitutes) {
             result = processEqv(program, lineNum, theLine, result); // DPS 11-July-2012
@@ -533,7 +530,6 @@ public class Tokenizer {
         }
         Token toke = new Token(type, value, program, line, tokenStartPos);
         tokenList.add(toke);
-        return;
     }
 
 
@@ -561,7 +557,7 @@ public class Tokenizer {
                 if (intValue >= 0 && intValue <= 255) {
                     return Integer.toString(intValue);
                 }
-            } catch (NumberFormatException nfe) {
+            } catch (NumberFormatException ignored) {
             } // if not valid octal, will fall through and reject
         }
         return value;

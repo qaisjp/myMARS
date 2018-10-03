@@ -1,8 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import java.util.*;
-
-import mars.util.*;
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
@@ -38,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class SyscallNumberOverride {
-    private String serviceName;
+    private final String serviceName;
     private int newServiceNumber;
 
     /**

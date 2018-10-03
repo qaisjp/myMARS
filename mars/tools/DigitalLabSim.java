@@ -5,14 +5,12 @@ import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.Timer;
 
 import mars.Globals;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Memory;
 import mars.mips.hardware.MemoryAccessNotice;
-import mars.simulator.Exceptions;
 
 @SuppressWarnings("serial")
 /* Add these two lines in exceptions.java file
@@ -25,19 +23,17 @@ import mars.simulator.Exceptions;
  * didier.teifreto@univ-fcomte.fr
  */
 public class DigitalLabSim extends AbstractMarsToolAndApplication {
-    private static String heading = "Digital Lab Sim";
-    private static String version = " Version 1.0 (Didier Teifreto)";
+    private static final String heading = "Digital Lab Sim";
+    private static final String version = " Version 1.0 (Didier Teifreto)";
     private static final int IN_ADRESS_DISPLAY_1 = Memory.memoryMapBaseAddress + 0x10;
     private static final int IN_ADRESS_DISPLAY_2 = Memory.memoryMapBaseAddress + 0x11;
     private static final int IN_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x12;
     private static final int IN_ADRESS_COUNTER = Memory.memoryMapBaseAddress + 0x13;
     private static final int OUT_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x14;
 
-    public static final int EXTERNAL_INTERRUPT_TIMER = 0x00000100; //Add for digital Lab Sim
-    public static final int EXTERNAL_INTERRUPT_HEXA_KEYBOARD = 0x00000200;// Add for digital Lab Sim
+    private static final int EXTERNAL_INTERRUPT_TIMER = 0x00000100; //Add for digital Lab Sim
+    private static final int EXTERNAL_INTERRUPT_HEXA_KEYBOARD = 0x00000200;// Add for digital Lab Sim
 
-    // GUI Interface.
-    private static JPanel panelTools;
     // Seven Segment display
     private SevenSegmentPanel sevenSegPanel;
     // Keyboard
@@ -45,7 +41,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
     private HexaKeyboard hexaKeyPanel;
     private static boolean KeyboardInterruptOnOff = false;
     // Counter
-    private static int CounterValueMax = 30;
+    private static final int CounterValueMax = 30;
     private static int CounterValue = CounterValueMax;
     private static boolean CounterInterruptOnOff = false;
     private static OneSecondCounter SecondCounter;
@@ -101,7 +97,8 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
     }
 
     protected JComponent buildMainDisplayArea() {
-        panelTools = new JPanel(new GridLayout(1, 2));
+        // GUI Interface.
+        JPanel panelTools = new JPanel(new GridLayout(1, 2));
         sevenSegPanel = new SevenSegmentPanel();
         panelTools.add(sevenSegPanel);
         hexaKeyPanel = new HexaKeyboard();
@@ -110,11 +107,11 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
         return panelTools;
     }
 
-    private synchronized void updateMMIOControlAndData(int dataAddr, int dataValue) {
-        if (!this.isBeingUsedAsAMarsTool || (this.isBeingUsedAsAMarsTool && connectButton.isConnected())) {
+    private synchronized void updateMMIOControlAndData(int dataValue) {
+        if (!this.isBeingUsedAsAMarsTool || connectButton.isConnected()) {
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
-                    Globals.memory.setByte(dataAddr, dataValue);
+                    Globals.memory.setByte(DigitalLabSim.OUT_ADRESS_HEXA_KEYBOARD, dataValue);
                 } catch (AddressErrorException aee) {
                     System.out.println("Tool author specified incorrect MMIO address!" + aee);
                     System.exit(0);
@@ -148,39 +145,37 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                         "   (contributed by Didier Teifreto, dteifreto@lifc.univ-fcomte.fr)";
         JButton help = new JButton("Help");
         help.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        JTextArea ja = new JTextArea(helpContent);
-                        ja.setRows(20);
-                        ja.setColumns(60);
-                        ja.setLineWrap(true);
-                        ja.setWrapStyleWord(true);
-                        JOptionPane.showMessageDialog(theWindow, new JScrollPane(ja),
-                                "Simulating the Hexa Keyboard and Seven segment display", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                e -> {
+                    JTextArea ja = new JTextArea(helpContent);
+                    ja.setRows(20);
+                    ja.setColumns(60);
+                    ja.setLineWrap(true);
+                    ja.setWrapStyleWord(true);
+                    JOptionPane.showMessageDialog(theWindow, new JScrollPane(ja),
+                            "Simulating the Hexa Keyboard and Seven segment display", JOptionPane.INFORMATION_MESSAGE);
                 });
         return help;
     }/* ....................Seven Segment display start here................................... */
 
     /* ...........................Seven segment display start here ..............................*/
-    public void updateSevenSegment(int number, char value) {
+    private void updateSevenSegment(int number, char value) {
         sevenSegPanel.display[number].modifyDisplay(value);
     }
 
-    public class SevenSegmentDisplay extends JComponent {
-        public char aff;
+    class SevenSegmentDisplay extends JComponent {
+        char aff;
 
-        public SevenSegmentDisplay(char aff) {
+        SevenSegmentDisplay(char aff) {
             this.aff = aff;
             this.setPreferredSize(new Dimension(60, 80));
         }
 
-        public void modifyDisplay(char val) {
+        void modifyDisplay(char val) {
             aff = val;
             this.repaint();
         }
 
-        public void SwitchSegment(Graphics g, char segment) {
+        void SwitchSegment(Graphics g, char segment) {
             switch (segment) {
                 case 'a': //a segment
                     int[] pxa1 = {12, 9, 12};
@@ -258,10 +253,10 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
         }
     }
 
-    public class SevenSegmentPanel extends JPanel {
-        public SevenSegmentDisplay[] display;
+    class SevenSegmentPanel extends JPanel {
+        final SevenSegmentDisplay[] display;
 
-        public SevenSegmentPanel() {
+        SevenSegmentPanel() {
             int i;
             FlowLayout fl = new FlowLayout();
             this.setLayout(fl);
@@ -272,12 +267,12 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
             }
         }
 
-        public void modifyDisplay(int num, char val) {
+        void modifyDisplay(int num, char val) {
             display[num].modifyDisplay(val);
             display[num].repaint();
         }
 
-        public void resetSevenSegment() {
+        void resetSevenSegment() {
             int i;
             for (i = 0; i < 2; i++)
                 modifyDisplay(i, (char) 0);
@@ -286,24 +281,21 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
 
     /* ...........................Seven segment display end here ..............................*/
 /* ....................Hexa Keyboard start here................................... */
-    public void updateHexaKeyboard(char row) {
+    private void updateHexaKeyboard(char row) {
         int key = KeyBoardValueButtonClick;
         if ((key != -1) && ((1 << (key / 4)) == (row & 0xF))) {
-            updateMMIOControlAndData(OUT_ADRESS_HEXA_KEYBOARD,
+            updateMMIOControlAndData(
                     (char) (1 << (key / 4)) | (1 << (4 + (key % 4))));
         } else {
-            updateMMIOControlAndData(OUT_ADRESS_HEXA_KEYBOARD, 0);
+            updateMMIOControlAndData(0);
         }
-        if ((row & 0xF0) != 0)
-            KeyboardInterruptOnOff = true;
-        else
-            KeyboardInterruptOnOff = false;
+        KeyboardInterruptOnOff = (row & 0xF0) != 0;
     }
 
-    public class HexaKeyboard extends JPanel {
-        public JButton[] button;
+    class HexaKeyboard extends JPanel {
+        final JButton[] button;
 
-        public HexaKeyboard() {
+        HexaKeyboard() {
             int i;
             GridLayout layout = new GridLayout(4, 4);
             this.setLayout(layout);
@@ -317,7 +309,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
             }
         }
 
-        public void resetHexaKeyboard() {
+        void resetHexaKeyboard() {
             int i;
             KeyBoardValueButtonClick = -1;
             for (i = 0; i < 16; i++) {
@@ -325,10 +317,10 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
             }
         }
 
-        public class EcouteurClick implements MouseListener {
-            private int buttonValue;
+        class EcouteurClick implements MouseListener {
+            private final int buttonValue;
 
-            public EcouteurClick(int val) {
+            EcouteurClick(int val) {
                 buttonValue = val;
             }
 
@@ -348,7 +340,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                 int i;
                 if (KeyBoardValueButtonClick != -1) {//Button already pressed -> now realease
                     KeyBoardValueButtonClick = -1;
-                    updateMMIOControlAndData(OUT_ADRESS_HEXA_KEYBOARD, 0);
+                    updateMMIOControlAndData(0);
                     for (i = 0; i < 16; i++)
                         button[i].setBackground(Color.WHITE);
                 } else { // new button pressed
@@ -364,7 +356,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
 
     /* ....................Hexa Keyboard end here................................... */
 /* ....................Timer start here................................... */
-    public void updateOneSecondCounter(char value) {
+    private void updateOneSecondCounter(char value) {
         if (value != 0) {
             CounterInterruptOnOff = true;
             CounterValue = CounterValueMax;
@@ -373,12 +365,12 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
         }
     }
 
-    public class OneSecondCounter {
-        public OneSecondCounter() {
+    class OneSecondCounter {
+        OneSecondCounter() {
             CounterInterruptOnOff = false;
         }
 
-        public void resetOneSecondCounter() {
+        void resetOneSecondCounter() {
             CounterInterruptOnOff = false;
             CounterValue = CounterValueMax;
         }

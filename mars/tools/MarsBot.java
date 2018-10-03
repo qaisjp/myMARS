@@ -2,10 +2,8 @@ package mars.tools;
 
 import mars.*;
 import mars.mips.hardware.*;
-import mars.venus.*;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 
@@ -27,48 +25,45 @@ public class MarsBot implements Observer, MarsTool {
     private double MarsBotXPosition = 0; // X pixel position of MarsBot
     private double MarsBotYPosition = 0; // Y pixel position of MarsBot
     private boolean MarsBotMoving = false; // true --> MarsBot is moving, false --> MarsBot not moving
+    private boolean running;
 
     // The begin and end points of a "track" segment are kept in neighboring pairs
     // of elements of the array. arrayOfTrack[i] is the start pt, arrayOfTrack[i+1] is
     // the end point of a path that should leave a track.
     private final int trackPts = 256;  // TBD Hardcoded. Array contains start-end points for segments in track.
-    private Point[] arrayOfTrack = new Point[trackPts];
+    private final Point[] arrayOfTrack = new Point[trackPts];
     private int trackIndex = 0;
 
     // private inner class
     private class BotRunnable implements Runnable {
-        JPanel panel;
+        final JPanel panel;
 
-        public BotRunnable() // constructor
+        BotRunnable() // constructor
         {
             final JFrame frame = new JFrame("Bot");
             panel = new JPanel(new BorderLayout());
-            graphicArea = new MarsBotDisplay(GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+            graphicArea = new MarsBotDisplay();
             JPanel buttonPanel = new JPanel();
             JButton clearButton = new JButton("Clear");
+            running = true;
+
             clearButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            graphicArea.clear();
-                            MarsBotLeaveTrack = false; // true --> leave track when moving, false --> do not ...
-                            MarsBotXPosition = 0; // X pixel position of MarsBot
-                            MarsBotYPosition = 0; // Y pixel position of MarsBot
-                            MarsBotMoving = false; // true --> MarsBot is moving, false --> MarsBot not moving
+                    e -> {
+                        graphicArea.clear();
+                        MarsBotLeaveTrack = false; // true --> leave track when moving, false --> do not ...
+                        MarsBotXPosition = 0; // X pixel position of MarsBot
+                        MarsBotYPosition = 0; // Y pixel position of MarsBot
+                        MarsBotMoving = false; // true --> MarsBot is moving, false --> MarsBot not moving
 
-                            trackIndex = 0;
-
-                        }
+                        trackIndex = 0;
 
                     });
             buttonPanel.add(clearButton);
             JButton closeButton = new JButton("Close");
             closeButton.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            frame.setVisible(false);
-
-                        }
-
+                    e -> {
+                        frame.setVisible(false);
+                        running = false;
                     });
             buttonPanel.add(closeButton);
             panel.add(graphicArea, BorderLayout.CENTER);
@@ -88,7 +83,7 @@ public class MarsBot implements Observer, MarsTool {
             double tempAngle;
             // infinite loop: move the bot according to the current directives
             // (which may be to NOT move)
-            do {
+            while(running) {
                 if (MarsBotMoving) {
                     //System.out.println("BotRunnable.run: bot IS moving.");
                     // TBD This is an arbitrary distance for bot movement. This could just
@@ -121,10 +116,9 @@ public class MarsBot implements Observer, MarsTool {
                     //      and that goes into the array.
                     arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
 
-                } else {
-                    // Action for if the MarsBot isn't moving
-                    // System.out.println("BotRunnable.run: bot is not moving.");
-                }
+                }  // Action for if the MarsBot isn't moving
+                // System.out.println("BotRunnable.run: bot is not moving.");
+
 
                 // TBD Pause whether the bot is or is not moving. This gives the MIPS program
                 // opportunity to consider results of movement, or to make the bot move.
@@ -139,7 +133,7 @@ public class MarsBot implements Observer, MarsTool {
                 }
 
                 panel.repaint(); // show new bot position
-            } while (true);
+            }
 
         } // end run method of BotRunnable class
 
@@ -147,14 +141,14 @@ public class MarsBot implements Observer, MarsTool {
 
     /* ------------------------------------------------------------------------- */
     private class MarsBotDisplay extends JPanel {
-        private int width;
-        private int height;
+        private final int width;
+        private final int height;
         private boolean clearTheDisplay = true;
 
 
-        public MarsBotDisplay(int tw, int th) {
-            width = tw;
-            height = th;
+        MarsBotDisplay() {
+            width = MarsBot.GRAPHIC_WIDTH;
+            height = MarsBot.GRAPHIC_HEIGHT;
 
         }
 
@@ -162,7 +156,7 @@ public class MarsBot implements Observer, MarsTool {
             repaint();
         }
 
-        public void clear() {
+        void clear() {
             // clear the graphic display
             clearTheDisplay = true;
             //System.out.println("MarsBotDisplay.clear: called to clear the display");
@@ -194,9 +188,7 @@ public class MarsBot implements Observer, MarsTool {
                 try {
                     g2.drawLine((int) arrayOfTrack[i - 1].getX(), (int) arrayOfTrack[i - 1].getY(),
                             (int) arrayOfTrack[i].getX(), (int) arrayOfTrack[i].getY());
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // No action   TBD sloppy
-                } catch (NullPointerException e) {
+                } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
                     // No action   TBD sloppy
                 }
             }
@@ -237,7 +229,7 @@ public class MarsBot implements Observer, MarsTool {
         try {
             Globals.memory.addObserver(this, 0xffff8000, 0xffff8060);
         } catch (AddressErrorException aee) {
-            System.out.println(aee);
+            aee.printStackTrace();
         }
     }
 
@@ -255,32 +247,30 @@ public class MarsBot implements Observer, MarsTool {
             if (address < 0 && notice.getAccessType() == AccessNotice.WRITE) {
                 String message = "";
                 if (address == ADDR_HEADING) {
-                    message = "MarsBot.update: got move heading value: ";
                     MarsBotHeading = notice.getValue();
                     //System.out.println(message + notice.getValue() );
                 } else if (address == ADDR_LEAVETRACK) {
-                    message = "MarsBot.update: got leave track directive value ";
 
                     // If we HAD NOT been leaving a track, but we should NOW leave
                     // a track, put start point into array.
-                    if (MarsBotLeaveTrack == false && notice.getValue() == 1) {
+                    if (!MarsBotLeaveTrack && notice.getValue() == 1) {
                         MarsBotLeaveTrack = true;
                         arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
                         trackIndex++;  // the index of the end point
                     }
                     // If we HAD NOT been leaving a track, and get another directive
                     // to NOT leave a track, do nothing (nothing to do).
-                    else if (MarsBotLeaveTrack == false && notice.getValue() == 0) {
+                    else if (!MarsBotLeaveTrack && notice.getValue() == 0) {
                         // NO ACTION
                     }
                     // If we HAD been leaving a track, and get another directive
                     // to LEAVE a track, do nothing (nothing to do).
-                    else if (MarsBotLeaveTrack == true && notice.getValue() == 1) {
+                    else if (MarsBotLeaveTrack && notice.getValue() == 1) {
                         // NO ACTION
                     }
                     // If we HAD been leaving a track, and get another directive
                     // to NOT leave a track, put end point into array.
-                    else if (MarsBotLeaveTrack == true && notice.getValue() == 0) {
+                    else if (MarsBotLeaveTrack && notice.getValue() == 0) {
                         MarsBotLeaveTrack = false;
                         arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
                         trackIndex++;  // the index of the next start point
@@ -290,20 +280,15 @@ public class MarsBot implements Observer, MarsTool {
 
                     //System.out.println(message + notice.getValue() );
                 } else if (address == ADDR_MOVE) {
-                    message = "MarsBot.update: got move control value: ";
-                    if (notice.getValue() == 0) MarsBotMoving = false;
-                    else MarsBotMoving = true;
+                    MarsBotMoving = notice.getValue() != 0;
                     //System.out.println(message + notice.getValue() );
-                } else if (address == ADDR_WHEREAREWEX ||
-                        address == ADDR_WHEREAREWEY) {
-                    // Ignore these memory writes, because the writes originated within
-                    // this tool. This tool is being notified of the writes in the usual
-                    // manner, but the writes are already known to this tool.
-                    // NO ACTION
-                } else {
-                    //message = "MarsBot.update: HEY!!! unknown address of " + Integer.toString(address) + ", value: ";
-                    //System.out.println(message + notice.getValue() );
-                }
+                }  // Ignore these memory writes, because the writes originated within
+                // this tool. This tool is being notified of the writes in the usual
+                // manner, but the writes are already known to this tool.
+                // NO ACTION
+                //message = "MarsBot.update: HEY!!! unknown address of " + Integer.toString(address) + ", value: ";
+                //System.out.println(message + notice.getValue() );
+
 
             }
         }

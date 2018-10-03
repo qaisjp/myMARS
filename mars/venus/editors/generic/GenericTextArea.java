@@ -8,7 +8,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
-import java.util.*;
 
 /*
 Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
@@ -41,11 +40,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
 
 
-    private EditPane editPane;
-    private UndoManager undoManager;
-    private UndoableEditListener undoableEditListener;
-    private JTextArea sourceCode;
-    private JScrollPane editAreaScrollPane;
+    private final EditPane editPane;
+    private final UndoManager undoManager;
+    private final UndoableEditListener undoableEditListener;
+    private final JTextArea sourceCode;
+    private final JScrollPane editAreaScrollPane;
 
     private boolean isCompoundEdit = false;
     private CompoundEdit compoundEdit;
@@ -70,24 +69,18 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
         this.undoManager = new UndoManager();
 
         this.getCaret().addChangeListener(
-                new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        editPane.displayCaretPosition(getCaretPosition());
-                    }
-                });
+                e -> editPane.displayCaretPosition(getCaretPosition()));
 
         // Needed to support unlimited undo/redo capability
         undoableEditListener =
-                new UndoableEditListener() {
-                    public void undoableEditHappened(UndoableEditEvent e) {
-                        //Remember the edit and update the menus.
-                        if (isCompoundEdit) {
-                            compoundEdit.addEdit(e.getEdit());
-                        } else {
-                            undoManager.addEdit(e.getEdit());
-                            editPane.updateUndoState();
-                            editPane.updateRedoState();
-                        }
+                e -> {
+                    //Remember the edit and update the menus.
+                    if (isCompoundEdit) {
+                        compoundEdit.addEdit(e.getEdit());
+                    } else {
+                        undoManager.addEdit(e.getEdit());
+                        editPane.updateUndoState();
+                        editPane.updateRedoState();
                     }
                 };
         this.getDocument().addUndoableEditListener(undoableEditListener);
@@ -236,7 +229,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
      */
     public int doFindText(String find, boolean caseSensitive) {
         int findPosn = sourceCode.getCaretPosition();
-        int nextPosn = 0;
+        int nextPosn;
         nextPosn = nextIndex(sourceCode.getText(), find, findPosn, caseSensitive);
         if (nextPosn >= 0) {
             sourceCode.requestFocus(); // guarantees visibility of the blue highlight 
@@ -259,7 +252,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
      * @param caseSensitive true for case sensitive. false to ignore case
      * @return next indexed position of found text or -1 if not found
      */
-    public int nextIndex(String input, String find, int start, boolean caseSensitive) {
+    private int nextIndex(String input, String find, int start, boolean caseSensitive) {
         int textPosn = -1;
         if (input != null && find != null && start < input.length()) {
             if (caseSensitive) { // indexOf() returns -1 if not found
@@ -298,7 +291,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
      * successful and there is at least one additional match.
      */
     public int doReplace(String find, String replace, boolean caseSensitive) {
-        int nextPosn = 0;
+        int nextPosn;
         int posn;
         // Will perform a "find" and return, unless positioned at the end of
         // a selected "find" result.

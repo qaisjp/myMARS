@@ -1,11 +1,8 @@
 package mars.simulator;
 
 import mars.*;
-import mars.venus.*;
 import mars.mips.hardware.*;
 import mars.mips.instructions.*;
-
-import java.util.*;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -62,7 +59,7 @@ public class BackStepper {
     private static final int NOT_PC_VALUE = -1;
 
     private boolean engaged;
-    private BackstepStack backSteps;
+    private final BackstepStack backSteps;
 
     // One can argue using java.util.Stack, given its clumsy implementation.
     // A homegrown linked implementation will be more streamlined, but
@@ -78,7 +75,7 @@ public class BackStepper {
      */
     public BackStepper() {
         engaged = true;
-        backSteps = new BackstepStack(Globals.maximumBacksteps);
+        backSteps = new BackstepStack();
     }
 
     /**
@@ -104,8 +101,8 @@ public class BackStepper {
      *
      * @return true if there are no steps to be undone, false otherwise.
      */
-    public boolean empty() {
-        return backSteps.empty();
+    public boolean notEmpty() {
+        return !backSteps.empty();
     }
 
     /**
@@ -117,7 +114,7 @@ public class BackStepper {
      */
     // Added 25 June 2007
     public boolean inDelaySlot() {
-        return !empty() && backSteps.peek().inDelaySlot;
+        return notEmpty() && backSteps.peek().inDelaySlot;
     }
 
     /**
@@ -133,10 +130,10 @@ public class BackStepper {
     // Use a do-while loop based on the backstep's program statement reference.
     public void backStep() {
         if (engaged && !backSteps.empty()) {
-            ProgramStatement statement = ((BackStep) backSteps.peek()).ps;
+            ProgramStatement statement = backSteps.peek().ps;
             engaged = false; // GOTTA DO THIS SO METHOD CALL IN SWITCH WILL NOT RESULT IN NEW ACTION ON STACK!
             do {
-                BackStep step = (BackStep) backSteps.pop();
+                BackStep step = backSteps.pop();
             /*
                 System.out.println("backstep POP: action "+step.action+" pc "+mars.util.Binary.intToHexString(step.pc)+
             	                   " source "+((step.ps==null)? "none":step.ps.getSource())+
@@ -185,7 +182,7 @@ public class BackStepper {
                     System.out.println("Internal MARS error: address exception while back-stepping.");
                     System.exit(0);
                 }
-            } while (!backSteps.empty() && statement == ((BackStep) backSteps.peek()).ps);
+            } while (!backSteps.empty() && statement == backSteps.peek().ps);
             engaged = true;  // RESET IT (was disabled at top of loop -- see comment)
         }
     }
@@ -208,9 +205,8 @@ public class BackStepper {
      * @param value   The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addMemoryRestoreRawWord(int address, int value) {
+    public void addMemoryRestoreRawWord(int address, int value) {
         backSteps.push(MEMORY_RESTORE_RAW_WORD, pc(), address, value);
-        return value;
     }
 
     /**
@@ -221,9 +217,8 @@ public class BackStepper {
      * @param value   The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addMemoryRestoreWord(int address, int value) {
+    public void addMemoryRestoreWord(int address, int value) {
         backSteps.push(MEMORY_RESTORE_WORD, pc(), address, value);
-        return value;
     }
 
     /**
@@ -234,9 +229,8 @@ public class BackStepper {
      * @param value   The "restore" value to be stored there, in low order half.
      * @return the argument value
      */
-    public int addMemoryRestoreHalf(int address, int value) {
+    public void addMemoryRestoreHalf(int address, int value) {
         backSteps.push(MEMORY_RESTORE_HALF, pc(), address, value);
-        return value;
     }
 
     /**
@@ -247,9 +241,8 @@ public class BackStepper {
      * @param value   The "restore" value to be stored there, in low order byte.
      * @return the argument value
      */
-    public int addMemoryRestoreByte(int address, int value) {
+    public void addMemoryRestoreByte(int address, int value) {
         backSteps.push(MEMORY_RESTORE_BYTE, pc(), address, value);
-        return value;
     }
 
     /**
@@ -272,13 +265,12 @@ public class BackStepper {
      * @param value The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addPCRestore(int value) {
+    public void addPCRestore(int value) {
         // adjust for value reflecting incremented PC.
         value -= Instruction.INSTRUCTION_LENGTH;
         // Use "value" insead of "pc()" for second arg because RegisterFile.getProgramCounter()
         // returns branch target address at this point.
         backSteps.push(PC_RESTORE, value, value);
-        return value;
     }
 
     /**
@@ -314,9 +306,8 @@ public class BackStepper {
      * @param flag The condition flag number.
      * @return the argument value
      */
-    public int addConditionFlagSet(int flag) {
+    public void addConditionFlagSet(int flag) {
         backSteps.push(COPROC1_CONDITION_SET, pc(), flag);
-        return flag;
     }
 
     /**
@@ -326,9 +317,8 @@ public class BackStepper {
      * @param flag The condition flag number.
      * @return the argument value
      */
-    public int addConditionFlagClear(int flag) {
+    public void addConditionFlagClear(int flag) {
         backSteps.push(COPROC1_CONDITION_CLEAR, pc(), flag);
-        return flag;
     }
 
     /**
@@ -339,11 +329,10 @@ public class BackStepper {
      *
      * @return 0
      */
-    public int addDoNothing(int pc) {
+    public void addDoNothing(int pc) {
         if (backSteps.empty() || backSteps.peek().pc != pc) {
-            backSteps.push(DO_NOTHING, pc);
+            backSteps.push(pc);
         }
-        return 0;
     }
 
 
@@ -401,21 +390,21 @@ public class BackStepper {
     // and make life easier for the garbage collector.
 
     private class BackstepStack {
-        private int capacity;
+        private final int capacity;
         private int size;
         private int top;
-        private BackStep[] stack;
+        private final BackStep[] stack;
 
         // Stack is created upon successful assembly or reset.  The one-time overhead of
         // creating all the BackStep objects will not be noticed by the user, and enhances
         // runtime performance by not having to create or recycle them during MIPS
         // program execution.
-        private BackstepStack(int capacity) {
-            this.capacity = capacity;
+        private BackstepStack() {
+            this.capacity = Globals.maximumBacksteps;
             this.size = 0;
             this.top = -1;
-            this.stack = new BackStep[capacity];
-            for (int i = 0; i < capacity; i++) {
+            this.stack = new BackStep[Globals.maximumBacksteps];
+            for (int i = 0; i < Globals.maximumBacksteps; i++) {
                 this.stack[i] = new BackStep();
             }
         }
@@ -443,8 +432,8 @@ public class BackStepper {
             push(act, programCounter, parm1, 0);
         }
 
-        private synchronized void push(int act, int programCounter) {
-            push(act, programCounter, 0, 0);
+        private synchronized void push(int programCounter) {
+            push(BackStepper.DO_NOTHING, programCounter, 0, 0);
         }
 
         // NO PROTECTION.  This class is used only within this file so there is no excuse

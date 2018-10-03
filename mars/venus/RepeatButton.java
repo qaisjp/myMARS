@@ -1,10 +1,7 @@
 package mars.venus;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
 import javax.swing.*;
-import javax.swing.event.*;
 
 /////////////////////////////  CREDIT  /////////////////////////////////////
 // http://forums.sun.com/thread.jspa?threadID=499183&messageID=2505646
@@ -146,10 +143,9 @@ public class RepeatButton extends JButton
     /**
      * Set the delay for the timer of this button.
      *
-     * @param d the delay
      */
-    public void setDelay(int d) {
-        this.delay = d;
+    void setDelay() {
+        this.delay = 60;
     }
 
     /**
@@ -164,10 +160,9 @@ public class RepeatButton extends JButton
     /**
      * Sets the initial delay for the timer of this button.
      *
-     * @param d the initial delay
      */
-    public void setInitialDelay(int d) {
-        this.initialDelay = d;
+    void setInitialDelay() {
+        this.initialDelay = 500;
     }
 
     /**
@@ -177,7 +172,7 @@ public class RepeatButton extends JButton
      *
      * @return if true, the button should fire events when held
      */
-    public boolean isRepeatEnabled() {
+    private boolean isRepeatEnabled() {
         return this.repeatEnabled;
     }
 

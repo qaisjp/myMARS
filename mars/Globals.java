@@ -7,7 +7,6 @@ import mars.assembler.*;
 import mars.venus.*;
 import mars.util.*;
 
-import java.io.*;
 import java.util.*;
 
 /*
@@ -46,8 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class Globals {
     // List these first because they are referenced by methods called at initialization.
-    private static String configPropertiesFile = "Config";
-    private static String syscallPropertiesFile = "Syscall";
+    private static final String configPropertiesFile = "Config";
 
     /**
      * The set of implemented MIPS instructions.
@@ -68,7 +66,7 @@ public class Globals {
     /**
      * Lock variable used at head of synchronized block to guard MIPS memory and registers
      **/
-    public static Object memoryAndRegistersLock = new Object();
+    public static final Object memoryAndRegistersLock = new Object();
     /**
      * Flag to determine whether or not to produce internal debugging information.
      **/
@@ -76,11 +74,11 @@ public class Globals {
     /**
      * Object that contains various settings that can be accessed modified internally.
      **/
-    static Settings settings;
+    private static Settings settings;
     /**
      * String to GUI's RunI/O text area when echoing user input from pop-up dialog.
      */
-    public static String userInputAlert = "**** user input : ";
+    public static final String userInputAlert = "**** user input : ";
     /**
      * Path to folder that contains images
      */
@@ -93,7 +91,7 @@ public class Globals {
     /* Flag that indicates whether or not instructionSet has been initialized. */
     private static boolean initialized = false;
     /* The GUI being used (if any) with this simulator. */
-    static VenusUI gui = null;
+    private static VenusUI gui = null;
     /**
      * The current MARS version number. Can't wait for "initialize()" call to get it.
      */
@@ -176,21 +174,21 @@ public class Globals {
 
     // Read byte limit of Run I/O or MARS Messages text to buffer.
     private static int getMessageLimit() {
-        return getIntegerProperty(configPropertiesFile, "MessageLimit", 1000000);
+        return getIntegerProperty("MessageLimit", 1000000);
     }
 
     // Read limit on number of error messages produced by one assemble operation.
     private static int getErrorLimit() {
-        return getIntegerProperty(configPropertiesFile, "ErrorLimit", 200);
+        return getIntegerProperty("ErrorLimit", 200);
     }
 
     // Read backstep limit (number of operations to buffer) from properties file.
     private static int getBackstepLimit() {
-        return getIntegerProperty(configPropertiesFile, "BackstepLimit", 1000);
+        return getIntegerProperty("BackstepLimit", 1000);
     }
 
     // Read ASCII default display character for non-printing characters, from properties file.
-    public static String getAsciiNonPrint() {
+    private static String getAsciiNonPrint() {
         String anp = getPropertyEntry(configPropertiesFile, "AsciiNonPrint");
         return (anp == null) ? "." : ((anp.equals("space")) ? " " : anp);
     }
@@ -198,7 +196,7 @@ public class Globals {
     // Read ASCII strings for codes 0-255, from properties file. If string
     // value is "null", substitute value of ASCII_NON_PRINT.  If string is
     // "space", substitute string containing one space character.
-    public static String[] getAsciiStrings() {
+    private static String[] getAsciiStrings() {
         String let = getPropertyEntry(configPropertiesFile, "AsciiTable");
         String placeHolder = getAsciiNonPrint();
         String[] lets = let.split(" +");
@@ -218,12 +216,12 @@ public class Globals {
 
     // Read and return integer property value for given file and property name.
     // Default value is returned if property file or name not found.
-    private static int getIntegerProperty(String propertiesFile, String propertyName, int defaultValue) {
+    private static int getIntegerProperty(String propertyName, int defaultValue) {
         int limit = defaultValue;  // just in case no entry is found
-        Properties properties = PropertiesFile.loadPropertiesFromFile(propertiesFile);
+        Properties properties = PropertiesFile.loadPropertiesFromFile(Globals.configPropertiesFile);
         try {
             limit = Integer.parseInt(properties.getProperty(propertyName, Integer.toString(defaultValue)));
-        } catch (NumberFormatException nfe) {
+        } catch (NumberFormatException ignored) {
         } // do nothing, I already have a default
         return limit;
     }
@@ -283,6 +281,7 @@ public class Globals {
      */
     public ArrayList getSyscallOverrides() {
         ArrayList overrides = new ArrayList();
+        String syscallPropertiesFile = "Syscall";
         Properties properties = PropertiesFile.loadPropertiesFromFile(syscallPropertiesFile);
         Enumeration keys = properties.keys();
         while (keys.hasMoreElements()) {

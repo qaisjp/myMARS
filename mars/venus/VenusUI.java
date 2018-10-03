@@ -1,13 +1,10 @@
 package mars.venus;
 
 import mars.*;
-import mars.mips.dump.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.event.*;
-import java.io.*;
 import java.net.*;
 
 /*
@@ -50,16 +47,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		*/
 
 public class VenusUI extends JFrame {
-    VenusUI mainUI;
-    public JMenuBar menu;
-    JToolBar toolbar;
-    MainPane mainPane;
-    RegistersPane registersPane;
-    RegistersWindow registersTab;
-    Coprocessor1Window coprocessor1Tab;
-    Coprocessor0Window coprocessor0Tab;
-    MessagesPane messagesPane;
-    JSplitPane splitter, horizonSplitter;
+    private final VenusUI mainUI;
+    private final JMenuBar menu;
+    private final MainPane mainPane;
+    private final RegistersPane registersPane;
+    final MessagesPane messagesPane;
     JPanel north;
 
     private int frameState; // see windowActivated() and windowDeactivated()
@@ -68,24 +60,13 @@ public class VenusUI extends JFrame {
     // PLEASE PUT THESE TWO (& THEIR METHODS) SOMEWHERE THEY BELONG, NOT HERE
     private static boolean reset = true; // registers/memory reset for execution
     private static boolean started = false;  // started execution
-    Editor editor;
+    final Editor editor;
 
-    // components of the menubar
-    private JMenu file, run, window, help, edit, settings;
-    private JMenuItem fileNew, fileOpen, fileClose, fileCloseAll, fileSave, fileSaveAs, fileSaveAll, fileDumpMemory, filePrint, fileExit;
-    private JMenuItem editUndo, editRedo, editCut, editCopy, editPaste, editFindReplace, editSelectAll;
-    private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
-    private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
-            settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsWarningsAreErrors, settingsStartAtMain,
-            settingsDelayedBranching, settingsProgramArguments, settingsSelfModifyingCode;
-    private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
-    private JMenuItem helpHelp, helpAbout;
+    private JMenu window;
+    private JCheckBoxMenuItem settingsValueDisplayBase;
+    private JCheckBoxMenuItem settingsAddressDisplayBase;
 
-    // components of the toolbar
-    private JButton Undo, Redo, Cut, Copy, Paste, FindReplace, SelectAll;
-    private JButton New, Open, Save, SaveAs, SaveAll, DumpMemory, Print;
-    private JButton Run, Assemble, Reset, Step, Backstep, Stop, Pause;
-    private JButton Help;
+    private JButton SaveAll;
 
     // The "action" objects, which include action listeners.  One of each will be created then
     // shared between a menu item and its corresponding toolbar button.  This is a very cool
@@ -160,10 +141,10 @@ public class VenusUI extends JFrame {
         // roughly in bottom-up order; some are created in component constructors and thus are
         // not visible here.
 
-        registersTab = new RegistersWindow();
-        coprocessor1Tab = new Coprocessor1Window();
-        coprocessor0Tab = new Coprocessor0Window();
-        registersPane = new RegistersPane(mainUI, registersTab, coprocessor1Tab, coprocessor0Tab);
+        RegistersWindow registersTab = new RegistersWindow();
+        Coprocessor1Window coprocessor1Tab = new Coprocessor1Window();
+        Coprocessor0Window coprocessor0Tab = new Coprocessor0Window();
+        registersPane = new RegistersPane(registersTab, coprocessor1Tab, coprocessor0Tab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
         //Insets defaultTabInsets = (Insets)UIManager.get("TabbedPane.tabInsets");
@@ -174,10 +155,10 @@ public class VenusUI extends JFrame {
         mainPane.setPreferredSize(mainPanePreferredSize);
         messagesPane = new MessagesPane();
         messagesPane.setPreferredSize(messagesPanePreferredSize);
-        splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPane, messagesPane);
+        JSplitPane splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPane, messagesPane);
         splitter.setOneTouchExpandable(true);
         splitter.resetToPreferredSizes();
-        horizonSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitter, registersPane);
+        JSplitPane horizonSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitter, registersPane);
         horizonSplitter.setOneTouchExpandable(true);
         horizonSplitter.resetToPreferredSizes();
 
@@ -186,7 +167,7 @@ public class VenusUI extends JFrame {
         menu = this.setUpMenuBar();
         this.setJMenuBar(menu);
 
-        toolbar = this.setUpToolBar();
+        JToolBar toolbar = this.setUpToolBar();
 
         JPanel jp = new JPanel(new FlowLayout(FlowLayout.LEFT));
         jp.add(toolbar);
@@ -243,125 +224,126 @@ public class VenusUI extends JFrame {
         try {
             fileNewAction = new FileNewAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
-                    "Create a new file for editing", new Integer(KeyEvent.VK_N),
+                    "Create a new file for editing", KeyEvent.VK_N,
                     KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileOpenAction = new FileOpenAction("Open ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open22.png"))),
-                    "Open a file for editing", new Integer(KeyEvent.VK_O),
+                    "Open a file for editing", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileCloseAction = new FileCloseAction("Close", null,
-                    "Close the current file", new Integer(KeyEvent.VK_C),
+                    "Close the current file", KeyEvent.VK_C,
                     KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileCloseAllAction = new FileCloseAllAction("Close All", null,
-                    "Close all open files", new Integer(KeyEvent.VK_L),
+                    "Close all open files", KeyEvent.VK_L,
                     null, mainUI);
             fileSaveAction = new FileSaveAction("Save",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save22.png"))),
-                    "Save the current file", new Integer(KeyEvent.VK_S),
+                    "Save the current file", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileSaveAsAction = new FileSaveAsAction("Save as ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs22.png"))),
-                    "Save current file with different name", new Integer(KeyEvent.VK_A),
+                    "Save current file with different name", KeyEvent.VK_A,
                     null, mainUI);
             fileSaveAllAction = new FileSaveAllAction("Save All", null,
-                    "Save all open files", new Integer(KeyEvent.VK_V),
+                    "Save all open files", KeyEvent.VK_V,
                     null, mainUI);
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump22.png"))),
-                    "Dump machine code or data in an available format", new Integer(KeyEvent.VK_D),
+                    "Dump machine code or data in an available format", KeyEvent.VK_D,
                     KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             filePrintAction = new FilePrintAction("Print ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print22.gif"))),
-                    "Print current file", new Integer(KeyEvent.VK_P),
+                    "Print current file", KeyEvent.VK_P,
                     null, mainUI);
             fileExitAction = new FileExitAction("Exit", null,
-                    "Exit Mars", new Integer(KeyEvent.VK_X),
-                    null, mainUI);
+                    "Exit Mars", KeyEvent.VK_Q,
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Q,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    mainUI);
             editUndoAction = new EditUndoAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
-                    "Undo last edit", new Integer(KeyEvent.VK_U),
+                    "Undo last edit", KeyEvent.VK_U,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editRedoAction = new EditRedoAction("Redo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo22.png"))),
-                    "Redo last edit", new Integer(KeyEvent.VK_R),
+                    "Redo last edit", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editCutAction = new EditCutAction("Cut",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut22.gif"))),
-                    "Cut", new Integer(KeyEvent.VK_C),
+                    "Cut", KeyEvent.VK_C,
                     KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editCopyAction = new EditCopyAction("Copy",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy22.png"))),
-                    "Copy", new Integer(KeyEvent.VK_O),
+                    "Copy", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editPasteAction = new EditPasteAction("Paste",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste22.png"))),
-                    "Paste", new Integer(KeyEvent.VK_P),
+                    "Paste", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editFindReplaceAction = new EditFindReplaceAction("Find/Replace",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Find22.png"))),
-                    "Find/Replace", new Integer(KeyEvent.VK_F),
+                    "Find/Replace", KeyEvent.VK_F,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editSelectAllAction = new EditSelectAllAction("Select All",
                     null, //new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath+"Find22.png"))),
-                    "Select All", new Integer(KeyEvent.VK_A),
+                    "Select All", KeyEvent.VK_A,
                     KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             runAssembleAction = new RunAssembleAction("Assemble",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Assemble22.png"))),
-                    "Assemble the current file and clear breakpoints", new Integer(KeyEvent.VK_A),
+                    "Assemble the current file and clear breakpoints", KeyEvent.VK_A,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0),
                     mainUI);
             runGoAction = new RunGoAction("Go",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Play22.png"))),
-                    "Run the current program", new Integer(KeyEvent.VK_G),
+                    "Run the current program", KeyEvent.VK_G,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
                     mainUI);
             runStepAction = new RunStepAction("Step",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepForward22.png"))),
-                    "Run one step at a time", new Integer(KeyEvent.VK_T),
+                    "Run one step at a time", KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0),
                     mainUI);
             runBackstepAction = new RunBackstepAction("Backstep",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepBack22.png"))),
-                    "Undo the last step", new Integer(KeyEvent.VK_B),
+                    "Undo the last step", KeyEvent.VK_B,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0),
                     mainUI);
             runPauseAction = new RunPauseAction("Pause",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Pause22.png"))),
-                    "Pause the currently running program", new Integer(KeyEvent.VK_P),
+                    "Pause the currently running program", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0),
                     mainUI);
             runStopAction = new RunStopAction("Stop",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Stop22.png"))),
-                    "Stop the currently running program", new Integer(KeyEvent.VK_S),
+                    "Stop the currently running program", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0),
                     mainUI);
             runResetAction = new RunResetAction("Reset",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Reset22.png"))),
-                    "Reset MIPS memory and registers", new Integer(KeyEvent.VK_R),
+                    "Reset MIPS memory and registers", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0),
                     mainUI);
             runClearBreakpointsAction = new RunClearBreakpointsAction("Clear all breakpoints",
                     null,
                     "Clears all execution breakpoints set since the last assemble.",
-                    new Integer(KeyEvent.VK_K),
+                    KeyEvent.VK_K,
                     KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             runToggleBreakpointsAction = new RunToggleBreakpointsAction("Toggle all breakpoints",
                     null,
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
-                    new Integer(KeyEvent.VK_T),
+                    KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             settingsLabelAction = new SettingsLabelAction("Show Labels Window (symbol table)",
@@ -447,7 +429,7 @@ public class VenusUI extends JFrame {
                     mainUI);
             helpHelpAction = new HelpHelpAction("Help",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Help22.png"))),
-                    "Help", new Integer(KeyEvent.VK_H),
+                    "Help", KeyEvent.VK_H,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),
                     mainUI);
             helpAboutAction = new HelpAboutAction("About ...", null,
@@ -469,39 +451,40 @@ public class VenusUI extends JFrame {
         Toolkit tk = Toolkit.getDefaultToolkit();
         Class cs = this.getClass();
         JMenuBar menuBar = new JMenuBar();
-        file = new JMenu("File");
+        // components of the menubar
+        JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
-        edit = new JMenu("Edit");
+        JMenu edit = new JMenu("Edit");
         edit.setMnemonic(KeyEvent.VK_E);
-        run = new JMenu("Run");
+        JMenu run = new JMenu("Run");
         run.setMnemonic(KeyEvent.VK_R);
         //window = new JMenu("Window");
         //window.setMnemonic(KeyEvent.VK_W);
-        settings = new JMenu("Settings");
+        JMenu settings = new JMenu("Settings");
         settings.setMnemonic(KeyEvent.VK_S);
-        help = new JMenu("Help");
+        JMenu help = new JMenu("Help");
         help.setMnemonic(KeyEvent.VK_H);
         // slight bug: user typing alt-H activates help menu item directly, not help menu
 
-        fileNew = new JMenuItem(fileNewAction);
+        JMenuItem fileNew = new JMenuItem(fileNewAction);
         fileNew.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New16.png"))));
-        fileOpen = new JMenuItem(fileOpenAction);
+        JMenuItem fileOpen = new JMenuItem(fileOpenAction);
         fileOpen.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open16.png"))));
-        fileClose = new JMenuItem(fileCloseAction);
+        JMenuItem fileClose = new JMenuItem(fileCloseAction);
         fileClose.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
-        fileCloseAll = new JMenuItem(fileCloseAllAction);
+        JMenuItem fileCloseAll = new JMenuItem(fileCloseAllAction);
         fileCloseAll.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
-        fileSave = new JMenuItem(fileSaveAction);
+        JMenuItem fileSave = new JMenuItem(fileSaveAction);
         fileSave.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save16.png"))));
-        fileSaveAs = new JMenuItem(fileSaveAsAction);
+        JMenuItem fileSaveAs = new JMenuItem(fileSaveAsAction);
         fileSaveAs.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs16.png"))));
-        fileSaveAll = new JMenuItem(fileSaveAllAction);
+        JMenuItem fileSaveAll = new JMenuItem(fileSaveAllAction);
         fileSaveAll.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
-        fileDumpMemory = new JMenuItem(fileDumpMemoryAction);
+        JMenuItem fileDumpMemory = new JMenuItem(fileDumpMemoryAction);
         fileDumpMemory.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump16.png"))));
-        filePrint = new JMenuItem(filePrintAction);
+        JMenuItem filePrint = new JMenuItem(filePrintAction);
         filePrint.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print16.gif"))));
-        fileExit = new JMenuItem(fileExitAction);
+        JMenuItem fileExit = new JMenuItem(fileExitAction);
         fileExit.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
         file.add(fileNew);
         file.add(fileOpen);
@@ -519,19 +502,19 @@ public class VenusUI extends JFrame {
         file.addSeparator();
         file.add(fileExit);
 
-        editUndo = new JMenuItem(editUndoAction);
+        JMenuItem editUndo = new JMenuItem(editUndoAction);
         editUndo.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo16.png"))));//"Undo16.gif"))));
-        editRedo = new JMenuItem(editRedoAction);
+        JMenuItem editRedo = new JMenuItem(editRedoAction);
         editRedo.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo16.png"))));//"Redo16.gif"))));
-        editCut = new JMenuItem(editCutAction);
+        JMenuItem editCut = new JMenuItem(editCutAction);
         editCut.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut16.gif"))));
-        editCopy = new JMenuItem(editCopyAction);
+        JMenuItem editCopy = new JMenuItem(editCopyAction);
         editCopy.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy16.png"))));//"Copy16.gif"))));
-        editPaste = new JMenuItem(editPasteAction);
+        JMenuItem editPaste = new JMenuItem(editPasteAction);
         editPaste.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste16.png"))));//"Paste16.gif"))));
-        editFindReplace = new JMenuItem(editFindReplaceAction);
+        JMenuItem editFindReplace = new JMenuItem(editFindReplaceAction);
         editFindReplace.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Find16.png"))));//"Paste16.gif"))));
-        editSelectAll = new JMenuItem(editSelectAllAction);
+        JMenuItem editSelectAll = new JMenuItem(editSelectAllAction);
         editSelectAll.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
         edit.add(editUndo);
         edit.add(editRedo);
@@ -543,23 +526,23 @@ public class VenusUI extends JFrame {
         edit.add(editFindReplace);
         edit.add(editSelectAll);
 
-        runAssemble = new JMenuItem(runAssembleAction);
+        JMenuItem runAssemble = new JMenuItem(runAssembleAction);
         runAssemble.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Assemble16.png"))));//"MyAssemble16.gif"))));
-        runGo = new JMenuItem(runGoAction);
+        JMenuItem runGo = new JMenuItem(runGoAction);
         runGo.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Play16.png"))));//"Play16.gif"))));
-        runStep = new JMenuItem(runStepAction);
+        JMenuItem runStep = new JMenuItem(runStepAction);
         runStep.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepForward16.png"))));//"MyStepForward16.gif"))));
-        runBackstep = new JMenuItem(runBackstepAction);
+        JMenuItem runBackstep = new JMenuItem(runBackstepAction);
         runBackstep.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepBack16.png"))));//"MyStepBack16.gif"))));
-        runReset = new JMenuItem(runResetAction);
+        JMenuItem runReset = new JMenuItem(runResetAction);
         runReset.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Reset16.png"))));//"MyReset16.gif"))));
-        runStop = new JMenuItem(runStopAction);
+        JMenuItem runStop = new JMenuItem(runStopAction);
         runStop.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Stop16.png"))));//"Stop16.gif"))));
-        runPause = new JMenuItem(runPauseAction);
+        JMenuItem runPause = new JMenuItem(runPauseAction);
         runPause.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Pause16.png"))));//"Pause16.gif"))));
-        runClearBreakpoints = new JMenuItem(runClearBreakpointsAction);
+        JMenuItem runClearBreakpoints = new JMenuItem(runClearBreakpointsAction);
         runClearBreakpoints.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
-        runToggleBreakpoints = new JMenuItem(runToggleBreakpointsAction);
+        JMenuItem runToggleBreakpoints = new JMenuItem(runToggleBreakpointsAction);
         runToggleBreakpoints.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
 
         run.add(runAssemble);
@@ -573,9 +556,9 @@ public class VenusUI extends JFrame {
         run.add(runClearBreakpoints);
         run.add(runToggleBreakpoints);
 
-        settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
+        JCheckBoxMenuItem settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
         settingsLabel.setSelected(Globals.getSettings().getLabelWindowVisibility());
-        settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
+        JCheckBoxMenuItem settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
         settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT));
         settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
         settingsValueDisplayBase.setSelected(Globals.getSettings().getDisplayValuesInHex());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
@@ -585,26 +568,26 @@ public class VenusUI extends JFrame {
         settingsAddressDisplayBase.setSelected(Globals.getSettings().getDisplayAddressesInHex());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getAddressDisplayBaseChooser().setSettingsMenuItem(settingsAddressDisplayBase);
-        settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
+        JCheckBoxMenuItem settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
         settingsExtended.setSelected(Globals.getSettings().getExtendedAssemblerEnabled());
-        settingsDelayedBranching = new JCheckBoxMenuItem(settingsDelayedBranchingAction);
+        JCheckBoxMenuItem settingsDelayedBranching = new JCheckBoxMenuItem(settingsDelayedBranchingAction);
         settingsDelayedBranching.setSelected(Globals.getSettings().getDelayedBranchingEnabled());
-        settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
+        JCheckBoxMenuItem settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
-        settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
+        JCheckBoxMenuItem settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getAssembleOnOpenEnabled());
-        settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
+        JCheckBoxMenuItem settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
         settingsAssembleAll.setSelected(Globals.getSettings().getAssembleAllEnabled());
-        settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
+        JCheckBoxMenuItem settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
         settingsWarningsAreErrors.setSelected(Globals.getSettings().getWarningsAreErrors());
-        settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
+        JCheckBoxMenuItem settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
         settingsStartAtMain.setSelected(Globals.getSettings().getStartAtMain());
-        settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
+        JCheckBoxMenuItem settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
         settingsProgramArguments.setSelected(Globals.getSettings().getProgramArguments());
-        settingsEditor = new JMenuItem(settingsEditorAction);
-        settingsHighlighting = new JMenuItem(settingsHighlightingAction);
-        settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);
-        settingsMemoryConfiguration = new JMenuItem(settingsMemoryConfigurationAction);
+        JMenuItem settingsEditor = new JMenuItem(settingsEditorAction);
+        JMenuItem settingsHighlighting = new JMenuItem(settingsHighlightingAction);
+        JMenuItem settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);
+        JMenuItem settingsMemoryConfiguration = new JMenuItem(settingsMemoryConfigurationAction);
 
         settings.add(settingsLabel);
         settings.add(settingsProgramArguments);
@@ -626,9 +609,9 @@ public class VenusUI extends JFrame {
         settings.add(settingsExceptionHandler);
         settings.add(settingsMemoryConfiguration);
 
-        helpHelp = new JMenuItem(helpHelpAction);
+        JMenuItem helpHelp = new JMenuItem(helpHelpAction);
         helpHelp.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Help16.png"))));//"Help16.gif"))));
-        helpAbout = new JMenuItem(helpAboutAction);
+        JMenuItem helpAbout = new JMenuItem(helpAboutAction);
         helpAbout.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
         help.add(helpHelp);
         help.addSeparator();
@@ -653,79 +636,80 @@ public class VenusUI extends JFrame {
      * shared between toolbar icon and corresponding menu item).
      */
 
-    JToolBar setUpToolBar() {
+    private JToolBar setUpToolBar() {
         JToolBar toolBar = new JToolBar();
 
-        New = new JButton(fileNewAction);
-        New.setText("");
-        Open = new JButton(fileOpenAction);
-        Open.setText("");
-        Save = new JButton(fileSaveAction);
-        Save.setText("");
-        SaveAs = new JButton(fileSaveAsAction);
-        SaveAs.setText("");
-        DumpMemory = new JButton(fileDumpMemoryAction);
-        DumpMemory.setText("");
-        Print = new JButton(filePrintAction);
-        Print.setText("");
+        JButton aNew = new JButton(fileNewAction);
+        aNew.setText("");
+        JButton open = new JButton(fileOpenAction);
+        open.setText("");
+        JButton save = new JButton(fileSaveAction);
+        save.setText("");
+        JButton saveAs = new JButton(fileSaveAsAction);
+        saveAs.setText("");
+        JButton dumpMemory = new JButton(fileDumpMemoryAction);
+        dumpMemory.setText("");
+        JButton print = new JButton(filePrintAction);
+        print.setText("");
 
-        Undo = new JButton(editUndoAction);
-        Undo.setText("");
-        Redo = new JButton(editRedoAction);
-        Redo.setText("");
-        Cut = new JButton(editCutAction);
-        Cut.setText("");
-        Copy = new JButton(editCopyAction);
-        Copy.setText("");
-        Paste = new JButton(editPasteAction);
-        Paste.setText("");
-        FindReplace = new JButton(editFindReplaceAction);
-        FindReplace.setText("");
-        SelectAll = new JButton(editSelectAllAction);
-        SelectAll.setText("");
+        // components of the toolbar
+        JButton undo = new JButton(editUndoAction);
+        undo.setText("");
+        JButton redo = new JButton(editRedoAction);
+        redo.setText("");
+        JButton cut = new JButton(editCutAction);
+        cut.setText("");
+        JButton copy = new JButton(editCopyAction);
+        copy.setText("");
+        JButton paste = new JButton(editPasteAction);
+        paste.setText("");
+        JButton findReplace = new JButton(editFindReplaceAction);
+        findReplace.setText("");
+        JButton selectAll = new JButton(editSelectAllAction);
+        selectAll.setText("");
 
-        Run = new JButton(runGoAction);
-        Run.setText("");
-        Assemble = new JButton(runAssembleAction);
-        Assemble.setText("");
-        Step = new JButton(runStepAction);
-        Step.setText("");
-        Backstep = new JButton(runBackstepAction);
-        Backstep.setText("");
-        Reset = new JButton(runResetAction);
-        Reset.setText("");
-        Stop = new JButton(runStopAction);
-        Stop.setText("");
-        Pause = new JButton(runPauseAction);
-        Pause.setText("");
-        Help = new JButton(helpHelpAction);
-        Help.setText("");
+        JButton run1 = new JButton(runGoAction);
+        run1.setText("");
+        JButton assemble = new JButton(runAssembleAction);
+        assemble.setText("");
+        JButton step = new JButton(runStepAction);
+        step.setText("");
+        JButton backstep = new JButton(runBackstepAction);
+        backstep.setText("");
+        JButton reset1 = new JButton(runResetAction);
+        reset1.setText("");
+        JButton stop = new JButton(runStopAction);
+        stop.setText("");
+        JButton pause = new JButton(runPauseAction);
+        pause.setText("");
+        JButton help1 = new JButton(helpHelpAction);
+        help1.setText("");
 
-        toolBar.add(New);
-        toolBar.add(Open);
-        toolBar.add(Save);
-        toolBar.add(SaveAs);
+        toolBar.add(aNew);
+        toolBar.add(open);
+        toolBar.add(save);
+        toolBar.add(saveAs);
         if (new mars.mips.dump.DumpFormatLoader().loadDumpFormats().size() > 0) {
-            toolBar.add(DumpMemory);
+            toolBar.add(dumpMemory);
         }
-        toolBar.add(Print);
+        toolBar.add(print);
         toolBar.add(new JToolBar.Separator());
-        toolBar.add(Undo);
-        toolBar.add(Redo);
-        toolBar.add(Cut);
-        toolBar.add(Copy);
-        toolBar.add(Paste);
-        toolBar.add(FindReplace);
+        toolBar.add(undo);
+        toolBar.add(redo);
+        toolBar.add(cut);
+        toolBar.add(copy);
+        toolBar.add(paste);
+        toolBar.add(findReplace);
         toolBar.add(new JToolBar.Separator());
-        toolBar.add(Assemble);
-        toolBar.add(Run);
-        toolBar.add(Step);
-        toolBar.add(Backstep);
-        toolBar.add(Pause);
-        toolBar.add(Stop);
-        toolBar.add(Reset);
+        toolBar.add(assemble);
+        toolBar.add(run1);
+        toolBar.add(step);
+        toolBar.add(backstep);
+        toolBar.add(pause);
+        toolBar.add(stop);
+        toolBar.add(reset1);
         toolBar.add(new JToolBar.Separator());
-        toolBar.add(Help);
+        toolBar.add(help1);
         toolBar.add(new JToolBar.Separator());
 
         return toolBar;
@@ -778,7 +762,7 @@ public class VenusUI extends JFrame {
     }
 
 
-    void setMenuStateInitial() {
+    private void setMenuStateInitial() {
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
         fileCloseAction.setEnabled(false);
@@ -816,7 +800,7 @@ public class VenusUI extends JFrame {
     /* Added DPS 9-Aug-2011, for newly-opened files.  Retain
         existing Run menu state (except Assemble, which is always true).
          Thus if there was a valid assembly it is retained. */
-    void setMenuStateNotEdited() {
+    private void setMenuStateNotEdited() {
       /* Note: undo and redo are handled separately by the undo manager*/
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
@@ -855,7 +839,7 @@ public class VenusUI extends JFrame {
     }
 
 
-    void setMenuStateEditing() {
+    private void setMenuStateEditing() {
       /* Note: undo and redo are handled separately by the undo manager*/
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
@@ -891,7 +875,7 @@ public class VenusUI extends JFrame {
 
     /* Use this when "File -> New" is used
      */
-    void setMenuStateEditingNew() {
+    private void setMenuStateEditingNew() {
       /* Note: undo and redo are handled separately by the undo manager*/
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
@@ -927,7 +911,7 @@ public class VenusUI extends JFrame {
 
     /* Use this upon successful assemble or reset
      */
-    void setMenuStateRunnable() {
+    private void setMenuStateRunnable() {
       /* Note: undo and redo are handled separately by the undo manager */
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
@@ -950,8 +934,7 @@ public class VenusUI extends JFrame {
         runGoAction.setEnabled(true);
         runStepAction.setEnabled(true);
         runBackstepAction.setEnabled(
-                (Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty())
-                        ? true : false);
+                Globals.getSettings().getBackSteppingEnabled() && Globals.program.getBackStepper().notEmpty());
         runResetAction.setEnabled(true);
         runStopAction.setEnabled(false);
         runPauseAction.setEnabled(false);
@@ -964,7 +947,7 @@ public class VenusUI extends JFrame {
 
     /* Use this while program is running
      */
-    void setMenuStateRunning() {
+    private void setMenuStateRunning() {
       /* Note: undo and redo are handled separately by the undo manager */
         fileNewAction.setEnabled(false);
         fileOpenAction.setEnabled(false);
@@ -999,7 +982,7 @@ public class VenusUI extends JFrame {
 
     /* Use this upon completion of execution
      */
-    void setMenuStateTerminated() {
+    private void setMenuStateTerminated() {
       /* Note: undo and redo are handled separately by the undo manager */
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
@@ -1022,8 +1005,7 @@ public class VenusUI extends JFrame {
         runGoAction.setEnabled(false);
         runStepAction.setEnabled(false);
         runBackstepAction.setEnabled(
-                (Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty())
-                        ? true : false);
+                Globals.getSettings().getBackSteppingEnabled() && Globals.program.getBackStepper().notEmpty());
         runResetAction.setEnabled(true);
         runStopAction.setEnabled(false);
         runPauseAction.setEnabled(false);

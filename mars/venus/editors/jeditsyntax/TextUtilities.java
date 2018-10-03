@@ -17,7 +17,7 @@ import javax.swing.text.*;
  * @author Slava Pestov
  * @version $Id: TextUtilities.java,v 1.4 1999/12/13 03:40:30 sp Exp $
  */
-public class TextUtilities {
+class TextUtilities {
     /**
      * Returns the offset of the bracket matching the one at the
      * specified offset of the document, or -1 if the bracket is

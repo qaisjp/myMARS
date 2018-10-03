@@ -26,6 +26,7 @@ import java.util.*;
  * @version $Id: TokenMarker.java,v 1.32 1999/12/13 03:40:30 sp Exp $
  * @see org.syntax.jedit.Token
  */
+@SuppressWarnings("JavadocReference")
 public abstract class TokenMarker {
     /**
      * A wrapper for the lower-level <code>markTokensImpl</code> method
@@ -51,7 +52,7 @@ public abstract class TokenMarker {
 
         byte oldToken = info.token;
         byte token = markTokensImpl(prev == null ?
-                Token.NULL : prev.token, line, lineIndex);
+                Token.NULL : prev.token, line);
 
         info.token = token;
       
@@ -112,11 +113,9 @@ public abstract class TokenMarker {
      *
      * @param token     The initial token type for this line
      * @param line      The line to be tokenized
-     * @param lineIndex The index of the line in the document, starting at 0
      * @return The initial token type for the next line
      */
-    protected abstract byte markTokensImpl(byte token, Segment line,
-                                           int lineIndex);
+    protected abstract byte markTokensImpl(byte token, Segment line);
 
     /**
      * Returns if the token marker supports tokens that span multiple
@@ -206,7 +205,6 @@ public abstract class TokenMarker {
      *
      * @param line      String containing current line
      * @param tokenList first Token on the current line
-     * @param token     the pertinent Token object
      * @param tokenText the source String that matched to the token
      * @return ArrayList containing PopupHelpItem objects, one per match.
      */
@@ -220,43 +218,43 @@ public abstract class TokenMarker {
      * The first token in the list. This should be used as the return
      * value from <code>markTokens()</code>.
      */
-    protected Token firstToken;
+    Token firstToken;
 
     /**
      * The last token in the list. New tokens are added here.
      * This should be set to null before a new line is to be tokenized.
      */
-    protected Token lastToken;
+    private Token lastToken;
 
     /**
      * An array for storing information about lines. It is enlarged and
      * shrunk automatically by the <code>insertLines()</code> and
      * <code>deleteLines()</code> methods.
      */
-    protected LineInfo[] lineInfo;
+    private LineInfo[] lineInfo;
 
     /**
      * The number of lines in the model being tokenized. This can be
      * less than the length of the <code>lineInfo</code> array.
      */
-    protected int length;
+    private int length;
 
     /**
      * The last tokenized line.
      */
-    protected int lastLine;
+    private int lastLine;
 
     /**
      * True if the next line should be painted.
      */
-    protected boolean nextLineRequested;
+    private boolean nextLineRequested;
 
     /**
      * Creates a new <code>TokenMarker</code>. This DOES NOT create
      * a lineInfo array; an initial call to <code>insertLines()</code>
      * does that.
      */
-    protected TokenMarker() {
+    TokenMarker() {
         lastLine = -1;
     }
 
@@ -271,7 +269,7 @@ public abstract class TokenMarker {
      *
      * @param index The array index
      */
-    protected void ensureCapacity(int index) {
+    private void ensureCapacity(int index) {
         if (lineInfo == null)
             lineInfo = new LineInfo[index + 1];
         else if (lineInfo.length <= index) {
@@ -288,7 +286,7 @@ public abstract class TokenMarker {
      * @param length The length of the token
      * @param id     The id of the token
      */
-    protected void addToken(int length, byte id) {
+    void addToken(int length, byte id) {
         if (id >= Token.INTERNAL_FIRST && id <= Token.INTERNAL_LAST)
             throw new InternalError("Invalid id: " + id);
 
@@ -335,7 +333,7 @@ public abstract class TokenMarker {
         /**
          * The id of the last token of the line.
          */
-        public byte token;
+        byte token;
 
         /**
          * This is for use by the token marker implementations
@@ -343,6 +341,6 @@ public abstract class TokenMarker {
          * is an object and that needs to exist on a per-line
          * basis.
          */
-        public Object obj;
+        Object obj;
     }
 }

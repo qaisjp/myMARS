@@ -83,7 +83,7 @@ class ToneGenerator {
      */
     public final static byte DEFAULT_VOLUME = 100;
 
-    private static Executor threadPool = Executors.newCachedThreadPool();
+    private static final Executor threadPool = Executors.newCachedThreadPool();
 
     /**
      * Produces a Tone with the specified pitch, duration, and instrument,
@@ -141,16 +141,16 @@ class Tone implements Runnable {
      * Tempo of the tone is in milliseconds: 1000 beats per second.
      */
 
-    public final static int TEMPO = 1000;
+    private final static int TEMPO = 1000;
     /**
      * The default MIDI channel of the tone: 0 (channel 1).
      */
-    public final static int DEFAULT_CHANNEL = 0;
+    private final static int DEFAULT_CHANNEL = 0;
 
-    private byte pitch;
-    private int duration;
-    private byte instrument;
-    private byte volume;
+    private final byte pitch;
+    private final int duration;
+    private final byte instrument;
+    private final byte volume;
 
     /**
      * Instantiates a new Tone object, initializing the tone's pitch,
@@ -198,12 +198,12 @@ class Tone implements Runnable {
 	* cause other, less severe, problems), so that case should be
 	* double covered. */
 
-    private static Lock openLock = new ReentrantLock();
+    private static final Lock openLock = new ReentrantLock();
 
     private void playTone() {
 
         try {
-            Sequencer player = null;
+            Sequencer player;
             openLock.lock();
             try {
                 player = MidiSystem.getSequencer();
@@ -247,15 +247,13 @@ class Tone implements Runnable {
 
             try {
                 eot.awaitEndOfTrack();
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException ignored) {
             } finally {
                 player.close();
             }
 
-        } catch (MidiUnavailableException mue) {
+        } catch (MidiUnavailableException | InvalidMidiDataException mue) {
             mue.printStackTrace();
-        } catch (InvalidMidiDataException imde) {
-            imde.printStackTrace();
         }
     }
 }

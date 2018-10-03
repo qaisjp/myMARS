@@ -3,11 +3,6 @@ package mars.util;
 import mars.Globals;
 import mars.mips.hardware.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.*;
 
 	/*
@@ -51,8 +46,8 @@ public class MemoryDump {
     private static final HashMap segmentBoundMap = new HashMap();
 
     private static final String[] segmentNames = {".text", ".data"};
-    private static int[] baseAddresses = new int[2];
-    private static int[] limitAddresses = new int[2];
+    private static final int[] baseAddresses = new int[2];
+    private static final int[] limitAddresses = new int[2];
 
 
     /**
@@ -67,8 +62,8 @@ public class MemoryDump {
         for (int i = 0; i < segmentNames.length; i++) {
             if (segmentNames[i].equals(segment)) {
                 Integer[] bounds = new Integer[2];
-                bounds[0] = new Integer(getBaseAddresses(segmentNames)[i]);
-                bounds[1] = new Integer(getLimitAddresses(segmentNames)[i]);
+                bounds[0] = getBaseAddresses()[i];
+                bounds[1] = getLimitAddresses()[i];
                 return bounds;
             }
         }
@@ -92,10 +87,9 @@ public class MemoryDump {
      * If invalid segment name is provided, will throw NullPointerException, so
      * I recommend getting segment names from getSegmentNames().
      *
-     * @param segments Array of Strings containing segment names (".text", ".data")
      * @return Array of int containing corresponding base addresses.
      */
-    public static int[] getBaseAddresses(String[] segments) {
+    public static int[] getBaseAddresses() {
         baseAddresses[0] = Memory.textBaseAddress;
         baseAddresses[1] = Memory.dataBaseAddress;
         return baseAddresses;
@@ -107,10 +101,9 @@ public class MemoryDump {
      * If invalid segment name is provided, will throw NullPointerException, so
      * I recommend getting segment names from getSegmentNames().
      *
-     * @param segments Array of Strings containing segment names (".text", ".data")
      * @return Array of int containing corresponding limit addresses.
      */
-    public static int[] getLimitAddresses(String[] segments) {
+    public static int[] getLimitAddresses() {
         limitAddresses[0] = Memory.textLimitAddress;
         limitAddresses[1] = Memory.dataSegmentLimitAddress;
         return limitAddresses;

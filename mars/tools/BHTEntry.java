@@ -44,12 +44,12 @@ package mars.tools;//.bhtsim;
  * @author ingo.kofler@itec.uni-klu.ac.at
  */
 
-public class BHTEntry {
+class BHTEntry {
 
     /**
      * the history of the BHT entry. Each boolean value signals if the branch was taken or not. The value at index n-1 represents the most recent branch outcome.
      */
-    private boolean m_history[];
+    private final boolean[] m_history;
 
     /**
      * the current prediction
@@ -107,9 +107,7 @@ public class BHTEntry {
     public void updatePrediction(boolean branchTaken) {
 
         // update history
-        for (int i = 0; i < m_history.length - 1; i++) {
-            m_history[i] = m_history[i + 1];
-        }
+        if (m_history.length - 1 >= 0) System.arraycopy(m_history, 1, m_history, 0, m_history.length - 1);
         m_history[m_history.length - 1] = branchTaken;
 
 
@@ -122,8 +120,8 @@ public class BHTEntry {
             // check if the prediction should change
             boolean changePrediction = true;
 
-            for (int i = 0; i < m_history.length; i++) {
-                if (m_history[i] != branchTaken)
+            for (boolean aM_history : m_history) {
+                if (aM_history != branchTaken)
                     changePrediction = false;
             }
 
@@ -172,13 +170,13 @@ public class BHTEntry {
      * @return a string representation of the BHT entry's history
      */
     public String getHistoryAsStr() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < m_history.length; i++) {
-            if (i > 0) result = result + ", ";
-            result += m_history[i] ? "T" : "NT";
+            if (i > 0) result.append(", ");
+            result.append(m_history[i] ? "T" : "NT");
         }
-        return result;
+        return result.toString();
     }
 
 

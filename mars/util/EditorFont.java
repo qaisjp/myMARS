@@ -4,7 +4,6 @@ import mars.*;
 
 import java.awt.*;
 import java.util.*;
-import java.awt.Font;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -46,11 +45,11 @@ public class EditorFont {
     // Note: These are parallel arrays so corresponding elements must match up.
     private static final String[] styleStrings = {"Plain", "Bold", "Italic", "Bold + Italic"};
     private static final int[] styleInts = {Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC};
-    public static final String DEFAULT_STYLE_STRING = styleStrings[0];
-    public static final int DEFAULT_STYLE_INT = styleInts[0];
+    private static final String DEFAULT_STYLE_STRING = styleStrings[0];
+    private static final int DEFAULT_STYLE_INT = styleInts[0];
     public static final int MIN_SIZE = 6;
     public static final int MAX_SIZE = 72;
-    public static final int DEFAULT_SIZE = 12;
+    private static final int DEFAULT_SIZE = 12;
     /* Fonts in 3 categories that are common to major Java platforms: Win, Mac, Linux.
      *    Monospace: Courier New and Lucida Sans Typewriter
      *    Serif: Georgia, Times New Roman
@@ -101,7 +100,7 @@ public class EditorFont {
      * @return The int value of the corresponding Font style constant.  If the
      * string does not match any style name, returns Font.PLAIN.
      */
-    public static int styleStringToStyleInt(String style) {
+    private static int styleStringToStyleInt(String style) {
         String styleLower = style.toLowerCase();
         for (int i = 0; i < styleStrings.length; i++) {
             if (styleLower.equals(styleStrings[i].toLowerCase())) {
@@ -152,7 +151,7 @@ public class EditorFont {
         int result = DEFAULT_SIZE;
         try {
             result = Integer.parseInt(size);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
         return (result < MIN_SIZE) ? MIN_SIZE : ((result > MAX_SIZE) ? MAX_SIZE : result);
     }
@@ -173,6 +172,9 @@ public class EditorFont {
         return new Font(family, styleStringToStyleInt(style), sizeStringToSizeInt(size));
     }
 
+    private static final String TAB_STRING = "\t";
+    private static final char TAB_CHAR = '\t';
+    private static final String SPACES = "                                                  ";
     /**
      * Handy utility to produce a string that substitutes spaces for all tab characters
      * in the given string.  The number of spaces generated is based on the position of
@@ -182,10 +184,6 @@ public class EditorFont {
      * @return New string in which spaces are substituted for tabs
      * @throws NullPointerException if string is null
      */
-    private static final String TAB_STRING = "\t";
-    private static final char TAB_CHAR = '\t';
-    private static final String SPACES = "                                                  ";
-
     public static String substituteSpacesForTabs(String string) {
         return substituteSpacesForTabs(string, Globals.getSettings().getEditorTabSize());
     }
@@ -200,10 +198,10 @@ public class EditorFont {
      * @return New string in which spaces are substituted for tabs
      * @throws NullPointerException if string is null
      */
-    public static String substituteSpacesForTabs(String string, int tabSize) {
+    private static String substituteSpacesForTabs(String string, int tabSize) {
         if (!string.contains(TAB_STRING))
             return string;
-        StringBuffer result = new StringBuffer(string);
+        StringBuilder result = new StringBuilder(string);
         for (int i = 0; i < result.length(); i++) {
             if (result.charAt(i) == TAB_CHAR) {
                 result.replace(i, i + 1, SPACES.substring(0, tabSize - (i % tabSize)));
@@ -223,9 +221,9 @@ public class EditorFont {
         String[] availableFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         Arrays.sort(availableFamilies); // not sure if necessary; is the list already alphabetical?
         int k = 0;
-        for (int i = 0; i < allCommonFamilies.length; i++) {
-            if (Arrays.binarySearch(availableFamilies, allCommonFamilies[i]) >= 0) {
-                result[k++] = allCommonFamilies[i];
+        for (String allCommonFamily : allCommonFamilies) {
+            if (Arrays.binarySearch(availableFamilies, allCommonFamily) >= 0) {
+                result[k++] = allCommonFamily;
             }
         }
         // If not all are found, creat a new array with only the ones that are.

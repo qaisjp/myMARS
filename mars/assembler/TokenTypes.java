@@ -63,15 +63,15 @@ public final class TokenTypes {
     public static final TokenTypes INTEGER_16 = new TokenTypes("INTEGER_16");
     public static final TokenTypes INTEGER_16U = new TokenTypes("INTEGER_16U");
     public static final TokenTypes INTEGER_32 = new TokenTypes("INTEGER_32");
-    public static final TokenTypes REAL_NUMBER = new TokenTypes("REAL_NUMBER");
+    private static final TokenTypes REAL_NUMBER = new TokenTypes("REAL_NUMBER");
     public static final TokenTypes QUOTED_STRING = new TokenTypes("QUOTED_STRING");
     public static final TokenTypes PLUS = new TokenTypes("PLUS");
     public static final TokenTypes MINUS = new TokenTypes("MINUS");
     public static final TokenTypes COLON = new TokenTypes("COLON");
     public static final TokenTypes ERROR = new TokenTypes("ERROR");
-    public static final TokenTypes MACRO_PARAMETER = new TokenTypes("MACRO_PARAMETER");
+    private static final TokenTypes MACRO_PARAMETER = new TokenTypes("MACRO_PARAMETER");
 
-    private String descriptor;
+    private final String descriptor;
 
     private TokenTypes() {
         // private ctor assures no objects can be created other than those above.
@@ -154,45 +154,45 @@ public final class TokenTypes {
 
             int i = Binary.stringToInt(value);   // KENV 1/6/05
 
-            /***************************************************************************
-             *  MODIFICATION AND COMMENT, DPS 3-July-2008
-             *
-             * The modifications of January 2005 documented below are being rescinded.
-             * All hexadecimal immediate values are considered 32 bits in length and
-             * their classification as INTEGER_5, INTEGER_16, INTEGER_16U (new)
-             * or INTEGER_32 depends on their 32 bit value.  So 0xFFFF will be
-             * equivalent to 0x0000FFFF instead of 0xFFFFFFFF.  This change, along with
-             * the introduction of INTEGER_16U (adopted from Greg Gibeling of Berkeley),
-             * required extensive changes to instruction templates especially for
-             * pseudo-instructions.
-             *
-             * This modification also appears inbuildBasicStatementFromBasicInstruction()
-             * in mars.ProgramStatement.
-             *
-             *  ///// Begin modification 1/4/05 KENV   ///////////////////////////////////////////
-             *  // We have decided to interpret non-signed (no + or -) 16-bit hexadecimal immediate
-             *  // operands as signed values in the range -32768 to 32767. So 0xffff will represent
-             *  // -1, not 65535 (bit 15 as sign bit), 0x8000 will represent -32768 not 32768.
-             *  // NOTE: 32-bit hexadecimal immediate operands whose values fall into this range
-             *  // will be likewise affected, but they are used only in pseudo-instructions.  The
-             *  // code in ExtendedInstruction.java to split this number into upper 16 bits for "lui"
-             *  // and lower 16 bits for "ori" works with the original source code token, so it is
-             *  // not affected by this tweak.  32-bit immediates in data segment directives
-             *  // are also processed elsewhere so are not affected either.
-             *  ////////////////////////////////////////////////////////////////////////////////
-             *
-             *     if ( Binary.isHex(value) &&
-             *         (i >= 32768) &&
-             *         (i <= 65535) )  // Range 0x8000 ... 0xffff
-             *     {
-             *          // Subtract the 0xffff bias, because strings in the
-             *          // range "0x8000" ... "0xffff" are used to represent
-             *          // 16-bit negative numbers, not positive numbers.
-             *        i = i - 65536;
-             *     }
-             *    // ------------- END    KENV 1/4/05   MODIFICATIONS --------------
-             *
-             **************************  END DPS 3-July-2008 COMMENTS *******************************/
+            /*
+             MODIFICATION AND COMMENT, DPS 3-July-2008
+
+             The modifications of January 2005 documented below are being rescinded.
+             All hexadecimal immediate values are considered 32 bits in length and
+             their classification as INTEGER_5, INTEGER_16, INTEGER_16U (new)
+             or INTEGER_32 depends on their 32 bit value.  So 0xFFFF will be
+             equivalent to 0x0000FFFF instead of 0xFFFFFFFF.  This change, along with
+             the introduction of INTEGER_16U (adopted from Greg Gibeling of Berkeley),
+             required extensive changes to instruction templates especially for
+             pseudo-instructions.
+
+             This modification also appears inbuildBasicStatementFromBasicInstruction()
+             in mars.ProgramStatement.
+
+             ///// Begin modification 1/4/05 KENV   ///////////////////////////////////////////
+             // We have decided to interpret non-signed (no + or -) 16-bit hexadecimal immediate
+             // operands as signed values in the range -32768 to 32767. So 0xffff will represent
+             // -1, not 65535 (bit 15 as sign bit), 0x8000 will represent -32768 not 32768.
+             // NOTE: 32-bit hexadecimal immediate operands whose values fall into this range
+             // will be likewise affected, but they are used only in pseudo-instructions.  The
+             // code in ExtendedInstruction.java to split this number into upper 16 bits for "lui"
+             // and lower 16 bits for "ori" works with the original source code token, so it is
+             // not affected by this tweak.  32-bit immediates in data segment directives
+             // are also processed elsewhere so are not affected either.
+             ////////////////////////////////////////////////////////////////////////////////
+
+             if ( Binary.isHex(value) &&
+             (i >= 32768) &&
+             (i <= 65535) )  // Range 0x8000 ... 0xffff
+             {
+             // Subtract the 0xffff bias, because strings in the
+             // range "0x8000" ... "0xffff" are used to represent
+             // 16-bit negative numbers, not positive numbers.
+             i = i - 65536;
+             }
+             // ------------- END    KENV 1/4/05   MODIFICATIONS --------------
+
+             END DPS 3-July-2008 COMMENTS */
             // shift operands must be in range 0-31
             if (i >= 0 && i <= 31) {
                 return TokenTypes.INTEGER_5;
