@@ -261,8 +261,9 @@ public class VenusUI extends JFrame {
                     "Print current file", KeyEvent.VK_P,
                     null, mainUI);
             fileExitAction = new FileExitAction("Exit", null,
-                    "Exit Mars", KeyEvent.VK_X,
-                    null, mainUI);
+                    "Exit Mars", KeyEvent.VK_Q,
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Q,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    mainUI);
             editUndoAction = new EditUndoAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
                     "Undo last edit", KeyEvent.VK_U,
