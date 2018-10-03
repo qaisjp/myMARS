@@ -6,11 +6,9 @@ MARS has been jointly developed by [Pete Sanderson][4] (programming) and [Ken Vo
 ## Purpose of this repo
 This project is a fork of MARS 4.5. Pull requests are very much welcomed.
 
-I'm not going to accept any pull request. This source code is not maintained by me but the original developers. If you want to contribute to the project, you should talk with them [going here][8].
-
 ## Documentation (included in the repo)
  - Go to the [documentation][7].
- - In order to run or compile this project **you must have Java J2SE 1.8 (or later) SDK installed on your computer**.
+ - In order to run or compile this project **you must have the Java 1.8 (or later) SDK installed on your computer**.
 
 ## How to run MARS
  - **Desktop**:
@@ -33,7 +31,7 @@ I'm not going to accept any pull request. This source code is not maintained by 
 
 ## How to compile
  - **Windows**: execute "CreateMarsJar.bat" file to generate an executable.
- - **GNU/Linux** and **Mac**: execute the "CreateMarsJar.sh" to generate an executable. If you can't due of permissions, run `chmod +x CreateMarsJar.sh` (Thanks to [@aesptux][8] for Mac testing).
+ - **GNU/Linux** and **Mac**: execute the "CreateMarsJar.sh" to generate an executable. If you can't due of permissions, run `chmod +x CreateMarsJar.sh`.
 
 ## License
 [MIT][2]. Check the [LICENSE][3] file. All the credits go to the original developers.
@@ -45,4 +43,3 @@ I'm not going to accept any pull request. This source code is not maintained by 
   [5]: http://courses.missouristate.edu/KenVollmar/
   [6]: http://courses.missouristate.edu/KenVollmar/MARS/download.htm
   [7]: http://courses.missouristate.edu/KenVollmar/MARS/Help/MarsHelpIntro.html
-  [8]: http://twitter.com/aesptux
