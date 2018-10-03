@@ -40,6 +40,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
 
 
         ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 
         currentLine = new Segment();
         currentLineIndex = -1;
