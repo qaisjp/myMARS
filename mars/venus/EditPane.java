@@ -513,7 +513,7 @@ public class EditPane extends JPanel implements Observer {
      * @param line The desired line number of this TextPane's text.  Numbering starts at 1, and
      *             nothing will happen if the parameter value is less than 1
      */
-    private void selectLine(int line) {
+    public void selectLine(int line) {
         if (line > 0) {
             int lineStartPosition = convertLineColumnToStreamPosition(line);
             int lineEndPosition = convertLineColumnToStreamPosition(line + 1) - 1;
@@ -529,19 +529,19 @@ public class EditPane extends JPanel implements Observer {
     }
 
 
-    /**
-     * Select the specified editor text line.  Lines are numbered starting with 1, consistent
-     * with line numbers displayed by the editor.
-     *  @param line   The desired line number of this TextPane's text.  Numbering starts at 1, and
+    /*
+      Select the specified editor text line.  Lines are numbered starting with 1, consistent
+      with line numbers displayed by the editor.
+       @param line   The desired line number of this TextPane's text.  Numbering starts at 1, and
      *               nothing will happen if the parameter value is less than 1
-     *
+
      */
-    public void selectLine(int line) {
-        selectLine(line);
+    //public void selectLine(int line) {
+    //    selectLine(line);
         // Made one attempt at setting cursor; didn't work but here's the attempt
         // (imagine using it in the one-parameter overloaded method above)
         //sourceCode.setCaretPosition(lineStartPosition+column-1);
-    }
+    //}
 
     /**
      * Finds next occurrence of text in a forward search of a string. Search begins

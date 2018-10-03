@@ -91,7 +91,7 @@ public interface MARSTextEditingArea {
 
     Font getFont();
 
-    void requestFocusInWindow();
+    boolean requestFocusInWindow();
 
     FontMetrics getFontMetrics(Font f);
 

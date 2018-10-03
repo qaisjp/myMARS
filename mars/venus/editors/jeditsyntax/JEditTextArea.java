@@ -223,7 +223,7 @@ class JEditTextArea extends JComponent {
      * @param caretVisible True if the caret should be visible, false
      *                     otherwise
      */
-    void setCaretVisible(boolean caretVisible) {
+    public void setCaretVisible(boolean caretVisible) {
         this.caretVisible = caretVisible;
         blink = true;
 
@@ -775,7 +775,7 @@ class JEditTextArea extends JComponent {
     /**
      * Returns the entire text of this text area.
      */
-    String getText() {
+    public String getText() {
         try {
             return document.getText(0, document.getLength());
         } catch (BadLocationException bl) {
@@ -787,7 +787,7 @@ class JEditTextArea extends JComponent {
     /**
      * Sets the entire text of this text area.
      */
-    void setText(String text) {
+    public void setText(String text) {
         try {
             document.beginCompoundEdit();
             document.remove(0, document.getLength());
@@ -895,7 +895,7 @@ class JEditTextArea extends JComponent {
      * @param selectionStart The selection start
      * @see #select(int, int)
      */
-    final void setSelectionStart(int selectionStart) {
+    public final void setSelectionStart(int selectionStart) {
         select(selectionStart, selectionEnd);
     }
 
@@ -940,7 +940,7 @@ class JEditTextArea extends JComponent {
      * @param selectionEnd The selection end
      * @see #select(int, int)
      */
-    final void setSelectionEnd(int selectionEnd) {
+    public final void setSelectionEnd(int selectionEnd) {
         select(selectionStart, selectionEnd);
     }
 
@@ -1077,7 +1077,7 @@ class JEditTextArea extends JComponent {
     /**
      * Returns the selected text, or null if no selection is active.
      */
-    final String getSelectedText() {
+    public final String getSelectedText() {
         if (selectionStart == selectionEnd)
             return null;
 
@@ -1201,7 +1201,7 @@ class JEditTextArea extends JComponent {
             throw new InternalError("Cannot replace"
                     + " selection");
         }
-        // No matter what happends... stops us from leaving document
+        // No matter what happens... stops us from leaving document
         // in a bad state
         finally {
             document.endCompoundEdit();
@@ -1223,7 +1223,7 @@ class JEditTextArea extends JComponent {
      * @param editable True if this text area should be editable,
      *                 false otherwise
      */
-    final void setEditable(boolean editable) {
+    public final void setEditable(boolean editable) {
         this.editable = editable;
     }
 
@@ -1871,11 +1871,7 @@ class JEditTextArea extends JComponent {
                 case 2:
                     // It uses the bracket matching stuff, so
                     // it can throw a BLE
-                    try {
-                        doDoubleClick(line, offset, dot);
-                    } catch (BadLocationException bl) {
-                        bl.printStackTrace();
-                    }
+                    doDoubleClick(line, offset, dot);
                     break;
                 case 3:
                     doTripleClick(line);
