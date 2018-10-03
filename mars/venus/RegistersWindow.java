@@ -57,6 +57,13 @@ public class RegistersWindow extends JPanel implements Observer {
     private static final int VALUE_COLUMN = 2;
     private static final int ASCII_COLUMN = 3;
     private static final int NOTE_COLUMN = 4;
+
+    private static final int NAME_COLUMN_WIDTH = 50;
+    private static final int NUMBER_COLUMN_WIDTH = 40;
+    private static final int VALUE_COLUMN_WIDTH = 80;
+    private static final int ASCII_COLUMN_WIDTH = 40;
+    private static final int NOTE_COLUMN_WIDTH = 30;
+
     private static Settings settings;
 
     /**
@@ -78,32 +85,32 @@ public class RegistersWindow extends JPanel implements Observer {
         TableColumn col; // current column being edited
 
         col = table.getColumnModel().getColumn(NAME_COLUMN);
-        col.setPreferredWidth(40);
-        col.setWidth(40);
-        col.setMaxWidth(40);
+        col.setPreferredWidth(NAME_COLUMN_WIDTH);
+        col.setWidth(NAME_COLUMN_WIDTH);
+        col.setMaxWidth(NAME_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoLeft);
 
         col = table.getColumnModel().getColumn(NUMBER_COLUMN);
-        col.setPreferredWidth(25);
-        col.setWidth(25);
-        col.setMaxWidth(25);
+        col.setPreferredWidth(NUMBER_COLUMN_WIDTH);
+        col.setWidth(NUMBER_COLUMN_WIDTH);
+        col.setMaxWidth(NUMBER_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(VALUE_COLUMN);
-        col.setPreferredWidth(80);
-        col.setWidth(80);
-        col.setMaxWidth(80);
+        col.setPreferredWidth(VALUE_COLUMN_WIDTH);
+        col.setWidth(VALUE_COLUMN_WIDTH);
+        col.setMaxWidth(VALUE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(ASCII_COLUMN);
-        col.setPreferredWidth(25);
-        col.setWidth(25);
-        col.setMaxWidth(25);
+        col.setPreferredWidth(ASCII_COLUMN_WIDTH);
+        col.setWidth(ASCII_COLUMN_WIDTH);
+        col.setMaxWidth(ASCII_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
         col = table.getColumnModel().getColumn(NOTE_COLUMN);
-        col.setPreferredWidth(12);
-        col.setWidth(12);
+        col.setPreferredWidth(NOTE_COLUMN_WIDTH);
+        col.setWidth(NOTE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererRegularLeft);
 
         table.setPreferredScrollableViewportSize(new Dimension(200, 700));
@@ -138,13 +145,13 @@ public class RegistersWindow extends JPanel implements Observer {
         tableData[33][1] = "";//new Integer(33);
         tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
         tableData[33][3] = "?";
-        tableData[33][4] = "hi";
+        tableData[33][4] = "";
 
         tableData[34][0] = "lo";
         tableData[34][1] = "";//new Integer(34);
         tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
         tableData[34][3] = "?";
-        tableData[34][4] = "?";
+        tableData[34][4] = "";
 
         return tableData;
     }
