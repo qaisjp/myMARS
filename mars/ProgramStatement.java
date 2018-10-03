@@ -256,7 +256,7 @@ public class ProgramStatement {
 
                 int tempNumeric = Binary.stringToInt(tokenValue);
 
-                /************************************************************************
+                /*
                  MODIFICATION AND COMMENT, DPS 3-July-2008
 
                  The modifications of January 2005 documented below are being rescinded.
@@ -295,7 +295,7 @@ public class ProgramStatement {
                  // Note: no action needed for range 0xffff8000 ... 0xffffffff
                  }
                  }
-                 END DPS 3-July-2008 COMMENTS *******************************/
+                 END DPS 3-July-2008 COMMENTS */
 
                 basic.append(tempNumeric);
                 basicStatementList.addValue(tempNumeric);

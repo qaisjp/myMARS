@@ -29,6 +29,8 @@ import java.util.*;
  * <p>
  * 08/12/2002	Clipboard actions	(Oliver Henning)
  */
+
+@SuppressWarnings("JavadocReference")
 public abstract class InputHandler extends KeyAdapter {
     /**
      * If this client property is set to Boolean.TRUE on the text area,
@@ -81,10 +83,10 @@ public abstract class InputHandler extends KeyAdapter {
     // Default action
     static final ActionListener INSERT_CHAR = new insert_char();
 
-    private static final Hashtable actions;
+    private static final Hashtable<String, ActionListener> actions;
 
     static {
-        actions = new Hashtable();
+        actions = new Hashtable<>();
         actions.put("backspace", BACKSPACE);
         actions.put("backspace-word", BACKSPACE_WORD);
         actions.put("delete", DELETE);
@@ -131,7 +133,7 @@ public abstract class InputHandler extends KeyAdapter {
      * @param name The action name
      */
     private static ActionListener getAction(String name) {
-        return (ActionListener) actions.get(name);
+        return actions.get(name);
     }
 
     /**

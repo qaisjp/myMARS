@@ -169,7 +169,7 @@ class OperandFormat {
             }
         }
 
-        /*****  nice little debugging code to see which operand format
+        /*  nice little debugging code to see which operand format
          the operands for this source code instruction matched.
          System.out.print("Candidate: ");
          for (int i=1; i<spec.size(); i++) {

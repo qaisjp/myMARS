@@ -55,6 +55,7 @@ import java.util.ArrayList;
  * @author Slava Pestov
  * @version $Id: JEditTextArea.java,v 1.36 1999/12/13 03:40:30 sp Exp $
  */
+@SuppressWarnings("WeakerAccess")
 class JEditTextArea extends JComponent {
     /**
      * Adding components with this name to the text area will place
@@ -76,15 +77,13 @@ class JEditTextArea extends JComponent {
         this(TextAreaDefaults.getDefaults(), lineNumbers);
     }
 
+    private JScrollBar lineNumbersVertical;
+
     /**
      * Creates a new JEditTextArea with the specified settings.
      *
      * @param defaults The default settings
      */
-
-    private JScrollBar lineNumbersVertical;//************************************
-
-
     private JEditTextArea(TextAreaDefaults defaults, JComponent lineNumbers) {
         // Enable the necessary events
         enableEvents(AWTEvent.KEY_EVENT_MASK);

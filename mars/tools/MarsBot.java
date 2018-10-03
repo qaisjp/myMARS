@@ -25,6 +25,7 @@ public class MarsBot implements Observer, MarsTool {
     private double MarsBotXPosition = 0; // X pixel position of MarsBot
     private double MarsBotYPosition = 0; // Y pixel position of MarsBot
     private boolean MarsBotMoving = false; // true --> MarsBot is moving, false --> MarsBot not moving
+    private boolean running;
 
     // The begin and end points of a "track" segment are kept in neighboring pairs
     // of elements of the array. arrayOfTrack[i] is the start pt, arrayOfTrack[i+1] is
@@ -44,6 +45,8 @@ public class MarsBot implements Observer, MarsTool {
             graphicArea = new MarsBotDisplay();
             JPanel buttonPanel = new JPanel();
             JButton clearButton = new JButton("Clear");
+            running = true;
+
             clearButton.addActionListener(
                     e -> {
                         graphicArea.clear();
@@ -58,7 +61,10 @@ public class MarsBot implements Observer, MarsTool {
             buttonPanel.add(clearButton);
             JButton closeButton = new JButton("Close");
             closeButton.addActionListener(
-                    e -> frame.setVisible(false));
+                    e -> {
+                        frame.setVisible(false);
+                        running = false;
+                    });
             buttonPanel.add(closeButton);
             panel.add(graphicArea, BorderLayout.CENTER);
             panel.add(buttonPanel, BorderLayout.SOUTH);
@@ -77,7 +83,7 @@ public class MarsBot implements Observer, MarsTool {
             double tempAngle;
             // infinite loop: move the bot according to the current directives
             // (which may be to NOT move)
-            do {
+            while(running) {
                 if (MarsBotMoving) {
                     //System.out.println("BotRunnable.run: bot IS moving.");
                     // TBD This is an arbitrary distance for bot movement. This could just
@@ -127,7 +133,7 @@ public class MarsBot implements Observer, MarsTool {
                 }
 
                 panel.repaint(); // show new bot position
-            } while (true);
+            }
 
         } // end run method of BotRunnable class
 
@@ -223,7 +229,7 @@ public class MarsBot implements Observer, MarsTool {
         try {
             Globals.memory.addObserver(this, 0xffff8000, 0xffff8060);
         } catch (AddressErrorException aee) {
-            System.out.println(aee);
+            aee.printStackTrace();
         }
     }
 

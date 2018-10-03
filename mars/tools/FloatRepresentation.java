@@ -899,9 +899,6 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             this.setBackground(parent.getBackground());
         }
 
-        public void setText(String text) {
-            super.setText(text);
-        }
     }
 
 

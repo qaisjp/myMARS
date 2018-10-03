@@ -675,8 +675,8 @@ public class MarsLaunch {
         int addressStart = 0, addressEnd = 0;
         while (memIter.hasNext()) {
             try { // This will succeed; error would have been caught during command arg parse
-                addressStart = Binary.stringToInt(memIter.next().toString());
-                addressEnd = Binary.stringToInt(memIter.next().toString());
+                addressStart = Binary.stringToInt(memIter.next());
+                addressEnd = Binary.stringToInt(memIter.next());
             } catch (NumberFormatException ignored) {
             }
             int valuesDisplayed = 0;

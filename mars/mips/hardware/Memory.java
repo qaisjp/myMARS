@@ -623,7 +623,7 @@ public class Memory extends Observable {
     }
 
 
-    /*****************************  THE GETTER METHODS  ******************************/
+    /* THE GETTER METHODS  */
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -977,7 +977,7 @@ public class Memory extends Observable {
     }
 
 
-    /******************************  THE UTILITIES  *************************************/
+    /*  THE UTILITIES  */
 
     /**
      * Utility to determine if given address is word-aligned.

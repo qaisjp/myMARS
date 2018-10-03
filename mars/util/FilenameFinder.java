@@ -216,7 +216,7 @@ public class FilenameFinder {
      */
     private static ArrayList<String> getFilenameList(String directoryPath, String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
-        ArrayList<String> filenameList = new ArrayList<String>();
+        ArrayList<String> filenameList = new ArrayList<>();
         File directory = new File(directoryPath);
         if (directory.isDirectory()) {
             File[] allFiles = directory.listFiles();
@@ -296,7 +296,7 @@ public class FilenameFinder {
      * @return array list of matching file names (absolute path).  If none, list is empty.
      */
     public static ArrayList<String> getFilenameList(ArrayList<String> nameList, ArrayList fileExtensions) {
-        ArrayList<String> filenameList = new ArrayList<String>();
+        ArrayList<String> filenameList = new ArrayList<>();
         String fileExtension;
         if (fileExtensions == null || fileExtensions.size() == 0) {
             filenameList = getFilenameList(nameList, "");

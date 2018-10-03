@@ -255,7 +255,7 @@ public class EditPane extends JPanel implements Observer {
     /**
      * Get source code text
      *
-     * @return Sting containing source code
+     * @return String containing source code
      */
     public String getSource() {
         return sourceCode.getText();
@@ -460,17 +460,15 @@ public class EditPane extends JPanel implements Observer {
      * Given byte stream position in text being edited, calculate its column and line
      * number coordinates.
      *
-     * @param stream position of character
+     //* @param stream position of character
      * @return position Its column and line number coordinate as a Point.
      */
-    private static final char newline = '\n';
-
     private Point convertStreamPositionToLineColumn(int position) {
         String textStream = sourceCode.getText();
         int line = 1;
         int column = 1;
         for (int i = 0; i < position; i++) {
-            if (textStream.charAt(i) == newline) {
+            if (textStream.charAt(i) == '\n') {
                 line++;
                 column = 1;
             } else {
@@ -496,7 +494,7 @@ public class EditPane extends JPanel implements Observer {
             if (textLine == line) {
                 return i;
             }
-            if (textStream.charAt(i) == newline) {
+            if (textStream.charAt(i) == '\n') {
                 textLine++;
                 textColumn = 1;
             } else {

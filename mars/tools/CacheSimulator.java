@@ -46,6 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * animating the block of initial access (first block of set).  Now it animates the block
  * of final access (where address found or stored).  Also added log display to GUI (previously System.out).</p>
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class CacheSimulator extends AbstractMarsToolAndApplication {
     private static boolean debug = false; // controls display of debugging info
     private static final String version = "Version 1.2";

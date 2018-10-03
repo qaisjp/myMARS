@@ -63,12 +63,14 @@ public class FilePrintAction extends GuiAction {
         } catch (HardcopyWriter.PrintCanceledException pce) {
             return;
         }
+
         BufferedReader in = new BufferedReader(new StringReader(editPane.getSource()));
         int lineNumberDigits = Integer.toString(editPane.getSourceLineCount()).length();
         String line;
         StringBuilder lineNumberString = new StringBuilder();
         int lineNumber = 0;
         int numchars;
+
         try {
             line = in.readLine();
 
@@ -80,13 +82,20 @@ public class FilePrintAction extends GuiAction {
                         lineNumberString.append(" ");
                     }
                 }
-                line = lineNumberString.toString() + line + "\n";
-                out.write(line.toCharArray(), 0, line.length());
+
+                String output = lineNumberString.toString() + line + '\n';
+                out.write(output.toCharArray(), 0, line.length());
+
                 line = in.readLine();
             }
-            in.close();
-            out.close();
         } catch (IOException ignored) {
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            out.close();
         }
     }
 }

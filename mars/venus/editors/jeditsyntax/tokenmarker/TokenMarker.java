@@ -26,6 +26,7 @@ import java.util.*;
  * @version $Id: TokenMarker.java,v 1.32 1999/12/13 03:40:30 sp Exp $
  * @see org.syntax.jedit.Token
  */
+@SuppressWarnings("JavadocReference")
 public abstract class TokenMarker {
     /**
      * A wrapper for the lower-level <code>markTokensImpl</code> method

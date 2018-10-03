@@ -76,7 +76,7 @@ public class PopupHelpItem {
     }
 
     /**
-     * The document text that mached this item
+     * The document text that matched this item
      */
     public String getTokenText() {
         return this.tokenText;

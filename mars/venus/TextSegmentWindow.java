@@ -891,7 +891,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             setHorizontalAlignment(SwingConstants.CENTER);
             setVerticalAlignment(SwingConstants.CENTER);
 
-            /*******************************************
+            /*
              Use this if you want to add "instant" recognition of breakpoint changes
              during simulation run.  Currently, the simulator gets array of breakpoints
              only when "Go" is selected.  Thus the system does not respond to breakpoints

@@ -240,7 +240,7 @@ public class ScavengerHunt implements Observer, MarsTool {
             double tempAngle;
 
             // infinite loop: play the Scavenger Hunt game
-            do {
+            while(GameOn) {
 
                 // Pause to slow down the redisplay of the game. This is separate from
                 // the execution speed of the MIPS program, so the display may lag behind
@@ -253,7 +253,7 @@ public class ScavengerHunt implements Observer, MarsTool {
                 }
 
                 panel.repaint(); // show new ScavengerHunt position
-            } while (true);
+            }
 
         } // end run method of ScavengerHuntRunnable class
 

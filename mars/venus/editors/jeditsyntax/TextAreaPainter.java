@@ -106,6 +106,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
      *
      * @see org.syntax.jedit.Token
      */
+    @SuppressWarnings("JavadocReference")
     public final SyntaxStyle[] getStyles() {
         return styles;
     }
@@ -117,6 +118,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
      * @param styles The syntax styles
      * @see org.syntax.jedit.Token
      */
+    @SuppressWarnings("JavadocReference")
     public final void setStyles(SyntaxStyle[] styles) {
         this.styles = styles;
         repaint();

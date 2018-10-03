@@ -976,8 +976,8 @@ public class Assembler {
                     }
                 }
             } // WHAT ABOUT .KDATA SEGMENT?
-            /************************************************************************
-             /****** NOTE of 11/20/06. Below will always throw exception b/c
+
+             /* NOTE of 11/20/06. Below will always throw exception b/c
              you cannot use Memory.set() with text segment addresses and the
              "not valid address" produced here is misleading. Added data
              segment check prior to this point, so this "else" will never be
@@ -1039,7 +1039,7 @@ public class Assembler {
             if (this.inDataSegment) {
                 writeToDataSegment(value, lengthInBytes, token, errors);
             }
-            /***
+            /*
              NOTE of 11/20/06. "try" below will always throw exception b/c you
              cannot use Memory.set() with text segment addresses and the
              "not valid address" produced here is misleading. Added data

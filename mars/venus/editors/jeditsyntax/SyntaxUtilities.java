@@ -13,7 +13,6 @@ import mars.venus.editors.jeditsyntax.tokenmarker.*;
 import mars.Globals;
 
 import javax.swing.text.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -145,8 +144,8 @@ public class SyntaxUtilities {
      * @param y The y co-ordinate
      * @return The x co-ordinate, plus the width of the painted string
      */
-    private static final boolean popupShowing = false;
-    public static Popup popup;
+    //private static final boolean popupShowing = false;
+    //public static Popup popup;
 
     public static int paintSyntaxLine(Segment line, Token tokens,
                                       SyntaxStyle[] styles, TabExpander expander, Graphics gfx,

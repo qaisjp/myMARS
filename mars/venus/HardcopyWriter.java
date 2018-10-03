@@ -67,13 +67,13 @@ class HardcopyWriter extends Writer {
     // A static variable that holds user preferences between print jobs
     private static final Properties printprops = new Properties();
 
-    /**
+    /*
      * The constructor for this class has a bunch of arguments:
      * The frame argument is required for all printing in Java.
      * The jobname appears left justified at the top of each printed page.
      * The font size is specified in points, as on-screen font sizes are.
      * The margins are specified in inches (or fractions of inches).
-     **/
+     */
     public HardcopyWriter(Frame frame, String jobname, int fontsize,
                           double leftmargin, double rightmargin,
                           double topmargin, double bottommargin)
@@ -97,7 +97,7 @@ class HardcopyWriter extends Writer {
         }
         if (job == null)
             throw new PrintCanceledException();
-        /****************************************************
+        /*
          SANDERSON OVERRIDE 8-17-2004:
          I didn't like the results produced by the code below, so am commenting
          it out and just setting pagedpi to 72.  This assures, among other things,
@@ -344,7 +344,7 @@ class HardcopyWriter extends Writer {
             in.close();
             out.close();
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
             System.err.println("Usage: " +
                     "java HardcopyWriter$PrintFile <filename>");
             System.exit(1);
