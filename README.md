@@ -31,7 +31,7 @@ This project is a fork of MARS 4.5. Pull requests are very much welcomed.
 
 ## How to compile
  - **Windows**: execute "CreateMarsJar.bat" file to generate an executable.
- - **GNU/Linux** and **Mac**: execute the "CreateMarsJar.sh" to generate an executable. If you can't due of permissions, run `chmod +x CreateMarsJar.sh`.
+ - **GNU/Linux** and **Mac**: `find . -name "*.java" | xargs javac` then execute the "CreateMarsJar.sh" to generate an executable. If you can't due of permissions, run `chmod +x CreateMarsJar.sh`.
 
 ## License
 [MIT][2]. Check the [LICENSE][3] file. All the credits go to the original developers.
@@ -43,3 +43,4 @@ This project is a fork of MARS 4.5. Pull requests are very much welcomed.
   [5]: http://courses.missouristate.edu/KenVollmar/
   [6]: http://courses.missouristate.edu/KenVollmar/MARS/download.htm
   [7]: http://courses.missouristate.edu/KenVollmar/MARS/Help/MarsHelpIntro.html
+
