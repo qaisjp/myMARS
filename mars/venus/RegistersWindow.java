@@ -55,14 +55,18 @@ public class RegistersWindow extends JPanel implements Observer {
     private static final int NAME_COLUMN = 0;
     private static final int NUMBER_COLUMN = 1;
     private static final int VALUE_COLUMN = 2;
-    private static final int ASCII_COLUMN = 3;
-    private static final int NOTE_COLUMN = 4;
+    private static final int BINARY_COLUMN = 3;
+    private static final int ASCII_COLUMN = 4;
+    private static final int NOTE_COLUMN = 5;
 
     private static final int NAME_COLUMN_WIDTH = 50;
     private static final int NUMBER_COLUMN_WIDTH = 40;
     private static final int VALUE_COLUMN_WIDTH = 80;
+    private static final int NOTE_BINARY_WIDTH = 230;
     private static final int ASCII_COLUMN_WIDTH = 40;
     private static final int NOTE_COLUMN_WIDTH = 30;
+
+
 
     private static Settings settings;
 
@@ -102,6 +106,12 @@ public class RegistersWindow extends JPanel implements Observer {
         col.setMaxWidth(VALUE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
+        col = table.getColumnModel().getColumn(BINARY_COLUMN);
+        col.setPreferredWidth(NOTE_BINARY_WIDTH);
+        col.setWidth(NOTE_BINARY_WIDTH);
+        col.setMaxWidth(NOTE_BINARY_WIDTH);
+        col.setCellRenderer(cellRendererMonoRight);
+
         col = table.getColumnModel().getColumn(ASCII_COLUMN);
         col.setPreferredWidth(ASCII_COLUMN_WIDTH);
         col.setWidth(ASCII_COLUMN_WIDTH);
@@ -126,32 +136,35 @@ public class RegistersWindow extends JPanel implements Observer {
 
     private Object[][] setupWindow() {
         int valueBase = NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex());
-        Object[][] tableData = new Object[35][5];
+        Object[][] tableData = new Object[35][6];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
-            tableData[i][0] = registers[i].getName();
-            tableData[i][1] = registers[i].getNumber();
-            tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
-            tableData[i][3] = Character.toString((char) registers[i].getValue());
-            tableData[i][4] = "";
+            tableData[i][NAME_COLUMN] = registers[i].getName();
+            tableData[i][NUMBER_COLUMN] = registers[i].getNumber();
+            tableData[i][VALUE_COLUMN] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
+            tableData[i][BINARY_COLUMN] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(),2);
+            tableData[i][ASCII_COLUMN] = Character.toString((char) registers[i].getValue());
+            tableData[i][NOTE_COLUMN] = "";
         }
-        tableData[32][0] = "pc";
-        tableData[32][1] = "";//new Integer(32);
-        tableData[32][2] = NumberDisplayBaseChooser.formatUnsignedInteger(RegisterFile.getProgramCounter(), valueBase);
-        tableData[32][3] = "?";
-        tableData[32][4] = "program counter";
+        tableData[32][NAME_COLUMN] = "pc";
+        tableData[32][NUMBER_COLUMN] = "";//new Integer(32);
+        tableData[32][VALUE_COLUMN] = NumberDisplayBaseChooser.formatUnsignedInteger(RegisterFile.getProgramCounter(), valueBase);
+        tableData[32][ASCII_COLUMN] = "?";
+        tableData[32][NOTE_COLUMN] = "program counter";
 
-        tableData[33][0] = "hi";
-        tableData[33][1] = "";//new Integer(33);
-        tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
-        tableData[33][3] = "?";
-        tableData[33][4] = "";
+        tableData[33][NAME_COLUMN] = "hi";
+        tableData[33][NUMBER_COLUMN] = "";//new Integer(33);
+        tableData[33][VALUE_COLUMN] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
+        tableData[33][BINARY_COLUMN] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), 2);
+        tableData[33][ASCII_COLUMN] = "?";
+        tableData[33][NOTE_COLUMN] = "";
 
-        tableData[34][0] = "lo";
-        tableData[34][1] = "";//new Integer(34);
-        tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
-        tableData[34][3] = "?";
-        tableData[34][4] = "";
+        tableData[34][NAME_COLUMN] = "lo";
+        tableData[34][NUMBER_COLUMN] = "";//new Integer(34);
+        tableData[34][VALUE_COLUMN] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
+        tableData[34][BINARY_COLUMN] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), 2);
+        tableData[34][ASCII_COLUMN] = "?";
+        tableData[34][NOTE_COLUMN] = "";
 
         return tableData;
     }
@@ -215,16 +228,17 @@ public class RegistersWindow extends JPanel implements Observer {
      **/
 
     private void updateRegisterValue(int number, int val, int base) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(val, base), number, 2);
-
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, 3);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(val, base), number, VALUE_COLUMN);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(val, 2), number, BINARY_COLUMN);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, ASCII_COLUMN);
 
 
     }
 
 
     private void updateRegisterUnsignedValue(int val, int base) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(val, base), 32, 2);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(val, base), 32, VALUE_COLUMN);
+
     }
 
     /**
@@ -324,7 +338,7 @@ public class RegistersWindow extends JPanel implements Observer {
     ////////////////////////////////////////////////////////////////////////////
 
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Num", "Value", "ASCII", "Note"};
+        final String[] columnNames = {"Name", "Num", "Value","Binary", "ASCII", "Note"};
         final Object[][] data;
 
         RegTableModel(Object[][] d) {
