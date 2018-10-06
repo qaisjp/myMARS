@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
+Created-By: 1.8.0_181 (Oracle Corporation)
 Class-Path: .
-Created-By: 1.6.0_33 (Sun Microsystems Inc.)
 Main-Class: Mars
-

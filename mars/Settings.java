@@ -472,7 +472,7 @@ public class Settings extends Observable {
     // Swing initialization (that caused problems for UC Berkeley when we
     // created Font objects here).  It shouldn't, but then again Font shouldn't
     // either but they said it did.  (see HeadlessException)
-    // On othe other hand, the first statement of this method causes Color objects
+    // On the other hand, the first statement of this method causes Color objects
     // to be created!  It is possible but a real pain in the rear to avoid using
     // Color objects totally.  Requires new methods for the SyntaxUtilities class.
     private void initializeEditorSyntaxStyles() {
