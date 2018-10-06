@@ -188,7 +188,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         contentPane.add(tableScroller);
-        if (Globals.getSettings().getProgramArguments()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
             addProgramArgumentsPanel();
         }
 
@@ -597,7 +597,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         // Select the source code cell for this row by generating a fake Mouse Pressed event
         // and explicitly invoking the table's mouse listener.
         MouseEvent fakeMouseEvent = new MouseEvent(table, MouseEvent.MOUSE_PRESSED,
-                new Date().getTime(), MouseEvent.BUTTON1_MASK,
+                new Date().getTime(), MouseEvent.BUTTON1_DOWN_MASK,
                 (int) sourceCell.getX() + 1,
                 (int) sourceCell.getY() + 1, 1, false);
         MouseListener[] mouseListeners = table.getMouseListeners();
@@ -616,7 +616,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         // event on its mouse listener.
         Rectangle rect = ((MyTippedJTable) table).getRectForColumnIndex();
         MouseEvent fakeMouseEvent = new MouseEvent(table, MouseEvent.MOUSE_CLICKED,
-                new Date().getTime(), MouseEvent.BUTTON1_MASK,
+                new Date().getTime(), MouseEvent.BUTTON1_DOWN_MASK,
                 (int) rect.getX(), (int) rect.getY(), 1, false);
         MouseListener[] mouseListeners = ((MyTippedJTable) table).tableHeader.getMouseListeners();
         for (MouseListener mouseListener : mouseListeners) {

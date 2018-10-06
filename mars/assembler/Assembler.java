@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 
-import mars.ErrorList;
-import mars.ErrorMessage;
-import mars.Globals;
-import mars.MIPSprogram;
-import mars.ProcessingException;
-import mars.ProgramStatement;
+import mars.*;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Memory;
 import mars.mips.instructions.BasicInstruction;
@@ -407,7 +402,7 @@ public class Assembler {
                         "Duplicate text segment address: "
                                 + mars.venus.NumberDisplayBaseChooser.formatUnsignedInteger(ps2
                                 .getAddress(), (Globals.getSettings()
-                                .getDisplayAddressesInHex()) ? 16 : 10)
+                                .getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX) ? 16 : 10))
                                 + " already occupied by " + ps1.getSourceFile() + " line "
                                 + ps1.getSourceLine() + " (caused by use of "
                                 + ((Memory.inTextSegment(ps2.getAddress())) ? ".text" : ".ktext")

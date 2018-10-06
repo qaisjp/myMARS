@@ -200,7 +200,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         // Select the memory address cell by generating a fake Mouse Pressed event within its
         // extent and explicitly invoking the table's mouse listener.
         MouseEvent fakeMouseEvent = new MouseEvent(dataTable, MouseEvent.MOUSE_PRESSED,
-                new Date().getTime(), MouseEvent.BUTTON1_MASK,
+                new Date().getTime(), MouseEvent.BUTTON1_DOWN_MASK,
                 (int) addressCell.getX() + 1,
                 (int) addressCell.getY() + 1, 1, false);
         MouseListener[] mouseListeners = dataTable.getMouseListeners();
@@ -980,7 +980,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
             cell.setHorizontalAlignment(SwingConstants.RIGHT);
             int rowFirstAddress = Binary.stringToInt(table.getValueAt(row, ADDRESS_COLUMN).toString());
-            if (settings.getDataSegmentHighlighting() && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
+            if (settings.getBooleanSetting(Settings.DATA_SEGMENT_HIGHLIGHTING) && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.DATASEGMENT_HIGHLIGHT_FONT));

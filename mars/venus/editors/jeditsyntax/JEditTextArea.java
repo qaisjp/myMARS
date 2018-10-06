@@ -144,7 +144,7 @@ class JEditTextArea extends JComponent {
         // DPS 12May2010
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
                 e -> {
-                    if (JEditTextArea.this.isFocusOwner() && e.getKeyCode() == KeyEvent.VK_TAB && e.getModifiers() == 0) {
+                    if (JEditTextArea.this.isFocusOwner() && e.getKeyCode() == KeyEvent.VK_TAB && e.getModifiersEx() == 0) {
                         processKeyEvent(e);
                         return true;
                     } else {
@@ -1807,8 +1807,8 @@ class JEditTextArea extends JComponent {
             if (popup != null && popup.isVisible())
                 return;
 
-            setSelectionRectangular((evt.getModifiers()
-                    & InputEvent.CTRL_MASK) != 0);
+            setSelectionRectangular((evt.getModifiersEx()
+                    & InputEvent.CTRL_DOWN_MASK) != 0);
             select(getMarkPosition(), xyToOffset(evt.getX(), evt.getY()));
         }
 
@@ -1853,7 +1853,7 @@ class JEditTextArea extends JComponent {
             setCaretVisible(true);
             focusedComponent = JEditTextArea.this;
 
-            if ((evt.getModifiers() & InputEvent.BUTTON3_MASK) != 0
+            if ((evt.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0
                     && popup != null) {
                 popup.show(painter, evt.getX(), evt.getY());
                 return;
@@ -1880,8 +1880,8 @@ class JEditTextArea extends JComponent {
 
         private void doSingleClick(MouseEvent evt,
                                    int dot) {
-            if ((evt.getModifiers() & InputEvent.SHIFT_MASK) != 0) {
-                rectSelect = (evt.getModifiers() & InputEvent.CTRL_MASK) != 0;
+            if ((evt.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) {
+                rectSelect = (evt.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0;
                 select(getMarkPosition(), dot);
             } else
                 setCaretPosition(dot);
@@ -2266,7 +2266,7 @@ class JEditTextArea extends JComponent {
                 // The solution, as shown here, is to use invokeLater.
                 final MenuElement[] newPath = new MenuElement[2];
                 newPath[0] = path[0];
-                newPath[1] = (MenuElement) popupMenu.getComponentAtIndex(index);
+                newPath[1] = (MenuElement) popupMenu.getComponent(index);
                 SwingUtilities.invokeLater(
                         () -> MenuSelectionManager.defaultManager().setSelectedPath(newPath));
                 return true;

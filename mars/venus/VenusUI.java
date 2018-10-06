@@ -225,16 +225,16 @@ public class VenusUI extends JFrame {
             fileNewAction = new FileNewAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
                     "Create a new file for editing", KeyEvent.VK_N,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             fileOpenAction = new FileOpenAction("Open ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open22.png"))),
                     "Open a file for editing", KeyEvent.VK_O,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             fileCloseAction = new FileCloseAction("Close", null,
                     "Close the current file", KeyEvent.VK_C,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             fileCloseAllAction = new FileCloseAllAction("Close All", null,
                     "Close all open files", KeyEvent.VK_L,
@@ -242,7 +242,7 @@ public class VenusUI extends JFrame {
             fileSaveAction = new FileSaveAction("Save",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save22.png"))),
                     "Save the current file", KeyEvent.VK_S,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             fileSaveAsAction = new FileSaveAsAction("Save as ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs22.png"))),
@@ -254,7 +254,7 @@ public class VenusUI extends JFrame {
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump22.png"))),
                     "Dump machine code or data in an available format", KeyEvent.VK_D,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             filePrintAction = new FilePrintAction("Print ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print22.gif"))),
@@ -262,42 +262,42 @@ public class VenusUI extends JFrame {
                     null, mainUI);
             fileExitAction = new FileExitAction("Exit", null,
                     "Exit Mars", KeyEvent.VK_Q,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_Q,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Q,Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editUndoAction = new EditUndoAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
                     "Undo last edit", KeyEvent.VK_U,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editRedoAction = new EditRedoAction("Redo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo22.png"))),
                     "Redo last edit", KeyEvent.VK_R,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editCutAction = new EditCutAction("Cut",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut22.gif"))),
                     "Cut", KeyEvent.VK_C,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editCopyAction = new EditCopyAction("Copy",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy22.png"))),
                     "Copy", KeyEvent.VK_O,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editPasteAction = new EditPasteAction("Paste",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste22.png"))),
                     "Paste", KeyEvent.VK_P,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editFindReplaceAction = new EditFindReplaceAction("Find/Replace",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Find22.png"))),
                     "Find/Replace", KeyEvent.VK_F,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             editSelectAllAction = new EditSelectAllAction("Select All",
                     null, //new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath+"Find22.png"))),
                     "Select All", KeyEvent.VK_A,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             runAssembleAction = new RunAssembleAction("Assemble",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Assemble22.png"))),
@@ -338,13 +338,13 @@ public class VenusUI extends JFrame {
                     null,
                     "Clears all execution breakpoints set since the last assemble.",
                     KeyEvent.VK_K,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             runToggleBreakpointsAction = new RunToggleBreakpointsAction("Toggle all breakpoints",
                     null,
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
                     KeyEvent.VK_T,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+                    KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
             settingsLabelAction = new SettingsLabelAction("Show Labels Window (symbol table)",
                     null,
@@ -557,33 +557,33 @@ public class VenusUI extends JFrame {
         run.add(runToggleBreakpoints);
 
         JCheckBoxMenuItem settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
-        settingsLabel.setSelected(Globals.getSettings().getLabelWindowVisibility());
+        settingsLabel.setSelected(Globals.getSettings().getBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY));
         JCheckBoxMenuItem settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
         settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT));
         settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
-        settingsValueDisplayBase.setSelected(Globals.getSettings().getDisplayValuesInHex());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
+        settingsValueDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getValueDisplayBaseChooser().setSettingsMenuItem(settingsValueDisplayBase);
         settingsAddressDisplayBase = new JCheckBoxMenuItem(settingsAddressDisplayBaseAction);
-        settingsAddressDisplayBase.setSelected(Globals.getSettings().getDisplayAddressesInHex());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
+        settingsAddressDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getAddressDisplayBaseChooser().setSettingsMenuItem(settingsAddressDisplayBase);
         JCheckBoxMenuItem settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
-        settingsExtended.setSelected(Globals.getSettings().getExtendedAssemblerEnabled());
+        settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED));
         JCheckBoxMenuItem settingsDelayedBranching = new JCheckBoxMenuItem(settingsDelayedBranchingAction);
-        settingsDelayedBranching.setSelected(Globals.getSettings().getDelayedBranchingEnabled());
+        settingsDelayedBranching.setSelected(Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED));
         JCheckBoxMenuItem settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         JCheckBoxMenuItem settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
-        settingsAssembleOnOpen.setSelected(Globals.getSettings().getAssembleOnOpenEnabled());
+        settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ON_OPEN_ENABLED));
         JCheckBoxMenuItem settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
-        settingsAssembleAll.setSelected(Globals.getSettings().getAssembleAllEnabled());
+        settingsAssembleAll.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED));
         JCheckBoxMenuItem settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
-        settingsWarningsAreErrors.setSelected(Globals.getSettings().getWarningsAreErrors());
+        settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
         JCheckBoxMenuItem settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
-        settingsStartAtMain.setSelected(Globals.getSettings().getStartAtMain());
+        settingsStartAtMain.setSelected(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));
         JCheckBoxMenuItem settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
-        settingsProgramArguments.setSelected(Globals.getSettings().getProgramArguments());
+        settingsProgramArguments.setSelected(Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS));
         JMenuItem settingsEditor = new JMenuItem(settingsEditorAction);
         JMenuItem settingsHighlighting = new JMenuItem(settingsHighlightingAction);
         JMenuItem settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);

@@ -2,6 +2,7 @@ package mars.mips.dump;
 
 import mars.Globals;
 import mars.ProgramStatement;
+import mars.Settings;
 import mars.util.Binary;
 import mars.mips.hardware.*;
 
@@ -83,46 +84,45 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
 
         PrintStream out = new PrintStream(new FileOutputStream(file));
 
-        boolean hexAddresses = Globals.getSettings().getDisplayAddressesInHex();
-
         // If address in data segment, print in same format as Data Segment Window
-        if (Memory.inDataSegment(firstAddress)) {
-            boolean hexValues = Globals.getSettings().getDisplayValuesInHex();
-            int offset = 0;
-            StringBuilder string = new StringBuilder();
-            try {
-                for (int address = firstAddress; address <= lastAddress; address += Memory.WORD_LENGTH_BYTES) {
-                    if (offset % 8 == 0) {
-                        string = new StringBuilder(((hexAddresses) ? Binary.intToHexString(address) : Binary.unsignedIntToIntString(address)) + "    ");
-                    }
-                    offset++;
-                    Integer temp = Globals.memory.getRawWordOrNull(address);
-                    if (temp == null)
-                        break;
-                    string.append((hexValues)
-                            ? Binary.intToHexString(temp)
-                            : ("           " + temp).substring(temp.toString().length())).append(" ");
-                    if (offset % 8 == 0) {
-                        out.println(string);
-                        string = new StringBuilder();
-                    }
-                }
-            } finally {
-                out.close();
-            }
-            return;
-        }
 
-        if (!Memory.inTextSegment(firstAddress)) {
-            return;
-        }
         // If address in text segment, print in same format as Text Segment Window
-        out.println(" Address    Code        Basic                     Source");
         //           12345678901234567890123456789012345678901234567890
         //                    1         2         3         4         5
-        out.println();
-        String string;
-        try {
+        try (out) {
+            boolean hexAddresses = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX);
+            if (Memory.inDataSegment(firstAddress)) {
+                boolean hexValues = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX);
+                int offset = 0;
+                StringBuilder string = new StringBuilder();
+                try {
+                    for (int address = firstAddress; address <= lastAddress; address += Memory.WORD_LENGTH_BYTES) {
+                        if (offset % 8 == 0) {
+                            string = new StringBuilder(((hexAddresses) ? Binary.intToHexString(address) : Binary.unsignedIntToIntString(address)) + "    ");
+                        }
+                        offset++;
+                        Integer temp = Globals.memory.getRawWordOrNull(address);
+                        if (temp == null)
+                            break;
+                        string.append((hexValues)
+                                ? Binary.intToHexString(temp)
+                                : ("           " + temp).substring(temp.toString().length())).append(" ");
+                        if (offset % 8 == 0) {
+                            out.println(string);
+                            string = new StringBuilder();
+                        }
+                    }
+                } finally {
+                    out.close();
+                }
+                return;
+            }
+            if (!Memory.inTextSegment(firstAddress)) {
+                return;
+            }
+            out.println(" Address    Code        Basic                     Source");
+            out.println();
+            String string;
             for (int address = firstAddress; address <= lastAddress; address += Memory.WORD_LENGTH_BYTES) {
                 string = ((hexAddresses) ? Binary.intToHexString(address) : Binary.unsignedIntToIntString(address)) + "  ";
                 Integer temp = Globals.memory.getRawWordOrNull(address);
@@ -138,8 +138,6 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
                 }
                 out.println(string);
             }
-        } finally {
-            out.close();
         }
     }
 
