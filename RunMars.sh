@@ -16,7 +16,7 @@ if [[ "$_java" ]]; then
 
     IFS=. read major minor extra <<< "$version";
 
-    if ((major == 1 && minor > 10)); then
+    if ((major > 9 || (major == 1 && minor > 9))); then
         echo "Running Mars with default JRE"
         java -jar Mars.jar
     else

@@ -16,7 +16,7 @@ if [[ "$_java" ]]; then
 
     IFS=. read major minor extra <<< "$version";
 
-    if ((major == 1 && minor > 10)); then
+    if ((major > 9 || (major == 1 && minor > 9))); then
         echo "Compiling Mars with default javac"
         find . -name "*.java" | xargs javac
     else
