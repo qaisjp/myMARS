@@ -45,6 +45,7 @@ public class NumberDisplayBaseChooser extends JCheckBox {
     public static final int DECIMAL = 10;
     public static final int HEXADECIMAL = 16;
     public static final int ASCII = 0;
+    public static final int BINARY = 2;
     private int base;
     private JCheckBoxMenuItem settingMenuItem;
 
@@ -52,7 +53,7 @@ public class NumberDisplayBaseChooser extends JCheckBox {
      * constructor. It assumes the text will be worded
      * so that a checked box means hexadecimal!
      *
-     * @param text        Text to accompany the check box.
+     * @param text Text to accompany the check box.
      */
     public NumberDisplayBaseChooser(String text, boolean displayInHex) {
         super(text, displayInHex);
@@ -143,6 +144,9 @@ public class NumberDisplayBaseChooser extends JCheckBox {
                 break;
             case ASCII:
                 result = Binary.intToAscii(value);
+                break;
+            case BINARY:
+                result = Binary.intToBinaryString(value,32);
                 break;
             default:
                 result = Integer.toString(value);
