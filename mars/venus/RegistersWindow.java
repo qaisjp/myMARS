@@ -55,13 +55,13 @@ public class RegistersWindow extends JPanel implements Observer {
     private static final int NAME_COLUMN = 0;
     private static final int NUMBER_COLUMN = 1;
     private static final int VALUE_COLUMN = 2;
-    private static final int ASCII_COLUMN = 3;
+    private static final int UTF16_COLUMN = 3;
     private static final int NOTE_COLUMN = 4;
 
     private static final int NAME_COLUMN_WIDTH = 50;
     private static final int NUMBER_COLUMN_WIDTH = 40;
     private static final int VALUE_COLUMN_WIDTH = 80;
-    private static final int ASCII_COLUMN_WIDTH = 40;
+    private static final int UTF16_COLUMN_WIDTH = 60;
     private static final int NOTE_COLUMN_WIDTH = 30;
 
     private static Settings settings;
@@ -81,6 +81,8 @@ public class RegistersWindow extends JPanel implements Observer {
         RegisterCellRenderer cellRendererMonoLeft = new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT);
         RegisterCellRenderer cellRendererMonoRight = new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT);
         RegisterCellRenderer cellRendererRegularLeft = new RegisterCellRenderer(null, SwingConstants.LEFT);
+        //UTF runs on cell render central
+        RegisterCellRenderer cellRendererCentral = new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT,SwingConstants.CENTER);
 
         TableColumn col; // current column being edited
 
@@ -102,11 +104,11 @@ public class RegistersWindow extends JPanel implements Observer {
         col.setMaxWidth(VALUE_COLUMN_WIDTH);
         col.setCellRenderer(cellRendererMonoRight);
 
-        col = table.getColumnModel().getColumn(ASCII_COLUMN);
-        col.setPreferredWidth(ASCII_COLUMN_WIDTH);
-        col.setWidth(ASCII_COLUMN_WIDTH);
-        col.setMaxWidth(ASCII_COLUMN_WIDTH);
-        col.setCellRenderer(cellRendererMonoRight);
+        col = table.getColumnModel().getColumn(UTF16_COLUMN);
+        col.setPreferredWidth(UTF16_COLUMN_WIDTH);
+        col.setWidth(UTF16_COLUMN_WIDTH);
+        col.setMaxWidth(UTF16_COLUMN_WIDTH);
+        col.setCellRenderer(cellRendererCentral);
 
         col = table.getColumnModel().getColumn(NOTE_COLUMN);
         col.setPreferredWidth(NOTE_COLUMN_WIDTH);
@@ -324,7 +326,7 @@ public class RegistersWindow extends JPanel implements Observer {
     ////////////////////////////////////////////////////////////////////////////
 
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Num", "Value", "ASCII", "Note"};
+        final String[] columnNames = {"Name", "Num", "Value", "UTF-16", "Note"};
         final Object[][] data;
 
         RegTableModel(Object[][] d) {
@@ -504,7 +506,7 @@ public class RegistersWindow extends JPanel implements Observer {
                 "Each register has a tool tip describing its usage convention", // name
                 "Corresponding register number", // register number
                 "Current 32 bit value", // value
-                "Current value encoded as an ASCII character", // ascii
+                "Current value encoded as an UTF-16 Encoded character", // UTF-16 ecoded
                 "Annotate your registers by double clicking the cell", // annotation
         };
 
