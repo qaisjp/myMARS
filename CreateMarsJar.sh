@@ -16,12 +16,16 @@ if [[ "$_java" ]]; then
 
     IFS=. read major minor extra <<< "$version";
 
+    mkdir "out"
+    mkdir "out/production"
+    mkdir "out/production/mymars"
+
     if ((major > 9 || (major == 1 && minor > 9))); then
         echo "Compiling Mars with default javac"
-        find . -name "*.java" | xargs javac
+        find . -name "*.java" | xargs javac -d "out/production/mymars"
     else
         echo "Attempting to compile Mars with java-10"
-        find . -name "*.java" | xargs /usr/lib/jvm/java-10/bin/javac
+        find . -name "*.java" | xargs /usr/lib/jvm/java-10/bin/javac -d "out/production/mymars"
     fi
 fi
 
