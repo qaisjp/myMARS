@@ -17,14 +17,10 @@ if [[ "$_java" ]]; then
     IFS=. read major minor extra <<< "$version";
 
     if ((major > 9 || (major == 1 && minor > 9))); then
-        echo "Compiling Mars with default javac"
-        find . -name "*.java" | xargs javac
+        echo "Running Mars with default JRE"
+        java -jar Mars.jar
     else
-        echo "Attempting to compile Mars with java-10"
-        find . -name "*.java" | xargs /usr/lib/jvm/java-10/bin/javac
+        echo "Attempting to run Mars with java-10"
+        /usr/lib/jvm/java-10/bin/java -jar Mars.jar
     fi
 fi
-
-jar cfm Mars.jar META-INF/MANIFEST.MF README.md LICENSE.md PseudoOps.txt Config.properties Syscall.properties Settings.properties MipsXRayOpcode.xml registerDatapath.xml controlDatapath.xml ALUcontrolDatapath.xml CreateMarsJar.bat CreateMarsJar.sh Mars.java Mars.class docs help images mars
-
-echo "CreateMarsJar finished"
