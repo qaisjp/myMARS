@@ -135,14 +135,14 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         Object[][] tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
+            tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
             if (i % 2 == 0) { // even numbered double registers
                 long longValue = 0;
                 try {
                     longValue = Coprocessor1.getLongFromRegisterPair(registers[i].getName());
                 } catch (InvalidRegisterAccessException ignored) {
                 } // cannot happen since i must be even
-                tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue, NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
+                tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue, NumberDisplayBaseChooser.getBase(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()));
             } else {
                 tableData[i][2] = "";
             }
@@ -290,9 +290,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         table.tableChanged(new TableModelEvent(table.getModel()));
           /*
          int registerColumn = FLOAT_COLUMN;
-         registerColumn = table.convertColumnIndexToView(registerColumn); 
+         registerColumn = table.convertColumnIndexToView(registerColumn);
          Rectangle registerCell = table.getCellRect(registerRow, registerColumn, true);
-         // STEP 2:  Select the cell by generating a fake Mouse Pressed event and 
+         // STEP 2:  Select the cell by generating a fake Mouse Pressed event and
       	// explicitly invoking the table's mouse listener.
          MouseEvent fakeMouseEvent = new MouseEvent(table, MouseEvent.MOUSE_PRESSED,
                                                     new Date().getTime(), MouseEvent.BUTTON1_MASK,
@@ -326,7 +326,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
+            if (BooleanSetting.REGISTERS_HIGHLIGHTING.get() && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));

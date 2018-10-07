@@ -46,7 +46,7 @@ public class SettingsPopupInputAction extends GuiAction {
 
     public void actionPerformed(ActionEvent e) {
         boolean usePopup = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-        Globals.getSettings().setBooleanSetting(Settings.POPUP_SYSCALL_INPUT, usePopup);
+        BooleanSetting.POPUP_SYSCALL_INPUT.setTo(usePopup);
     }
 
 }

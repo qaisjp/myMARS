@@ -9,6 +9,7 @@
 
 package mars.venus.editors.jeditsyntax.tokenmarker;
 
+import mars.BooleanSetting;
 import mars.Globals;
 import mars.Settings;
 import mars.mips.hardware.Register;
@@ -222,7 +223,7 @@ public class MIPSTokenMarker extends TokenMarker {
                 matches = new ArrayList();
                 for (Object instrMatche : instrMatches) {
                     Instruction inst = (Instruction) instrMatche;
-                    if (Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED) || inst instanceof BasicInstruction) {
+                    if (BooleanSetting.EXTENDED_ASSEMBLER_ENABLED.get() || inst instanceof BasicInstruction) {
                         matches.add(new PopupHelpItem(tokenText, inst.getExampleFormat(), inst.getDescription()));
                         realMatches++;
                     }
@@ -400,7 +401,7 @@ public class MIPSTokenMarker extends TokenMarker {
         TreeSet mnemonics = new TreeSet();
         for (Object matche : matches) {
             Instruction inst = (Instruction) matche;
-            if (Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED) || inst instanceof BasicInstruction) {
+            if (BooleanSetting.EXTENDED_ASSEMBLER_ENABLED.get() || inst instanceof BasicInstruction) {
                 if (exact) {
                     results.add(new PopupHelpItem(tokenText, inst.getExampleFormat(), inst.getDescription(), true));
                 } else {

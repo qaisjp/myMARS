@@ -47,7 +47,7 @@ public class SettingsWarningsAreErrorsAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Globals.getSettings().setBooleanSetting(Settings.WARNINGS_ARE_ERRORS, ((JCheckBoxMenuItem) e.getSource()).isSelected());
+        BooleanSetting.WARNINGS_ARE_ERRORS.setTo(((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 
 }

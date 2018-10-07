@@ -10,6 +10,7 @@
 package mars.venus.editors.jeditsyntax;
 
 import mars.Settings;
+import mars.BooleanSetting;
 
 import javax.swing.JPopupMenu;
 import java.awt.Color;
@@ -72,7 +73,7 @@ public class TextAreaDefaults {
         DEFAULTS.caretColor = Color.black; // Color.red;
         DEFAULTS.selectionColor = new Color(0xccccff);
         DEFAULTS.lineHighlightColor = new Color(0xeeeeee);//0xe0e0e0);
-        DEFAULTS.lineHighlight = mars.Globals.getSettings().getBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING);
+        DEFAULTS.lineHighlight = BooleanSetting.EDITOR_CURRENT_LINE_HIGHLIGHTING.get();
         DEFAULTS.bracketHighlightColor = Color.black;
         DEFAULTS.bracketHighlight = false; // assembly language doesn't need this.
         DEFAULTS.eolMarkerColor = new Color(0x009999);

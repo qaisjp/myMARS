@@ -512,14 +512,14 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                     // temporarily enabling the setting as "non persistent" so it won't write through to the registry.
                     if (Memory.inTextSegment(address)) {
                         int displayValue = 0;
-                        if (!Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
-                            Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, true);
+                        if (!BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
+                            BooleanSetting.SELF_MODIFYING_CODE_ENABLED.setBooleanSettingNonPersistent(true);
                             try {
                                 displayValue = Globals.memory.getWordNoNotify(address);
                             } catch (AddressErrorException e) {
                                 // Still got an exception?  Doesn't seem possible but if we drop through it will write default value 0.
                             }
-                            Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, false);
+                            BooleanSetting.SELF_MODIFYING_CODE_ENABLED.setBooleanSettingNonPersistent(false);
                         }
                         ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(displayValue, valueBase), row, column);
                     }
@@ -633,7 +633,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         heapButton.setEnabled(true);
         extnButton.setEnabled(true);
         mmioButton.setEnabled(true);
-        textButton.setEnabled(settings.getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+        textButton.setEnabled(BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
         kernButton.setEnabled(true);
         prevButton.setEnabled(true);
         nextButton.setEnabled(true);
@@ -817,7 +817,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         } else if (observable == settings) {
             // Suspended work in progress. Intended to disable combobox item for text segment. DPS 9-July-2013.
             //baseAddressSelector.getModel().getElementAt(TEXT_BASE_ADDRESS_INDEX)
-            //*.setEnabled(settings.getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+            //*.setEnabled(BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
         } else if (obj instanceof MemoryAccessNotice) {            // NOTE: observable != Memory.getInstance() because Memory class delegates notification duty.
             MemoryAccessNotice access = (MemoryAccessNotice) obj;
             if (access.getAccessType() == AccessNotice.WRITE) {
@@ -880,8 +880,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         }
 
         /*
-         * The cells in the Address column are not editable.  
-      	* Value cells are editable except when displayed 
+         * The cells in the Address column are not editable.
+      	* Value cells are editable except when displayed
       	* in ASCII view - don't want to give the impression
       	* that ASCII text can be entered directly because
       	* it can't.  It is possible but not worth the
@@ -896,7 +896,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
         /*
          * JTable uses this method to determine the default renderer/
-         * editor for each cell.  
+         * editor for each cell.
          */
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
@@ -980,7 +980,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
             cell.setHorizontalAlignment(SwingConstants.RIGHT);
             int rowFirstAddress = Binary.stringToInt(table.getValueAt(row, ADDRESS_COLUMN).toString());
-            if (settings.getBooleanSetting(Settings.DATA_SEGMENT_HIGHLIGHTING) && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
+            if (BooleanSetting.DATA_SEGMENT_HIGHLIGHTING.get() && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.DATASEGMENT_HIGHLIGHT_FONT));

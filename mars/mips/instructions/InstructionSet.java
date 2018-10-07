@@ -2537,7 +2537,7 @@ public class InstructionSet {
     // the bottom (currently line 194, heavily commented).
 
     private void processBranch(int displacement) {
-        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
+        if (BooleanSetting.DELAYED_BRANCHING_ENABLED.get()) {
             // Register the branch target address (absolute byte address).
             DelayedBranch.register(RegisterFile.getProgramCounter() + (displacement << 2));
         } else {
@@ -2559,7 +2559,7 @@ public class InstructionSet {
    	 */
 
     private void processJump(int targetAddress) {
-        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
+        if (BooleanSetting.DELAYED_BRANCHING_ENABLED.get()) {
             DelayedBranch.register(targetAddress);
         } else {
             RegisterFile.setProgramCounter(targetAddress);
@@ -2580,7 +2580,7 @@ public class InstructionSet {
 
     private void processReturnAddress(int register) {
         RegisterFile.updateRegister(register, RegisterFile.getProgramCounter() +
-                ((Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) ?
+                ((BooleanSetting.DELAYED_BRANCHING_ENABLED.get()) ?
                         Instruction.INSTRUCTION_LENGTH : 0));
     }
 
