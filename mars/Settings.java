@@ -63,18 +63,18 @@ public class Settings extends Observable {
      * Flag to determine whether or not program being assembled is limited to
      * basic MIPS instructions and formats.
      */
-    private static final int EXTENDED_ASSEMBLER_ENABLED = 0;
+    public static final int EXTENDED_ASSEMBLER_ENABLED = 0;
     /**
      * Flag to determine whether or not program being assembled is limited to
      * using register numbers instead of names. NOTE: Its default value is
      * false and the IDE provides no means to change it!
      */
-    private static final int BARE_MACHINE_ENABLED = 1;
+    public static final int BARE_MACHINE_ENABLED = 1;
     /**
      * Flag to determine whether or not a file is immediately and automatically assembled
      * upon opening. Handy when using externa editor like mipster.
      */
-    private static final int ASSEMBLE_ON_OPEN_ENABLED = 2;
+    public static final int ASSEMBLE_ON_OPEN_ENABLED = 2;
     /**
      * Flag to determine whether only the current editor source file (enabled false) or
      * all files in its directory (enabled true) will be assembled when assembly is selected.
@@ -84,7 +84,7 @@ public class Settings extends Observable {
      * Default visibilty of label window (symbol table).  Default only, dynamic status
      * maintained by ExecutePane
      */
-    private static final int LABEL_WINDOW_VISIBILITY = 4;
+    public static final int LABEL_WINDOW_VISIBILITY = 4;
     /**
      * Default setting for displaying addresses and values in hexidecimal in the Execute
      * pane.
@@ -95,7 +95,7 @@ public class Settings extends Observable {
      * Flag to determine whether the currently selected exception handler source file will
      * be included in each assembly operation.
      */
-    private static final int EXCEPTION_HANDLER_ENABLED = 7;
+    public static final int EXCEPTION_HANDLER_ENABLED = 7;
     /**
      * Flag to determine whether or not delayed branching is in effect at MIPS execution.
      * This means we simulate the pipeline and statement FOLLOWING a successful branch
@@ -105,19 +105,19 @@ public class Settings extends Observable {
     /**
      * Flag to determine whether or not the editor will display line numbers.
      */
-    private static final int EDITOR_LINE_NUMBERS_DISPLAYED = 9;
+    public static final int EDITOR_LINE_NUMBERS_DISPLAYED = 9;
     /**
      * Flag to determine whether or not assembler warnings are considered errors.
      */
-    private static final int WARNINGS_ARE_ERRORS = 10;
+    public static final int WARNINGS_ARE_ERRORS = 10;
     /**
      * Flag to determine whether or not to display and use program arguments
      */
-    private static final int PROGRAM_ARGUMENTS = 11;
+    public static final int PROGRAM_ARGUMENTS = 11;
     /**
      * Flag to control whether or not highlighting is applied to data segment window
      */
-    private static final int DATA_SEGMENT_HIGHLIGHTING = 12;
+    public static final int DATA_SEGMENT_HIGHLIGHTING = 12;
     /**
      * Flag to control whether or not highlighting is applied to register windows
      */
@@ -125,7 +125,7 @@ public class Settings extends Observable {
     /**
      * Flag to control whether or not assembler automatically initializes program counter to 'main's address
      */
-    private static final int START_AT_MAIN = 14;
+    public static final int START_AT_MAIN = 14;
     /**
      * Flag to control whether or not editor will highlight the line currently being edited
      */
@@ -472,7 +472,7 @@ public class Settings extends Observable {
     // Swing initialization (that caused problems for UC Berkeley when we
     // created Font objects here).  It shouldn't, but then again Font shouldn't
     // either but they said it did.  (see HeadlessException)
-    // On othe other hand, the first statement of this method causes Color objects
+    // On the other hand, the first statement of this method causes Color objects
     // to be created!  It is possible but a real pain in the rear to avoid using
     // Color objects totally.  Requires new methods for the SyntaxUtilities class.
     private void initializeEditorSyntaxStyles() {

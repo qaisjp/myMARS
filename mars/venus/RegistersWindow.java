@@ -135,7 +135,7 @@ public class RegistersWindow extends JPanel implements Observer {
      **/
 
     private Object[][] setupWindow() {
-        int valueBase = NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex());
+        int valueBase = NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));
         Object[][] tableData = new Object[35][6];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {

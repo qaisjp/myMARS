@@ -148,8 +148,8 @@ public class SyntaxUtilities {
     //public static Popup popup;
 
     public static int paintSyntaxLine(Segment line, Token tokens,
-                                      SyntaxStyle[] styles, TabExpander expander, Graphics gfx,
-                                      int x, int y) {
+                                      SyntaxStyle[] styles, TabExpander expander, Graphics2D gfx,
+                                      float x, float y) {
         Font defaultFont = gfx.getFont();
         Color defaultColor = gfx.getColor();
 
@@ -203,7 +203,7 @@ public class SyntaxUtilities {
             tokens = tokens.next;
         }
 
-        return x;
+        return (int) x;
     }
 
     // private members

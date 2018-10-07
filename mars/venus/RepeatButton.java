@@ -254,7 +254,7 @@ public class RepeatButton extends JButton
         if (me.getSource() == this && this.isEnabled() && this.isRepeatEnabled()) {
             this.pressed = true;
             if (!this.timer.isRunning()) {
-                this.modifiers = me.getModifiers();
+                this.modifiers = me.getModifiersEx();
                 this.timer.setInitialDelay(this.initialDelay);
                 this.timer.start();
             }
@@ -285,7 +285,7 @@ public class RepeatButton extends JButton
         // process events only from this components
         if (me.getSource() == this && this.isEnabled() && this.isRepeatEnabled()) {
             if (this.pressed && !this.timer.isRunning()) {
-                this.modifiers = me.getModifiers();
+                this.modifiers = me.getModifiersEx();
                 this.timer.setInitialDelay(this.delay);
                 this.timer.start();
             }
