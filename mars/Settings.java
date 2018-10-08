@@ -57,6 +57,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Settings extends Observable {
     /////////////////////////////  PROPERTY ARRAY INDEXES /////////////////////////////
 
+    // NUMBER BASE SETTING
+    private String numberBaseSettingKey = "NumberBase";
+    private NumberBase numberBaseSetting;
+    private NumberBase defaultNumberBaseSetting = NumberBase.DECIMAL;
+
+    public void setNumberBaseSetting(NumberBase base) {
+        if (numberBaseSetting != base) {
+            numberBaseSetting = base;
+            saveNumberBaseSetting();
+            setChanged();
+            notifyObservers();
+        }
+    }
+
+    public NumberBase getNumberBaseSetting() {
+        return numberBaseSetting;
+    }
+
+
     // BOOLEAN SETTINGS...
     // Used by all the boolean setting "setter" methods.
     void internalSetBooleanSetting(BooleanSetting setting, boolean value) {
@@ -769,6 +788,7 @@ public class Settings extends Observable {
 
     // Default values.  Will be replaced if available from property file or Preferences object.
     private void applyDefaultSettings() {
+        numberBaseSetting = defaultNumberBaseSetting;
         System.arraycopy(defaultStringSettingsValues, 0, stringSettingsValues, 0, stringSettingsValues.length);
         for (int i = 0; i < fontFamilySettingsValues.length; i++) {
             fontFamilySettingsValues[i] = defaultFontFamilySettingsValues[i];
@@ -891,6 +911,9 @@ public class Settings extends Observable {
     // PRECONDITION: Values arrays have already been initialized to default values from
     // Settings.properties file or default value arrays above!
     private void getSettingsFromPreferences() {
+        int base = preferences.getInt(numberBaseSettingKey, numberBaseSetting.value);
+        numberBaseSetting = NumberBase.getBase(base);
+
         for (BooleanSetting setting : BooleanSetting.values()) {
             setting.value = preferences.getBoolean(setting.key, setting.value);
         }
@@ -906,6 +929,15 @@ public class Settings extends Observable {
             colorSettingsValues[i] = preferences.get(colorSettingsKeys[i], colorSettingsValues[i]);
         }
         getEditorSyntaxStyleSettingsFromPreferences();
+    }
+
+    private void saveNumberBaseSetting() {
+        try {
+            preferences.putInt(numberBaseSettingKey, numberBaseSetting.value);
+            preferences.flush();
+        } catch (SecurityException | BackingStoreException se) {
+            // cannot write to persistent storage for security reasons
+        }
     }
 
     // Save the key-value pair in the Properties object and assure it is written to persistent storage.
@@ -930,7 +962,7 @@ public class Settings extends Observable {
     }
 
 
-    // Save the key-value pair in the Properties object and assure it is written to persisent storage.
+    // Save the key-value pair in the Properties object and assure it is written to persistent storage.
     private void saveColorSetting(int index) {
         try {
             preferences.put(colorSettingsKeys[index], colorSettingsValues[index]);

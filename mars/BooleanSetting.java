@@ -123,7 +123,7 @@ public enum BooleanSetting {
      *
      * @param value True to display values in hexadecimal, false for decimal.
      */
-    DISPLAY_VALUES_IN_HEX("DisplayValuesInHex", true),
+    // DISPLAY_VALUES_IN_HEX("DisplayValuesInHex", true),
     /**
      * Flag to determine whether the currently selected exception handler source file will
      * be included in each assembly operation.

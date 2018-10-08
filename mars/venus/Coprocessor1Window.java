@@ -135,14 +135,14 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         Object[][] tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
+            tableData[i][1] = settings.getNumberBaseSetting().formatFloatNumber(registers[i].getValue());
             if (i % 2 == 0) { // even numbered double registers
                 long longValue = 0;
                 try {
                     longValue = Coprocessor1.getLongFromRegisterPair(registers[i].getName());
                 } catch (InvalidRegisterAccessException ignored) {
                 } // cannot happen since i must be even
-                tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue, NumberDisplayBaseChooser.getBase(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()));
+                tableData[i][2] = settings.getNumberBaseSetting().formatDoubleNumber(longValue);
             } else {
                 tableData[i][2] = "";
             }

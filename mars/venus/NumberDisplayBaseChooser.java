@@ -123,41 +123,6 @@ public class NumberDisplayBaseChooser extends JCheckBox {
 
 
     /**
-     * Produces a string form of an integer given the value and the
-     * numerical base to convert it to.  There is an instance
-     * method that uses the internally stored base.  This class
-     * method can be used by anyone anytime.
-     *
-     * @param value the number to be converted
-     * @param base  the numerical base to use (currently 10 or 16)
-     * @return a String equivalent of the value rendered appropriately.
-     */
-    public static String formatNumber(int value, int base) {
-        String result;
-        switch (base) {
-            case HEXADECIMAL:
-                result = Binary.intToHexString(value);
-                break;
-            case DECIMAL:
-                result = Integer.toString(value);
-                break;
-            case ASCII:
-                result = Binary.intToAscii(value);
-                break;
-            default:
-                result = Integer.toString(value);
-        }
-        return result;
-        //          if (base == NumberDisplayBaseChooser.HEXADECIMAL) {
-        //             return Binary.intToHexString(value);
-        //          }
-        //          else {
-        //             return Integer.toString(value);
-        //          }
-    }
-
-
-    /**
      * Produces a string form of a float given the value and the
      * numerical base to convert it to.  There is an instance
      * method that uses the internally stored base.  This class

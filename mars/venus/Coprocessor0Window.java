@@ -93,7 +93,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
             rowGivenRegNumber[registers[i].getNumber()] = i;
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
-            tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()));
+            tableData[i][2] = settings.getNumberBaseSetting().formatNumber(registers[i].getValue());
         }
         return tableData;
     }

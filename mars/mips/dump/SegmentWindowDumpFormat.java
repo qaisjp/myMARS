@@ -93,7 +93,8 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
         try (out) {
             boolean hexAddresses = BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get();
             if (Memory.inDataSegment(firstAddress)) {
-                boolean hexValues = BooleanSetting.DISPLAY_VALUES_IN_HEX.get();
+                boolean hexValues = false;
+                //BooleanSetting.DISPLAY_VALUES_IN_HEX.get();
                 int offset = 0;
                 StringBuilder string = new StringBuilder();
                 try {

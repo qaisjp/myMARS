@@ -67,7 +67,7 @@ public class ExecutePane extends JDesktopPane {
         addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
                 BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get());
         valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
-                BooleanSetting.DISPLAY_VALUES_IN_HEX.get());//VenusUI.DEFAULT_NUMBER_BASE);
+                true);
         addressDisplayBase.setToolTipText("If checked, displays all memory addresses in hexadecimal.  Otherwise, decimal.");
         valueDisplayBase.setToolTipText("If checked, displays all memory and register contents in hexadecimal.  Otherwise, decimal.");
         NumberDisplayBaseChooser[] choosers = {addressDisplayBase, valueDisplayBase};
