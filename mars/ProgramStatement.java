@@ -699,6 +699,7 @@ public class ProgramStatement {
 
         public String toString() {
             int addressBase = (BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get()) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
+            // TODO: replace constant
             int valueBase = NumberDisplayBaseChooser.DECIMAL;
                     //(BooleanSetting.DISPLAY_VALUES_IN_HEX.get()) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
 

@@ -53,6 +53,7 @@ public enum NumberBase {
     public String formatNumber(int number) {
         String result;
 
+        //TODO: replace constants
         switch(this) {
             case BINARY:
                 result = Binary.intToBinaryString(number);

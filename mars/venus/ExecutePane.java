@@ -66,6 +66,7 @@ public class ExecutePane extends JDesktopPane {
         // windows within the Execute pane.  So they will be housed here.
         addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
                 BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get());
+        //TODO: replace constant
         valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
                 true);
         addressDisplayBase.setToolTipText("If checked, displays all memory addresses in hexadecimal.  Otherwise, decimal.");
