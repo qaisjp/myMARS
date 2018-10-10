@@ -25,6 +25,14 @@ This project is a fork of MARS 4.5. Pull requests are very much welcomed.
  - **Windows**: execute "CreateMarsJar.bat" file to generate an executable.
  - **GNU/Linux** and **Mac**: execute "CreateMarsJar.sh" to generate a java archive. If you can't due to permissions, run `chmod +x CreateMarsJar.sh`.
 
+## How to release
+
+- Create new folder `mkdir myMARS`
+- Run `./CreateMarsJar.sh`
+- Copy files `cp Mars.jar RunMars.sh`
+- Create zip `zip myMARS.zip myMARS`
+- Release `myMARS.zip` with `vYYYY-MM-DD` as the version tag
+
 ## License
 [MIT][2]. Check the [LICENSE][3] file. All the credits go to the original developers.
 
