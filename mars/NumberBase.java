@@ -53,30 +53,29 @@ public enum NumberBase {
     public String formatNumber(int number) {
         String result;
 
-        //TODO: replace constants
         switch(this) {
             case BINARY:
                 result = Binary.intToBinaryString(number);
                 break;
 
             case TERNARY:
-                result = "FIX ME";
+                result = Integer.toString(number,3);
                 break;
 
             case QUATERNARY:
-                result = "FIX ME";
+                result = Integer.toString(number,4);
                 break;
 
             case QUINARY:
-                result = "FIX ME";
+                result =Integer.toString(number,5);
                 break;
 
             case SENARY:
-                result = "FIX ME";
+                result = Integer.toString(number,6);
                 break;
 
             case OCTAL:
-                result = "FIX ME";
+                result = Integer.toOctalString(number);
                 break;
 
             case DECIMAL:
