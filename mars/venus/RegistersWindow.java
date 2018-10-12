@@ -389,8 +389,8 @@ public class RegistersWindow extends JPanel implements Observer {
             synchronized (Globals.memoryAndRegistersLock) {
                 RegisterFile.updateRegister(row, val);
             }
-            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
-            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
+
+            data[row][col] = Globals.getSettings().getNumberBaseSetting().formatNumber(val);
             fireTableCellUpdated(row, col);
         }
 

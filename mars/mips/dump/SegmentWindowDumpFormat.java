@@ -93,9 +93,6 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
         try (out) {
             boolean hexAddresses = BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get();
             if (Memory.inDataSegment(firstAddress)) {
-                //TODO: replace constant
-                boolean hexValues = false;
-                //BooleanSetting.DISPLAY_VALUES_IN_HEX.get();
                 int offset = 0;
                 StringBuilder string = new StringBuilder();
                 try {
@@ -107,9 +104,10 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
                         Integer temp = Globals.memory.getRawWordOrNull(address);
                         if (temp == null)
                             break;
-                        string.append((hexValues)
-                                ? Binary.intToHexString(temp)
-                                : ("           " + temp).substring(temp.toString().length())).append(" ");
+
+                        string.append(Globals.getSettings().getNumberBaseSetting().formatNumber(temp))
+                              .append(" ");
+
                         if (offset % 8 == 0) {
                             out.println(string);
                             string = new StringBuilder();

@@ -88,10 +88,6 @@ public enum NumberBase {
 
             case ASCII:
                 result = Binary.intToAscii(number);
-                /*
-                * Could also be
-                * Character.toString((char) registers[i].getValue());
-                 */
                 break;
 
             default:
@@ -130,10 +126,9 @@ public enum NumberBase {
      * method can be used by anyone anytime.
      *
      * @param value the number to be converted
-     * @param base  the numerical base to use (currently 10 or 16)
      * @return a String equivalent of the value rendered appropriately.
      */
-    public String formatNumber(float value, int base) {
+    public String formatNumber(float value) {
         if (this == NumberBase.HEXADECIMAL) {
             return Binary.intToHexString(Float.floatToIntBits(value));
         } else {
@@ -149,10 +144,9 @@ public enum NumberBase {
      * method can be used by anyone anytime.
      *
      * @param value the number to be converted
-     * @param base  the numerical base to use (currently 10 or 16)
      * @return a String equivalent of the value rendered appropriately.
      */
-    public String formatNumber(double value, int base) {
+    public String formatNumber(double value) {
         if (this == NumberBase.HEXADECIMAL) {
             long lguy = Double.doubleToLongBits(value);
             return Binary.intToHexString(Binary.highOrderLongToInt(lguy)) +
@@ -178,7 +172,6 @@ public enum NumberBase {
      * no matter what the internal NaN value is.
      *
      * @param value the int bits to be converted to string of corresponding float.
-     * @param base  the numerical base to use (currently 10 or 16)
      * @return a String equivalent of the value rendered appropriately.
      */
     public String formatFloatNumber(int value) {
@@ -205,7 +198,6 @@ public enum NumberBase {
      * no matter what the internal NaN value is.
      *
      * @param value the long bits to be converted to string of corresponding double.
-     * @param base  the numerical base to use (currently 10 or 16)
      * @return a String equivalent of the value rendered appropriately.
      */
     public String formatDoubleNumber(long value) {

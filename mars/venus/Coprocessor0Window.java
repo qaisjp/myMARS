@@ -104,7 +104,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
     public void clearWindow() {
         this.clearHighlighting();
         Coprocessor0.resetRegisters();
-        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
+        this.updateRegisters();
     }
 
     /**
@@ -128,21 +128,12 @@ public class Coprocessor0Window extends JPanel implements Observer {
     }
 
     /**
-     * Update register display using current display base (10 or 16)
+     * Update register display using specified display base
      */
     public void updateRegisters() {
-        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
-    }
-
-    /**
-     * Update register display using specified display base
-     *
-     * @param base number base for display (10 or 16)
-     */
-    private void updateRegisters(int base) {
         registers = Coprocessor0.getRegisters();
         for (Register register : registers) {
-            this.updateRegisterValue(register.getNumber(), register.getValue(), base);
+            this.updateRegisterValue(register.getNumber(), register.getValue());
         }
     }
 
@@ -153,9 +144,9 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    private void updateRegisterValue(int number, int val, int base) {
+    private void updateRegisterValue(int number, int val) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number]);
+                Globals.getSettings().getNumberBaseSetting().formatNumber(val), rowGivenRegNumber[number]);
     }
 
 
@@ -314,8 +305,8 @@ public class Coprocessor0Window extends JPanel implements Observer {
             synchronized (Globals.memoryAndRegistersLock) {
                 Coprocessor0.updateRegister(registers[row].getNumber(), val);
             }
-            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
-            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
+
+            data[row][col] = settings.getNumberBaseSetting().formatNumber(val);
             fireTableCellUpdated(row, col);
         }
 

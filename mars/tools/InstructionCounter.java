@@ -220,7 +220,6 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
             else if (format == BasicInstructionFormat.J_FORMAT)
                 counterJ++;
         } catch (AddressErrorException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         updateDisplay();
