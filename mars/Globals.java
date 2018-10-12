@@ -46,6 +46,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Globals {
     // List these first because they are referenced by methods called at initialization.
     private static final String configPropertiesFile = "Config";
+    public static final String settingsPropertiesFile = "Settings";
+    private static final Properties configProperties = PropertiesFile.loadPropertiesFromFile(configPropertiesFile);
 
     /**
      * The set of implemented MIPS instructions.
@@ -99,7 +101,7 @@ public class Globals {
     /**
      * List of accepted file extensions for MIPS assembly source files.
      */
-    public static final ArrayList fileExtensions = getFileExtensions();
+    public static final ArrayList<String> fileExtensions = getFileExtensions();
     /**
      * Maximum length of scrolled message window (MARS Messages and Run I/O)
      */
@@ -189,7 +191,7 @@ public class Globals {
 
     // Read ASCII default display character for non-printing characters, from properties file.
     private static String getAsciiNonPrint() {
-        String anp = getPropertyEntry(configPropertiesFile, "AsciiNonPrint");
+        String anp = configProperties.getProperty("AsciiNonPrint");
         return (anp == null) ? "." : ((anp.equals("space")) ? " " : anp);
     }
 
@@ -197,7 +199,7 @@ public class Globals {
     // value is "null", substitute value of ASCII_NON_PRINT.  If string is
     // "space", substitute string containing one space character.
     private static String[] getAsciiStrings() {
-        String let = getPropertyEntry(configPropertiesFile, "AsciiTable");
+        String let = configProperties.getProperty("AsciiTable");
         String placeHolder = getAsciiNonPrint();
         String[] lets = let.split(" +");
         int maxLength = 0;
@@ -229,9 +231,10 @@ public class Globals {
 
     // Read assembly language file extensions from properties file.  Resulting
     // string is tokenized into array list (assume StringTokenizer default delimiters).
-    private static ArrayList getFileExtensions() {
-        ArrayList extensionsList = new ArrayList();
-        String extensions = getPropertyEntry(configPropertiesFile, "Extensions");
+    private static ArrayList<String> getFileExtensions() {
+        ArrayList<String> extensionsList = new ArrayList<>();
+        String extensions = configProperties.getProperty("Extensions");
+
         if (extensions != null) {
             StringTokenizer st = new StringTokenizer(extensions);
             while (st.hasMoreTokens()) {
@@ -249,10 +252,11 @@ public class Globals {
      * @return ArrayList.  Each item is file path to .class file
      * of a class that implements MarsTool.  If none, returns empty list.
      */
-    public static ArrayList getExternalTools() {
-        ArrayList toolsList = new ArrayList();
+    public static ArrayList<String> getExternalTools() {
+        ArrayList<String> toolsList = new ArrayList<>();
         String delimiter = ";";
-        String tools = getPropertyEntry(configPropertiesFile, "ExternalTools");
+        String tools = configProperties.getProperty("ExternalTools");
+
         if (tools != null) {
             StringTokenizer st = new StringTokenizer(tools, delimiter);
             while (st.hasMoreTokens()) {
@@ -270,17 +274,17 @@ public class Globals {
      * @param propertyName   String containing desired property name
      * @return String containing associated value; null if property not found
      */
-    public static String getPropertyEntry(String propertiesFile, String propertyName) {
-        return PropertiesFile.loadPropertiesFromFile(propertiesFile).getProperty(propertyName);
-    }
+    //public static String getPropertyEntry(String propertiesFile, String propertyName) {
+    //    return PropertiesFile.loadPropertiesFromFile(propertiesFile).getProperty(propertyName);
+    //}
 
     /**
      * Read any syscall number assignment overrides from config file.
      *
      * @return ArrayList of SyscallNumberOverride objects
      */
-    public ArrayList getSyscallOverrides() {
-        ArrayList overrides = new ArrayList();
+    public ArrayList<SyscallNumberOverride> getSyscallOverrides() {
+        ArrayList<SyscallNumberOverride> overrides = new ArrayList<>();
         String syscallPropertiesFile = "Syscall";
         Properties properties = PropertiesFile.loadPropertiesFromFile(syscallPropertiesFile);
         Enumeration keys = properties.keys();

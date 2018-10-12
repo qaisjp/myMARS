@@ -169,15 +169,15 @@ public class Settings extends Observable {
     public static final int REGISTER_HIGHLIGHT_FONT = 6;
 
     private static final String[] fontFamilySettingsKeys = {"EditorFontFamily", "EvenRowFontFamily",
-            "OddRowFontFamily", " TextSegmentHighlightFontFamily", "TextSegmentDelayslotHighightFontFamily",
+            "OddRowFontFamily", "TextSegmentHighlightFontFamily", "TextSegmentDelayslotHighightFontFamily",
             "DataSegmentHighlightFontFamily", "RegisterHighlightFontFamily"
     };
     private static final String[] fontStyleSettingsKeys = {"EditorFontStyle", "EvenRowFontStyle",
-            "OddRowFontStyle", " TextSegmentHighlightFontStyle", "TextSegmentDelayslotHighightFontStyle",
+            "OddRowFontStyle", "TextSegmentHighlightFontStyle", "TextSegmentDelayslotHighightFontStyle",
             "DataSegmentHighlightFontStyle", "RegisterHighlightFontStyle"
     };
     private static final String[] fontSizeSettingsKeys = {"EditorFontSize", "EvenRowFontSize",
-            "OddRowFontSize", " TextSegmentHighlightFontSize", "TextSegmentDelayslotHighightFontSize",
+            "OddRowFontSize", "TextSegmentHighlightFontSize", "TextSegmentDelayslotHighightFontSize",
             "DataSegmentHighlightFontSize", "RegisterHighlightFontSize"
     };
 
@@ -779,8 +779,8 @@ public class Settings extends Observable {
     private void initialize() {
         applyDefaultSettings();
         /* Properties file used to hold default settings. */
-        String settingsFile = "Settings";
-        if (!readSettingsFromPropertiesFile(settingsFile)) {
+
+        if (!readSettingsFromPropertiesFile()) {
             System.out.println("MARS System error: unable to read Settings.properties defaults. Using built-in defaults.");
         }
         getSettingsFromPreferences();
@@ -866,40 +866,54 @@ public class Settings extends Observable {
     // In that case, this method will NOT make an assignment to the settings array!
     // So consider it a precondition of this method: the settings arrays must already be
     // initialized with last-resort default values.
-    private boolean readSettingsFromPropertiesFile(String filename) {
+    private boolean readSettingsFromPropertiesFile() {
         String settingValue;
-        try {
-            for (BooleanSetting setting : BooleanSetting.values()) {
-                settingValue = Globals.getPropertyEntry(filename, setting.key);
+        Properties properties = PropertiesFile.loadPropertiesFromFile(Globals.settingsPropertiesFile);
 
-                if (settingValue != null) {
-                    setting.value = Boolean.valueOf(settingValue);
-                }
-            }
-            for (int i = 0; i < stringSettingsKeys.length; i++) {
-                settingValue = Globals.getPropertyEntry(filename, stringSettingsKeys[i]);
-                if (settingValue != null)
-                    stringSettingsValues[i] = defaultStringSettingsValues[i] = settingValue;
-            }
-            for (int i = 0; i < fontFamilySettingsValues.length; i++) {
-                settingValue = Globals.getPropertyEntry(filename, fontFamilySettingsKeys[i]);
-                if (settingValue != null)
-                    fontFamilySettingsValues[i] = defaultFontFamilySettingsValues[i] = settingValue;
-                settingValue = Globals.getPropertyEntry(filename, fontStyleSettingsKeys[i]);
-                if (settingValue != null)
-                    fontStyleSettingsValues[i] = defaultFontStyleSettingsValues[i] = settingValue;
-                settingValue = Globals.getPropertyEntry(filename, fontSizeSettingsKeys[i]);
-                if (settingValue != null)
-                    fontSizeSettingsValues[i] = defaultFontSizeSettingsValues[i] = settingValue;
-            }
-            for (int i = 0; i < colorSettingsKeys.length; i++) {
-                settingValue = Globals.getPropertyEntry(filename, colorSettingsKeys[i]);
-                if (settingValue != null)
-                    colorSettingsValues[i] = defaultColorSettingsValues[i] = settingValue;
-            }
-        } catch (Exception e) {
-            return false;
+        for (BooleanSetting setting : BooleanSetting.values()) {
+            settingValue = properties.getProperty(setting.key);
+
+            if (settingValue != null) {
+                setting.value = Boolean.valueOf(settingValue);
+            } else return false;
         }
+
+        for (int i = 0; i < stringSettingsKeys.length; i++) {
+            settingValue = properties.getProperty(stringSettingsKeys[i]);
+
+            if (settingValue != null) {
+                stringSettingsValues[i] = defaultStringSettingsValues[i] = settingValue;
+            } else return false;
+        }
+
+        for (int i = 0; i < fontFamilySettingsValues.length; i++) {
+            settingValue = properties.getProperty(fontFamilySettingsKeys[i]);
+
+            if (settingValue != null) {
+                fontFamilySettingsValues[i] = defaultFontFamilySettingsValues[i] = settingValue;
+            } else return false;
+
+            settingValue = properties.getProperty(fontStyleSettingsKeys[i]);
+
+            if (settingValue != null) {
+                fontStyleSettingsValues[i] = defaultFontStyleSettingsValues[i] = settingValue;
+            } else return false;
+
+            settingValue = properties.getProperty(fontSizeSettingsKeys[i]);
+
+            if (settingValue != null) {
+                fontSizeSettingsValues[i] = defaultFontSizeSettingsValues[i] = settingValue;
+            } else return false;
+        }
+
+        for (int i = 0; i < colorSettingsKeys.length; i++) {
+            settingValue = properties.getProperty(colorSettingsKeys[i]);
+
+            if (settingValue != null) {
+                colorSettingsValues[i] = defaultColorSettingsValues[i] = settingValue;
+            } else return false;
+        }
+
         return true;
     }
 
