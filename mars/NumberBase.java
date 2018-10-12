@@ -67,7 +67,7 @@ public enum NumberBase {
                 break;
 
             case QUINARY:
-                result =Integer.toString(number,5);
+                result = Integer.toString(number,5);
                 break;
 
             case SENARY:

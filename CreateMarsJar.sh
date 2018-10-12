@@ -29,6 +29,22 @@ if [[ "$_java" ]]; then
     fi
 fi
 
-jar cfm Mars.jar META-INF/MANIFEST.MF README.md LICENSE.md PseudoOps.txt Config.properties Syscall.properties Settings.properties MipsXRayOpcode.xml registerDatapath.xml controlDatapath.xml ALUcontrolDatapath.xml CreateMarsJar.bat CreateMarsJar.sh Mars.java Mars.class docs help images mars
+jar cfm Mars.jar \
+        META-INF/MANIFEST.MF \
+        README.md \
+        LICENSE.md \
+        PseudoOps.txt \
+        Config.properties \
+        Syscall.properties \
+        Settings.properties \
+        MipsXRayOpcode.xml \
+        registerDatapath.xml \
+        controlDatapath.xml \
+        ALUcontrolDatapath.xml \
+        docs \
+        help \
+        images \
+        -C out/production/mymars/ Mars.class \
+        -C out/production/mymars/ mars
 
 echo "CreateMarsJar finished"
