@@ -216,7 +216,7 @@ public class RegistersWindow extends JPanel implements Observer {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
                 settings.getNumberBaseSetting().formatNumber(val), number, VALUE_COLUMN);
 
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, ASCII_COLUMN);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, UTF16_COLUMN);
     }
 
 
