@@ -698,8 +698,7 @@ public class ProgramStatement {
         }
 
         public String toString() {
-            int addressBase = (Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX)) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
-            int valueBase = (Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
+            int addressBase = (BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get()) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
 
             StringBuilder result = new StringBuilder();
             for (Object aList : list) {
@@ -712,11 +711,9 @@ public class ProgramStatement {
                         result.append(NumberDisplayBaseChooser.formatNumber(e.iValue, addressBase));
                         break;
                     case 2:
-                        if (valueBase == NumberDisplayBaseChooser.HEXADECIMAL) {
-                            result.append(Binary.intToHexString(e.iValue)); // 13-July-2011, was: intToHalfHexString()
-                        } else {
-                            result.append(NumberDisplayBaseChooser.formatNumber(e.iValue, valueBase));
-                        }
+                        result.append(Globals.getSettings().getNumberBaseSetting().formatNumber(e.iValue));
+                        break;
+
                     default:
                         break;
                 }

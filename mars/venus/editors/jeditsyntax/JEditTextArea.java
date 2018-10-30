@@ -11,6 +11,7 @@ package mars.venus.editors.jeditsyntax;
 
 import mars.Globals;
 import mars.Settings;
+import mars.BooleanSetting;
 import mars.venus.editors.jeditsyntax.tokenmarker.*;
 
 import javax.swing.event.*;
@@ -2034,7 +2035,7 @@ class JEditTextArea extends JComponent {
      * @return String containing auto-indent characters to be inserted into text
      */
     public String getAutoIndent() {
-        return (Globals.getSettings().getBooleanSetting(Settings.AUTO_INDENT)) ? getLeadingWhiteSpace() : "";
+        return (BooleanSetting.AUTO_INDENT.get()) ? getLeadingWhiteSpace() : "";
     }
 
     /**
@@ -2118,7 +2119,7 @@ class JEditTextArea extends JComponent {
     // Compose and display syntax-sensitive help. Typically invoked upon typing a key.
     // Results in popup menu.  Is not used for creating tool tips.
     private void applySyntaxSensitiveHelp() {
-        if (!mars.Globals.getSettings().getBooleanSetting(mars.Settings.POPUP_INSTRUCTION_GUIDANCE)) {
+        if (!BooleanSetting.POPUP_INSTRUCTION_GUIDANCE.get()) {
             return;
         }
         int line = getCaretLine();

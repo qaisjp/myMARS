@@ -4,6 +4,8 @@ import mars.*;
 
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
 
 	/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -37,17 +39,28 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Action class for the Settings menu item to control number base (10 or 16) of memory/register contents.
  */
 public class SettingsValueDisplayBaseAction extends GuiAction {
-
-
     public SettingsValueDisplayBaseAction(String name, Icon icon, String descrip,
                                           Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel, gui);
+
+/*
+        for(JRadioButtonMenuItem item : items) {
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Globals.getSettings().setNumberBaseSetting(NumberBase.valueOf(item.getText()));
+                }
+            });
+        }
+        */
     }
 
     public void actionPerformed(ActionEvent e) {
-        boolean isHex = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-        Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
-        Globals.getSettings().setBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX, isHex);
-    }
+        //JMenuItem menuItem = (JMenuItem) e.getSource();
+        //menu.show(menuItem, 0, menuItem.getHeight());
 
+        // boolean isHex = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+        // Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
+        // BooleanSetting.DISPLAY_VALUES_IN_HEX.setTo(isHex);
+    }
 }

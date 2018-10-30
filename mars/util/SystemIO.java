@@ -89,7 +89,7 @@ public class SystemIO {
             } catch (IOException ignored) {
             }
         } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT)) {
+            if (BooleanSetting.POPUP_SYSCALL_INPUT.get()) {
                 input = Globals.getGui().getMessagesPane().getInputString(
                         "Enter an integer value (syscall " + serviceNumber + ")");
             } else {
@@ -118,7 +118,7 @@ public class SystemIO {
             } catch (IOException ignored) {
             }
         } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT)) {
+            if (BooleanSetting.POPUP_SYSCALL_INPUT.get()) {
                 input = Globals.getGui().getMessagesPane().getInputString(
                         "Enter a float value (syscall " + serviceNumber + ")");
             } else {
@@ -145,7 +145,7 @@ public class SystemIO {
             } catch (IOException ignored) {
             }
         } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT)) {
+            if (BooleanSetting.POPUP_SYSCALL_INPUT.get()) {
                 input = Globals.getGui().getMessagesPane().getInputString(
                         "Enter a double value (syscall " + serviceNumber + ")");
             } else {
@@ -185,7 +185,7 @@ public class SystemIO {
             } catch (IOException ignored) {
             }
         } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT)) {
+            if (BooleanSetting.POPUP_SYSCALL_INPUT.get()) {
                 input = Globals.getGui().getMessagesPane().getInputString(
                         "Enter a string of maximum length " + maxLength
                                 + " (syscall " + serviceNumber + ")");
@@ -221,7 +221,7 @@ public class SystemIO {
             } catch (IOException ignored) {
             }
         } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT)) {
+            if (BooleanSetting.POPUP_SYSCALL_INPUT.get()) {
                 input = Globals.getGui().getMessagesPane().getInputString(
                         "Enter a character value (syscall " + serviceNumber + ")");
             } else {

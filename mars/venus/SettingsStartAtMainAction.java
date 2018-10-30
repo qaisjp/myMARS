@@ -47,7 +47,7 @@ public class SettingsStartAtMainAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Globals.getSettings().setBooleanSetting(Settings.START_AT_MAIN, ((JCheckBoxMenuItem) e.getSource()).isSelected());
+        BooleanSetting.START_AT_MAIN.setTo(((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 
 }

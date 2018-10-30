@@ -2,6 +2,7 @@ package mars.mips.hardware;
 
 import java.util.Observer;
 
+import mars.BooleanSetting;
 import mars.Globals;
 import mars.Settings;
 import mars.assembler.SymbolTable;
@@ -302,7 +303,7 @@ public class RegisterFile {
         for (Register aRegFile : regFile) {
             aRegFile.resetValue();
         }
-        initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
+        initializeProgramCounter(BooleanSetting.START_AT_MAIN.get());// replaces "programCounter.resetValue()", DPS 3/3/09
         hi.resetValue();
         lo.resetValue();
     }

@@ -76,7 +76,7 @@ public class EditPane extends JPanel implements Observer {
         this.fileStatus = new FileStatus();
         lineNumbers = new JLabel();
 
-        if (Globals.getSettings().getBooleanSetting(Settings.GENERIC_TEXT_EDITOR)) {
+        if (BooleanSetting.GENERIC_TEXT_EDITOR.get()) {
             this.sourceCode = new GenericTextArea(this, lineNumbers);
         } else {
             this.sourceCode = new JEditBasedTextArea(this, lineNumbers);
@@ -144,7 +144,7 @@ public class EditPane extends JPanel implements Observer {
         showLineNumbers.setToolTipText("If checked, will display line number for each line of text.");
         showLineNumbers.setEnabled(false);
         // Show line numbers by default.
-        showLineNumbers.setSelected(Globals.getSettings().getBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED));
+        showLineNumbers.setSelected(BooleanSetting.EDITOR_LINE_NUMBERS_DISPLAYED.get());
 
         this.setSourceCode("", false);
 
@@ -164,7 +164,7 @@ public class EditPane extends JPanel implements Observer {
                         lineNumbers.setVisible(false);
                     }
                     sourceCode.revalidate(); // added 16 Jan 2012 to assure label redrawn.
-                    Globals.getSettings().setBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED, showLineNumbers.isSelected());
+                    BooleanSetting.EDITOR_LINE_NUMBERS_DISPLAYED.setTo(showLineNumbers.isSelected());
                     // needed because caret disappears when checkbox clicked
                     sourceCode.setCaretVisible(true);
                     sourceCode.requestFocusInWindow();
@@ -236,7 +236,7 @@ public class EditPane extends JPanel implements Observer {
      */
 
    	/*  IMPLEMENTATION NOTE:
-   	 * Tried repeatedly to use StringTokenizer to count lines but got bad results 
+   	 * Tried repeatedly to use StringTokenizer to count lines but got bad results
    	 * on empty lines (consecutive delimiters) even when returning delimiter as token.
    	 * BufferedReader on StringReader seems to work better.
    	 */
@@ -345,14 +345,14 @@ public class EditPane extends JPanel implements Observer {
     public UndoManager getUndoManager() {
         return sourceCode.getUndoManager();
     }
-   	
+
       /*       Note: these are invoked only when copy/cut/paste are used from the
    	               toolbar or menu or the defined menu Alt codes.  When
    						Ctrl-C, Ctrl-X or Ctrl-V are used, this code is NOT invoked
    						but the operation works correctly!
    				The "set visible" operations are used because clicking on the toolbar
    				icon causes both the selection highlighting AND the blinking cursor
-   				to disappear!  This does not happen when using menu selection or 
+   				to disappear!  This does not happen when using menu selection or
    				Ctrl-C/X/V
    	*/
 
@@ -596,7 +596,7 @@ public class EditPane extends JPanel implements Observer {
      */
     public void update(Observable fontChanger, Object arg) {
         sourceCode.setFont(Globals.getSettings().getEditorFont());
-        sourceCode.setLineHighlightEnabled(Globals.getSettings().getBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING));
+        sourceCode.setLineHighlightEnabled(BooleanSetting.EDITOR_CURRENT_LINE_HIGHLIGHTING.get());
         sourceCode.setCaretBlinkRate(Globals.getSettings().getCaretBlinkRate());
         sourceCode.setTabSize(Globals.getSettings().getEditorTabSize());
         sourceCode.updateSyntaxStyles();

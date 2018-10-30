@@ -413,7 +413,7 @@ public class Memory extends Observable {
             // Burch Mod (Jan 2013): replace throw with call to setStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
 
-            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+            if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
                 ProgramStatement oldStatement = getStatementNoNotify(address);
                 if (oldStatement != null) {
                     oldValue = oldStatement.getBinaryStatement();
@@ -476,7 +476,7 @@ public class Memory extends Observable {
         } else if (inTextSegment(address)) {
             // Burch Mod (Jan 2013): replace throw with call to setStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+            if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
                 ProgramStatement oldStatement = getStatementNoNotify(address);
                 if (oldStatement != null) {
                     oldValue = oldStatement.getBinaryStatement();
@@ -660,7 +660,7 @@ public class Memory extends Observable {
         } else if (inTextSegment(address)) {
             // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+            if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
                 ProgramStatement stmt = getStatementNoNotify(address);
                 value = stmt == null ? 0 : stmt.getBinaryStatement();
             } else {
@@ -700,7 +700,7 @@ public class Memory extends Observable {
      **/
 
     // Note: the logic here is repeated in getRawWordOrNull() below.  Logic is
-    // simplified by having this method just call getRawWordOrNull() then 
+    // simplified by having this method just call getRawWordOrNull() then
     // return either the int of its return value, or 0 if it returns null.
     // Doing so would be detrimental to simulation runtime performance, so
     // I decided to keep the duplicate logic.
@@ -726,7 +726,7 @@ public class Memory extends Observable {
         } else if (inTextSegment(address)) {
             // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+            if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
                 ProgramStatement stmt = getStatementNoNotify(address);
                 value = stmt == null ? 0 : stmt.getBinaryStatement();
             } else {
@@ -919,7 +919,7 @@ public class Memory extends Observable {
          }
          if (inTextSegment(address)) {
             return readProgramStatement(address, textBaseAddress, textBlockTable, true);
-         } 
+         }
          else {
             return readProgramStatement(address, kernelTextBaseAddress, kernelTextBlockTable,true);
          }
@@ -947,7 +947,7 @@ public class Memory extends Observable {
          }
          if (inTextSegment(address)) {
             return readProgramStatement(address, textBaseAddress, textBlockTable, false);
-         } 
+         }
          else {
             return readProgramStatement(address, kernelTextBaseAddress, kernelTextBlockTable, false);
          }
@@ -962,7 +962,7 @@ public class Memory extends Observable {
                     "fetch address for text segment not aligned to word boundary ",
                     Exceptions.ADDRESS_EXCEPTION_LOAD, address);
         }
-        if (!Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)
+        if (!BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()
                 && !(inTextSegment(address) || inKernelTextSegment(address))) {
             throw new AddressErrorException(
                     "fetch address for text segment out of range ",

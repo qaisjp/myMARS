@@ -72,8 +72,8 @@ public class RunAssembleAction extends GuiAction {
         Component editPane = mainUI.getMainPane().getEditPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         RegistersPane registersPane = mainUI.getRegistersPane();
-        extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED);
-        warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS);
+        extendedAssemblerEnabled = BooleanSetting.EXTENDED_ASSEMBLER_ENABLED.get();
+        warningsAreErrors = BooleanSetting.WARNINGS_ARE_ERRORS.get();
         if (FileStatus.getFile() != null) {
             if (FileStatus.get() == FileStatus.EDITED) {
                 mainUI.editor.save();
@@ -81,7 +81,7 @@ public class RunAssembleAction extends GuiAction {
             try {
                 Globals.program = new MIPSprogram();
                 ArrayList filesToAssemble;
-                if (Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED)) {// setting calls for multiple file assembly
+                if (BooleanSetting.ASSEMBLE_ALL_ENABLED.get()) {// setting calls for multiple file assembly
                     filesToAssemble = FilenameFinder.getFilenameList(
                             new File(FileStatus.getName()).getParent(), Globals.fileExtensions);
                 } else {
@@ -89,7 +89,7 @@ public class RunAssembleAction extends GuiAction {
                     filesToAssemble.add(FileStatus.getName());
                 }
                 String exceptionHandler = null;
-                if (Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED) &&
+                if (BooleanSetting.EXCEPTION_HANDLER_ENABLED.get() &&
                         Globals.getSettings().getExceptionHandler() != null &&
                         Globals.getSettings().getExceptionHandler().length() > 0) {
                     exceptionHandler = Globals.getSettings().getExceptionHandler();
