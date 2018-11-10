@@ -16,35 +16,15 @@ if [[ "$_java" ]]; then
 
     IFS=. read major minor extra <<< "$version";
 
-    mkdir "out"
-    mkdir "out/production"
-    mkdir "out/production/mymars"
-
     if ((major > 9 || (major == 1 && minor > 9))); then
         echo "Compiling Mars with default javac"
-        find . -name "*.java" | xargs javac -d "out/production/mymars"
+        find . -name "*.java" | xargs javac
     else
         echo "Attempting to compile Mars with java-10"
-        find . -name "*.java" | xargs /usr/lib/jvm/java-10/bin/javac -d "out/production/mymars"
+        find . -name "*.java" | xargs /usr/lib/jvm/java-10/bin/javac
     fi
 fi
 
-jar cfm Mars.jar \
-        META-INF/MANIFEST.MF \
-        README.md \
-        LICENSE.md \
-        PseudoOps.txt \
-        Config.properties \
-        Syscall.properties \
-        Settings.properties \
-        MipsXRayOpcode.xml \
-        registerDatapath.xml \
-        controlDatapath.xml \
-        ALUcontrolDatapath.xml \
-        docs \
-        help \
-        images \
-        -C out/production/mymars/ Mars.class \
-        -C out/production/mymars/ mars
+jar cfm Mars.jar META-INF/MANIFEST.MF README.md LICENSE.md PseudoOps.txt Config.properties Syscall.properties Settings.properties MipsXRayOpcode.xml registerDatapath.xml controlDatapath.xml ALUcontrolDatapath.xml CreateMarsJar.bat CreateMarsJar.sh Mars.java Mars.class docs help images mars
 
 echo "CreateMarsJar finished"

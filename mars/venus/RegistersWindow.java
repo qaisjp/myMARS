@@ -60,10 +60,8 @@ public class RegistersWindow extends JPanel implements Observer {
 
     private static final int NAME_COLUMN_WIDTH = 50;
     private static final int NUMBER_COLUMN_WIDTH = 40;
-
     private static final int VALUE_COLUMN_WIDTH = 80;
     private static final int UTF16_COLUMN_WIDTH = 60;
-
     private static final int NOTE_COLUMN_WIDTH = 30;
 
     private static Settings settings;
@@ -129,30 +127,31 @@ public class RegistersWindow extends JPanel implements Observer {
      **/
 
     private Object[][] setupWindow() {
+        int valueBase = NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));
         Object[][] tableData = new Object[35][5];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
-            tableData[i][2] = settings.getNumberBaseSetting().formatNumber(registers[i].getValue());
+            tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
             tableData[i][3] = Character.toString((char) registers[i].getValue());
             tableData[i][4] = "";
         }
         tableData[32][0] = "pc";
         tableData[32][1] = "";//new Integer(32);
-        tableData[32][2] = settings.getNumberBaseSetting().formatUnsignedInteger(RegisterFile.getProgramCounter());
+        tableData[32][2] = NumberDisplayBaseChooser.formatUnsignedInteger(RegisterFile.getProgramCounter(), valueBase);
         tableData[32][3] = "?";
         tableData[32][4] = "program counter";
 
         tableData[33][0] = "hi";
         tableData[33][1] = "";//new Integer(33);
-        tableData[33][2] = settings.getNumberBaseSetting().formatUnsignedInteger(RegisterFile.getValue(33));
+        tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
         tableData[33][3] = "?";
         tableData[33][4] = "";
 
         tableData[34][0] = "lo";
         tableData[34][1] = "";//new Integer(34);
-        tableData[34][2] = settings.getNumberBaseSetting().formatUnsignedInteger(RegisterFile.getValue(34));
+        tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
         tableData[34][3] = "?";
         tableData[34][4] = "";
 
@@ -165,7 +164,7 @@ public class RegistersWindow extends JPanel implements Observer {
     public void clearWindow() {
         this.clearHighlighting();
         RegisterFile.resetRegisters();
-        this.updateRegisters();
+        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
     }
 
     /**
@@ -189,20 +188,25 @@ public class RegistersWindow extends JPanel implements Observer {
     }
 
     /**
+     * update register display using current number base (10 or 16)
+     */
+    public void updateRegisters() {
+        updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
+    }
+
+    /**
      * update register display using specified number base (10 or 16)
      *
      * @param base desired number base
      */
-    public void updateRegisters() {
+    private void updateRegisters(int base) {
         registers = RegisterFile.getRegisters();
-
         for (Register register : registers) {
-            updateRegisterValue(register.getNumber(), register.getValue());
+            updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
-
-        updateRegisterUnsignedValue(RegisterFile.getProgramCounter());
-        updateRegisterValue(33, RegisterFile.getValue(33));
-        updateRegisterValue(34, RegisterFile.getValue(34));
+        updateRegisterUnsignedValue(RegisterFile.getProgramCounter(), base);
+        updateRegisterValue(33, RegisterFile.getValue(33), base);
+        updateRegisterValue(34, RegisterFile.getValue(34), base);
     }
 
     /**
@@ -212,17 +216,17 @@ public class RegistersWindow extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    private void updateRegisterValue(int number, int val) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                settings.getNumberBaseSetting().formatNumber(val), number, VALUE_COLUMN);
+    private void updateRegisterValue(int number, int val, int base) {
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(val, base), number, 2);
 
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, UTF16_COLUMN);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(Character.toString((char) val), number, 3);
+
+
     }
 
 
-    private void updateRegisterUnsignedValue(int val) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                settings.getNumberBaseSetting().formatUnsignedInteger(val), 32, VALUE_COLUMN);
+    private void updateRegisterUnsignedValue(int val, int base) {
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(val, base), 32, 2);
     }
 
     /**
@@ -301,7 +305,7 @@ public class RegistersWindow extends JPanel implements Observer {
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
 
-            if (BooleanSetting.REGISTERS_HIGHLIGHTING.get() && highlighting && row == highlightRow) {
+            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));
@@ -393,8 +397,8 @@ public class RegistersWindow extends JPanel implements Observer {
             synchronized (Globals.memoryAndRegistersLock) {
                 RegisterFile.updateRegister(row, val);
             }
-
-            data[row][col] = Globals.getSettings().getNumberBaseSetting().formatNumber(val);
+            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
         }
 

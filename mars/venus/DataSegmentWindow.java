@@ -98,7 +98,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
      * @param choosers an array of objects used by user to select number display base (10 or 16)
      */
 
-    public DataSegmentWindow(NumberDisplayBaseChooser baseChooser) {
+    public DataSegmentWindow(NumberDisplayBaseChooser[] choosers) {
         super("Data Segment", true, false, true, true);
 
         Simulator.getInstance().addObserver(this);
@@ -149,7 +149,17 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         navButtons.add(nextButton);
         features.add(navButtons);
         features.add(baseAddressSelector);
-        features.add(baseChooser);
+        for (NumberDisplayBaseChooser chooser : choosers) {
+            features.add(chooser);
+        }
+        JCheckBox asciiDisplayCheckBox = new JCheckBox("ASCII", asciiDisplay);
+        asciiDisplayCheckBox.setToolTipText("Display data segment values in ASCII (overrides Hexadecimal Values setting)");
+        asciiDisplayCheckBox.addItemListener(
+                e -> {
+                    asciiDisplay = (e.getStateChange() == ItemEvent.SELECTED);
+                    DataSegmentWindow.this.updateValues();
+                });
+        features.add(asciiDisplayCheckBox);
 
         contentPane.add(features, BorderLayout.SOUTH);
     }
@@ -394,16 +404,16 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
     //   Returns the JScrollPane for the Address/Data part of the Data Segment window.
     private JScrollPane generateDataPanel() {
         dataData = new Object[NUMBER_OF_ROWS][NUMBER_OF_COLUMNS];
-
+        int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
         int addressBase = Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBase();
         int address = this.homeAddress;
         for (int row = 0; row < NUMBER_OF_ROWS; row++) {
             dataData[row][ADDRESS_COLUMN] = NumberDisplayBaseChooser.formatUnsignedInteger(address, addressBase);
             for (int column = 1; column < NUMBER_OF_COLUMNS; column++) {
                 try {
-                    dataData[row][column] = Globals.getSettings().getNumberBaseSetting().formatNumber(Globals.memory.getRawWord(address));
+                    dataData[row][column] = NumberDisplayBaseChooser.formatNumber(Globals.memory.getRawWord(address), valueBase);
                 } catch (AddressErrorException aee) {
-                    dataData[row][column] = Globals.getSettings().getNumberBaseSetting().formatNumber(0);
+                    dataData[row][column] = NumberDisplayBaseChooser.formatNumber(0, valueBase);
                 }
                 address += BYTES_PER_VALUE;
             }
@@ -470,6 +480,12 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         addressColumn = -1;
     }
 
+
+    private int getValueDisplayFormat() {
+        return (asciiDisplay) ? NumberDisplayBaseChooser.ASCII :
+                Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+    }
+
     /**
      * Update table model with contents of new memory "chunk".  Mars supports megabytes of
      * data segment space so we only plug a "chunk" at a time into the table.
@@ -480,7 +496,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
     private void updateModelForMemoryRange(int firstAddr) {
         if (tablePanel.getComponentCount() == 0)
             return; // ignore if no content to change
-
+        int valueBase = getValueDisplayFormat();
         int addressBase = Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBase();
         int address = firstAddr;
         TableModel dataModel = dataTable.getModel();
@@ -488,8 +504,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatUnsignedInteger(address, addressBase), row, ADDRESS_COLUMN);
             for (int column = 1; column < NUMBER_OF_COLUMNS; column++) {
                 try {
-                    ((DataTableModel) dataModel).setDisplayAndModelValueAt(
-                            Globals.getSettings().getNumberBaseSetting().formatNumber(Globals.memory.getWordNoNotify(address)), row, column);
+                    ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(Globals.memory.getWordNoNotify(address), valueBase), row, column);
                 } catch (AddressErrorException aee) {
                     // Bit of a hack here.  Memory will throw an exception if you try to read directly from text segment when the
                     // self-modifying code setting is disabled.  This is a good thing if it is the executing MIPS program trying to
@@ -497,17 +512,16 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                     // temporarily enabling the setting as "non persistent" so it won't write through to the registry.
                     if (Memory.inTextSegment(address)) {
                         int displayValue = 0;
-                        if (!BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
-                            BooleanSetting.SELF_MODIFYING_CODE_ENABLED.setBooleanSettingNonPersistent(true);
+                        if (!Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+                            Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, true);
                             try {
                                 displayValue = Globals.memory.getWordNoNotify(address);
                             } catch (AddressErrorException e) {
                                 // Still got an exception?  Doesn't seem possible but if we drop through it will write default value 0.
                             }
-                            BooleanSetting.SELF_MODIFYING_CODE_ENABLED.setBooleanSettingNonPersistent(false);
+                            Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, false);
                         }
-                        ((DataTableModel) dataModel).setDisplayAndModelValueAt(
-                                Globals.getSettings().getNumberBaseSetting().formatNumber(displayValue), row, column);
+                        ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(displayValue, valueBase), row, column);
                     }
                     // Bug Fix: the following line of code disappeared during the release 4.4 mods, but is essential to
                     // display values of 0 for valid MIPS addresses that are outside the MARS simulated address space.  Such
@@ -515,8 +529,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                     // With 4.4, I added the above IF statement to work with the text segment but inadvertently removed this line!
                     // Now it becomes the "else" part, executed when not in text segment.  DPS 8-July-2014.
                     else {
-                        ((DataTableModel) dataModel).setDisplayAndModelValueAt(
-                                Globals.getSettings().getNumberBaseSetting().formatNumber(0), row, column);
+                        ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(0, valueBase), row, column);
                     }
                 }
                 address += BYTES_PER_VALUE;
@@ -535,8 +548,9 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         }
         int row = offset / BYTES_PER_ROW;
         int column = (offset % BYTES_PER_ROW) / BYTES_PER_VALUE + 1; // column 0 reserved for address
-        ((DataTableModel) dataTable.getModel()).setDisplayAndModelValueAt(
-                Globals.getSettings().getNumberBaseSetting().formatNumber(value), row, column);
+        int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+        ((DataTableModel) dataTable.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(value, valueBase),
+                row, column);
     }
 
     /**
@@ -582,11 +596,11 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
      */
 
     public void resetValues() {
+        int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
         TableModel dataModel = dataTable.getModel();
         for (int row = 0; row < NUMBER_OF_ROWS; row++) {
             for (int column = 1; column < NUMBER_OF_COLUMNS; column++) {
-                ((DataTableModel) dataModel).setDisplayAndModelValueAt(
-                        Globals.getSettings().getNumberBaseSetting().formatNumber(0), row, column);
+                ((DataTableModel) dataModel).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatNumber(0, valueBase), row, column);
             }
         }
         disableAllButtons();
@@ -619,7 +633,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         heapButton.setEnabled(true);
         extnButton.setEnabled(true);
         mmioButton.setEnabled(true);
-        textButton.setEnabled(BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
+        textButton.setEnabled(settings.getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         kernButton.setEnabled(true);
         prevButton.setEnabled(true);
         nextButton.setEnabled(true);
@@ -803,7 +817,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         } else if (observable == settings) {
             // Suspended work in progress. Intended to disable combobox item for text segment. DPS 9-July-2013.
             //baseAddressSelector.getModel().getElementAt(TEXT_BASE_ADDRESS_INDEX)
-            //*.setEnabled(BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
+            //*.setEnabled(settings.getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         } else if (obj instanceof MemoryAccessNotice) {            // NOTE: observable != Memory.getInstance() because Memory class delegates notification duty.
             MemoryAccessNotice access = (MemoryAccessNotice) obj;
             if (access.getAccessType() == AccessNotice.WRITE) {
@@ -866,8 +880,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         }
 
         /*
-         * The cells in the Address column are not editable.
-      	* Value cells are editable except when displayed
+         * The cells in the Address column are not editable.  
+      	* Value cells are editable except when displayed 
       	* in ASCII view - don't want to give the impression
       	* that ASCII text can be entered directly because
       	* it can't.  It is possible but not worth the
@@ -882,7 +896,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
         /*
          * JTable uses this method to determine the default renderer/
-         * editor for each cell.
+         * editor for each cell.  
          */
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
@@ -924,7 +938,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                     return;
                 }
             }// end synchronized block
-            data[row][col] = Globals.getSettings().getNumberBaseSetting().formatNumber(val);
+            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
         }
 
@@ -965,7 +980,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
             cell.setHorizontalAlignment(SwingConstants.RIGHT);
             int rowFirstAddress = Binary.stringToInt(table.getValueAt(row, ADDRESS_COLUMN).toString());
-            if (BooleanSetting.DATA_SEGMENT_HIGHLIGHTING.get() && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
+            if (settings.getBooleanSetting(Settings.DATA_SEGMENT_HIGHLIGHTING) && addressHighlighting && rowFirstAddress == addressRowFirstAddress && column == addressColumn) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.DATASEGMENT_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.DATASEGMENT_HIGHLIGHT_FONT));

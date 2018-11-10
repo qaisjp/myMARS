@@ -318,7 +318,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
          * @param line The line number
          * @param y    The y co-ordinate of the line
          */
-        void paintHighlight(Graphics gfx, int line, int y);
+        void paintHighlight(Graphics gfx, int line, float y);
 
         /**
          * Returns the tool tip to display at the specified
@@ -385,7 +385,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
      *
      * @param gfx The graphics context
      */
-    public void paint(Graphics gfx) {
+    public void paint(Graphics2D gfx) {
 
         // Added 4/6/10 DPS to set antialiasing for text rendering - smoother letters
         // Second one says choose algorithm for quality over speed
@@ -521,7 +521,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
 
     private Highlight highlights;
 
-    private void paintLine(Graphics gfx, TokenMarker tokenMarker,
+    private void paintLine(Graphics2D gfx, TokenMarker tokenMarker,
                            int line, int x) {//System.out.println("paintLine "+ (++count));
         Font defaultFont = getFont();
         Color defaultColor = getForeground();
@@ -543,8 +543,8 @@ class TextAreaPainter extends JComponent implements TabExpander {
         }
     }
 
-    private void paintPlainLine(Graphics gfx, int line, Font defaultFont,
-                                Color defaultColor, int x, int y) {
+    private void paintPlainLine(Graphics2D gfx, int line, Font defaultFont,
+                                Color defaultColor, float x, int y) {
         paintHighlight(gfx, line, y);
         textArea.getLineText(line, currentLine);
 
@@ -561,7 +561,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
     }
 
     //      private int count=0;
-    private void paintSyntaxLine(Graphics gfx, TokenMarker tokenMarker,
+    private void paintSyntaxLine(Graphics2D gfx, TokenMarker tokenMarker,
                                  int line, Font defaultFont, Color defaultColor, int x, int y) {//System.out.println("paintSyntaxLine line "+ line);
         textArea.getLineText(currentLineIndex, currentLine);
         currentLineTokens = tokenMarker.markTokens(currentLine,
@@ -588,7 +588,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
         }
     }
 
-    private void paintHighlight(Graphics gfx, int line, int y) {//System.out.println("paintHighlight "+ (++count));
+    private void paintHighlight(Graphics2D gfx, int line, int y) {//System.out.println("paintHighlight "+ (++count));
         if (line >= textArea.getSelectionStartLine()
                 && line <= textArea.getSelectionEndLine())
             paintLineHighlight(gfx, line, y);
@@ -603,7 +603,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
             paintCaret(gfx, line, y);
     }
 
-    private void paintLineHighlight(Graphics gfx, int line, int y) {//System.out.println("paintLineHighlight "+ (++count));
+    private void paintLineHighlight(Graphics2D gfx, int line, int y) {//System.out.println("paintLineHighlight "+ (++count));
         int height = fm.getHeight();
         y += fm.getLeading() + fm.getMaxDescent();
 
@@ -658,7 +658,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
 
     }
 
-    private void paintBracketHighlight(Graphics gfx, int line, int y) {
+    private void paintBracketHighlight(Graphics2D gfx, int line, int y) {
         int position = textArea.getBracketPosition();
         if (position == -1)
             return;
@@ -672,7 +672,7 @@ class TextAreaPainter extends JComponent implements TabExpander {
                 fm.getHeight() - 1);
     }
 
-    private void paintCaret(Graphics gfx, int line, int y) {
+    private void paintCaret(Graphics2D gfx, int line, int y) {
         if (textArea.isCaretVisible()) {
             int offset = textArea.getCaretPosition()
                     - textArea.getLineStartOffset(line);

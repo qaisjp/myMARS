@@ -93,7 +93,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
             rowGivenRegNumber[registers[i].getNumber()] = i;
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
-            tableData[i][2] = settings.getNumberBaseSetting().formatNumber(registers[i].getValue());
+            tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
         }
         return tableData;
     }
@@ -104,7 +104,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
     public void clearWindow() {
         this.clearHighlighting();
         Coprocessor0.resetRegisters();
-        this.updateRegisters();
+        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
     }
 
     /**
@@ -128,12 +128,21 @@ public class Coprocessor0Window extends JPanel implements Observer {
     }
 
     /**
-     * Update register display using specified display base
+     * Update register display using current display base (10 or 16)
      */
     public void updateRegisters() {
+        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
+    }
+
+    /**
+     * Update register display using specified display base
+     *
+     * @param base number base for display (10 or 16)
+     */
+    private void updateRegisters(int base) {
         registers = Coprocessor0.getRegisters();
         for (Register register : registers) {
-            this.updateRegisterValue(register.getNumber(), register.getValue());
+            this.updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
     }
 
@@ -144,9 +153,9 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    private void updateRegisterValue(int number, int val) {
+    private void updateRegisterValue(int number, int val, int base) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                Globals.getSettings().getNumberBaseSetting().formatNumber(val), rowGivenRegNumber[number]);
+                NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number]);
     }
 
 
@@ -225,7 +234,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (BooleanSetting.REGISTERS_HIGHLIGHTING.get() && highlighting && row == highlightRow) {
+            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));
@@ -305,8 +314,8 @@ public class Coprocessor0Window extends JPanel implements Observer {
             synchronized (Globals.memoryAndRegistersLock) {
                 Coprocessor0.updateRegister(registers[row].getNumber(), val);
             }
-
-            data[row][col] = settings.getNumberBaseSetting().formatNumber(val);
+            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
         }
 

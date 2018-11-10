@@ -135,14 +135,14 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         Object[][] tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = settings.getNumberBaseSetting().formatFloatNumber(registers[i].getValue());
+            tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(), NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
             if (i % 2 == 0) { // even numbered double registers
                 long longValue = 0;
                 try {
                     longValue = Coprocessor1.getLongFromRegisterPair(registers[i].getName());
                 } catch (InvalidRegisterAccessException ignored) {
                 } // cannot happen since i must be even
-                tableData[i][2] = settings.getNumberBaseSetting().formatDoubleNumber(longValue);
+                tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue, NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
             } else {
                 tableData[i][2] = "";
             }
@@ -156,7 +156,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     public void clearWindow() {
         this.clearHighlighting();
         Coprocessor1.resetRegisters();
-        this.updateRegisters();
+        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
         Coprocessor1.clearConditionFlags();
         this.updateConditionFlagDisplay();
     }
@@ -182,15 +182,23 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     }
 
     /**
-     * Redisplay registers
+     * Redisplay registers using current display number base (10 or 16)
      */
     public void updateRegisters() {
-        registers = Coprocessor1.getRegisters();
+        updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
+    }
 
+    /**
+     * Redisplay registers using specified display number base (10 or 16)
+     *
+     * @param base number base for display (10 or 16)
+     */
+    private void updateRegisters(int base) {
+        registers = Coprocessor1.getRegisters();
         for (int i = 0; i < registers.length; i++) {
-            updateFloatRegisterValue(registers[i].getNumber(), registers[i].getValue());
+            updateFloatRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
             if (i % 2 == 0) {
-                updateDoubleRegisterValue(i);
+                updateDoubleRegisterValue(i, base);
             }
         }
         updateConditionFlagDisplay();
@@ -210,9 +218,8 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @param base   the number base for display (e.g. 10, 16)
      **/
 
-    private void updateFloatRegisterValue(int number, int val) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                Globals.getSettings().getNumberBaseSetting().formatFloatNumber(val), number, FLOAT_COLUMN);
+    private void updateFloatRegisterValue(int number, int val, int base) {
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatFloatNumber(val, base), number, FLOAT_COLUMN);
 
     }
 
@@ -223,14 +230,13 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @param number The number of the double register to update.
      * @param base   the number base for display (e.g. 10, 16)
      **/
-    private void updateDoubleRegisterValue(int number) {
+    private void updateDoubleRegisterValue(int number, int base) {
         long val = 0;
         try {
             val = Coprocessor1.getLongFromRegisterPair(registers[number].getName());
         } catch (InvalidRegisterAccessException ignored) {
         } // happens only if number is not even
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                Globals.getSettings().getNumberBaseSetting().formatDoubleNumber(val), number, DOUBLE_COLUMN);
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatDoubleNumber(val, base), number, DOUBLE_COLUMN);
     }
 
     /**
@@ -284,9 +290,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         table.tableChanged(new TableModelEvent(table.getModel()));
           /*
          int registerColumn = FLOAT_COLUMN;
-         registerColumn = table.convertColumnIndexToView(registerColumn);
+         registerColumn = table.convertColumnIndexToView(registerColumn); 
          Rectangle registerCell = table.getCellRect(registerRow, registerColumn, true);
-         // STEP 2:  Select the cell by generating a fake Mouse Pressed event and
+         // STEP 2:  Select the cell by generating a fake Mouse Pressed event and 
       	// explicitly invoking the table's mouse listener.
          MouseEvent fakeMouseEvent = new MouseEvent(table, MouseEvent.MOUSE_PRESSED,
                                                     new Date().getTime(), MouseEvent.BUTTON1_MASK,
@@ -320,7 +326,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (BooleanSetting.REGISTERS_HIGHLIGHTING.get() && highlighting && row == highlightRow) {
+            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));
@@ -389,6 +395,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
       	* value is valid, MIPS register is updated.
          */
         public void setValueAt(Object value, int row, int col) {
+            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             float fVal;
             double dVal;
             String sVal = (String) value;
@@ -402,7 +409,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                         synchronized (Globals.memoryAndRegistersLock) {
                             Coprocessor1.updateRegister(row, iVal);
                         }
-                        data[row][col] = settings.getNumberBaseSetting().formatFloatNumber(iVal);
+                        data[row][col] = NumberDisplayBaseChooser.formatFloatNumber(iVal, valueBase);
 
                     } else {
                         fVal = Float.parseFloat(sVal);
@@ -411,12 +418,12 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                         synchronized (Globals.memoryAndRegistersLock) {
                             Coprocessor1.setRegisterToFloat(row, fVal);
                         }
-                        data[row][col] = settings.getNumberBaseSetting().formatNumber(fVal);
+                        data[row][col] = NumberDisplayBaseChooser.formatNumber(fVal, valueBase);
                     }
                     // have to update corresponding double display
                     int dReg = row - (row % 2);
                     setDisplayAndModelValueAt(
-                            settings.getNumberBaseSetting().formatDoubleNumber(Coprocessor1.getLongFromRegisterPair(dReg)), dReg, DOUBLE_COLUMN);
+                            NumberDisplayBaseChooser.formatDoubleNumber(Coprocessor1.getLongFromRegisterPair(dReg), valueBase), dReg, DOUBLE_COLUMN);
                 } else if (col == DOUBLE_COLUMN) {
                     if (Binary.isHex(sVal)) {
                         long lVal = Binary.stringToLong(sVal);
@@ -426,7 +433,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                             Coprocessor1.setRegisterPairToLong(row, lVal);
                         }
                         setDisplayAndModelValueAt(
-                                settings.getNumberBaseSetting().formatDoubleNumber(lVal), row, col);
+                                NumberDisplayBaseChooser.formatDoubleNumber(lVal, valueBase), row, col);
                     } else { // is not hex, so must be decimal
                         dVal = Double.parseDouble(sVal);
                         //  Assures that if changed during MIPS program execution, the update will
@@ -435,13 +442,13 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                             Coprocessor1.setRegisterPairToDouble(row, dVal);
                         }
                         setDisplayAndModelValueAt(
-                                settings.getNumberBaseSetting().formatNumber(dVal), row, col);
+                                NumberDisplayBaseChooser.formatNumber(dVal, valueBase), row, col);
                     }
                     // have to update corresponding float display
                     setDisplayAndModelValueAt(
-                            settings.getNumberBaseSetting().formatNumber(Coprocessor1.getValue(row)), row, FLOAT_COLUMN);
+                            NumberDisplayBaseChooser.formatNumber(Coprocessor1.getValue(row), valueBase), row, FLOAT_COLUMN);
                     setDisplayAndModelValueAt(
-                            settings.getNumberBaseSetting().formatNumber(Coprocessor1.getValue(row + 1)), row + 1, FLOAT_COLUMN);
+                            NumberDisplayBaseChooser.formatNumber(Coprocessor1.getValue(row + 1), valueBase), row + 1, FLOAT_COLUMN);
                 }
             } catch (NumberFormatException nfe) {
                 data[row][col] = "INVALID";

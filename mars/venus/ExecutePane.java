@@ -47,6 +47,7 @@ public class ExecutePane extends JDesktopPane {
     private final TextSegmentWindow textSegment;
     private final LabelsWindow labelValues;
     private final VenusUI mainUI;
+    private final NumberDisplayBaseChooser valueDisplayBase;
     private final NumberDisplayBaseChooser addressDisplayBase;
     private boolean labelWindowVisible;
 
@@ -64,15 +65,19 @@ public class ExecutePane extends JDesktopPane {
         // Although these are displayed in Data Segment, they apply to all three internal
         // windows within the Execute pane.  So they will be housed here.
         addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
-                BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get());
+                Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX));
+        valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
+                Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));//VenusUI.DEFAULT_NUMBER_BASE);
         addressDisplayBase.setToolTipText("If checked, displays all memory addresses in hexadecimal.  Otherwise, decimal.");
+        valueDisplayBase.setToolTipText("If checked, displays all memory and register contents in hexadecimal.  Otherwise, decimal.");
+        NumberDisplayBaseChooser[] choosers = {addressDisplayBase, valueDisplayBase};
         registerValues = regs;
         coprocessor1Values = cop1Regs;
         coprocessor0Values = cop0Regs;
         textSegment = new TextSegmentWindow();
-        dataSegment = new DataSegmentWindow(addressDisplayBase);
+        dataSegment = new DataSegmentWindow(choosers);
         labelValues = new LabelsWindow();
-        labelWindowVisible = BooleanSetting.LABEL_WINDOW_VISIBILITY.get();
+        labelWindowVisible = Globals.getSettings().getBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY);
         this.add(textSegment);  // these 3 LOC moved up.  DPS 3-Sept-2014
         this.add(dataSegment);
         this.add(labelValues);
@@ -203,10 +208,26 @@ public class ExecutePane extends JDesktopPane {
     }
 
     /**
+     * Retrieve the number system base for displaying values (mem/register contents)
+     */
+    public int getValueDisplayBase() {
+        return valueDisplayBase.getBase();
+    }
+
+    /**
      * Retrieve the number system base for displaying memory addresses
      */
     public int getAddressDisplayBase() {
         return addressDisplayBase.getBase();
+    }
+
+    /**
+     * Retrieve component used to set numerical base (10 or 16) of data value display.
+     *
+     * @return the chooser
+     */
+    public NumberDisplayBaseChooser getValueDisplayBaseChooser() {
+        return valueDisplayBase;
     }
 
     /**
@@ -225,11 +246,20 @@ public class ExecutePane extends JDesktopPane {
      * @param chooser the GUI object manipulated by the user to change number base
      */
     public void numberDisplayBaseChanged(NumberDisplayBaseChooser chooser) {
-        // Have all internal windows update their address columns
-        dataSegment.updateDataAddresses();
-        labelValues.updateLabelAddresses();
-        textSegment.updateCodeAddresses();
-        textSegment.updateBasicStatements();
+        if (chooser == valueDisplayBase) {
+            // Have all internal windows update their value columns
+            registerValues.updateRegisters();
+            coprocessor1Values.updateRegisters();
+            coprocessor0Values.updateRegisters();
+            dataSegment.updateValues();
+            textSegment.updateBasicStatements();
+        } else { // addressDisplayBase
+            // Have all internal windows update their address columns
+            dataSegment.updateDataAddresses();
+            labelValues.updateLabelAddresses();
+            textSegment.updateCodeAddresses();
+            textSegment.updateBasicStatements();
+        }
     }
 
 }

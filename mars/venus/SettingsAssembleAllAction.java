@@ -46,7 +46,8 @@ public class SettingsAssembleAllAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        BooleanSetting.ASSEMBLE_ALL_ENABLED.setTo(((JCheckBoxMenuItem) e.getSource()).isSelected());
+        Globals.getSettings().setBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED,
+                ((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 
 }

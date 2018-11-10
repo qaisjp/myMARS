@@ -188,12 +188,12 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         contentPane.add(tableScroller);
-        if (BooleanSetting.PROGRAM_ARGUMENTS.get()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
             addProgramArgumentsPanel();
         }
 
         deleteAsTextSegmentObserver();
-        if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
             addAsTextSegmentObserver();
         }
     }
@@ -310,13 +310,13 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                 // Seems reasonable for text segment display to be accurate in cases where existing code is overwritten
                 // even when running at unlimited speed.  DPS 10-July-2013
                 deleteAsTextSegmentObserver();
-                if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) { // && (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps()==1)) {
+                if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) { // && (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps()==1)) {
                     addAsTextSegmentObserver();
                 }
             }
         } else if (observable == Globals.getSettings()) {
             deleteAsTextSegmentObserver();
-            if (BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get()) {
+            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
                 addAsTextSegmentObserver();
             }
         } else if (obj instanceof MemoryAccessNotice) {
@@ -641,7 +641,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     private void deleteAsTextSegmentObserver() {
         Memory.getInstance().deleteObserver(this);
     }
-
+   		
       /*
    	 *  Re-order the Text segment columns according to saved preferences.
    	 */
@@ -719,7 +719,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            return col == BREAK_COLUMN || (col == CODE_COLUMN && BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
+            return col == BREAK_COLUMN || (col == CODE_COLUMN && Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         }
 
         /**
@@ -759,7 +759,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                     Globals.memory.setRawWord(address, val);
                 }
                 // somehow, user was able to display out-of-range address.  Most likely to occur between
-                // stack base and Kernel.
+                // stack base and Kernel.  
                 catch (AddressErrorException ignored) {
                 }
             }// end synchronized block

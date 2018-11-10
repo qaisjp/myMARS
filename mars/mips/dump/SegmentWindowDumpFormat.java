@@ -3,7 +3,6 @@ package mars.mips.dump;
 import mars.Globals;
 import mars.ProgramStatement;
 import mars.Settings;
-import mars.BooleanSetting;
 import mars.util.Binary;
 import mars.mips.hardware.*;
 
@@ -91,8 +90,9 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
         //           12345678901234567890123456789012345678901234567890
         //                    1         2         3         4         5
         try (out) {
-            boolean hexAddresses = BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get();
+            boolean hexAddresses = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX);
             if (Memory.inDataSegment(firstAddress)) {
+                boolean hexValues = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX);
                 int offset = 0;
                 StringBuilder string = new StringBuilder();
                 try {
@@ -104,10 +104,9 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
                         Integer temp = Globals.memory.getRawWordOrNull(address);
                         if (temp == null)
                             break;
-
-                        string.append(Globals.getSettings().getNumberBaseSetting().formatNumber(temp))
-                              .append(" ");
-
+                        string.append((hexValues)
+                                ? Binary.intToHexString(temp)
+                                : ("           " + temp).substring(temp.toString().length())).append(" ");
                         if (offset % 8 == 0) {
                             out.println(string);
                             string = new StringBuilder();

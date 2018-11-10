@@ -63,7 +63,7 @@ public class VenusUI extends JFrame {
     final Editor editor;
 
     private JMenu window;
-    private JMenuItem settingsValueDisplayBase;
+    private JCheckBoxMenuItem settingsValueDisplayBase;
     private JCheckBoxMenuItem settingsAddressDisplayBase;
 
     private JButton SaveAll;
@@ -84,9 +84,6 @@ public class VenusUI extends JFrame {
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
             settingsDelayedBranchingAction, settingsExceptionHandlerAction, settingsEditorAction,
             settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction;
-    private Action settingsValueDisplayBaseBinaryAction, settingsValueDisplayBaseTernaryAction, settingsValueDisplayBaseQuaternaryAction,
-            settingsValueDisplayBaseQuinaryAction, settingsValueDisplayBaseSenaryAction, settingsValueDisplayBaseOctalAction,
-            settingsValueDisplayBaseDecimalAction, settingsValueDisplayBaseHexadecimalAction, settingsValueDisplayBaseASCIIAction;
     private Action helpHelpAction, helpAboutAction;
 
 
@@ -349,7 +346,6 @@ public class VenusUI extends JFrame {
                     KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
                     mainUI);
-
             settingsLabelAction = new SettingsLabelAction("Show Labels Window (symbol table)",
                     null,
                     "Toggle visibility of Labels window (symbol table) in the Execute tab",
@@ -360,113 +356,12 @@ public class VenusUI extends JFrame {
                     "If set, use popup dialog for input syscalls (5,6,7,8,12) instead of cursor in Run I/O window",
                     null, null,
                     mainUI);
-            // TODO: Fix this really hacky code
-            settingsValueDisplayBaseBinaryAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.BINARY);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseTernaryAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.TERNARY);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseQuaternaryAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.QUATERNARY);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseQuinaryAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.QUINARY);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseSenaryAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.SENARY);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseOctalAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.OCTAL);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseDecimalAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.DECIMAL);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseHexadecimalAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.HEXADECIMAL);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            settingsValueDisplayBaseASCIIAction = new GuiAction("", null, "", null, null, mainUI) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Globals.getSettings().setNumberBaseSetting(NumberBase.ASCII);
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor0Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getCoprocessor1Window().updateRegisters();
-                    Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().updateBasicStatements();
-                }
-            };
-            /*
+
             settingsValueDisplayBaseAction = new SettingsValueDisplayBaseAction("Values displayed in hexadecimal",
                     null,
                     "Toggle between hexadecimal and decimal display of memory/register values",
                     null, null,
                     mainUI);
-                    */
             settingsAddressDisplayBaseAction = new SettingsAddressDisplayBaseAction("Addresses displayed in hexadecimal",
                     null,
                     "Toggle between hexadecimal and decimal display of memory addresses",
@@ -565,8 +460,6 @@ public class VenusUI extends JFrame {
         run.setMnemonic(KeyEvent.VK_R);
         //window = new JMenu("Window");
         //window.setMnemonic(KeyEvent.VK_W);
-        JMenu valueDisplayBase = new JMenu("Value display base");
-        valueDisplayBase.setMnemonic(KeyEvent.VK_B);
         JMenu settings = new JMenu("Settings");
         settings.setMnemonic(KeyEvent.VK_S);
         JMenu help = new JMenu("Help");
@@ -663,88 +556,34 @@ public class VenusUI extends JFrame {
         run.add(runClearBreakpoints);
         run.add(runToggleBreakpoints);
 
-        ButtonGroup valueDisplayBaseGroup = new ButtonGroup();
-
-        JRadioButtonMenuItem binary = new JRadioButtonMenuItem(settingsValueDisplayBaseBinaryAction);
-        binary.setText(NumberBase.BINARY.getKey());
-        binary.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.BINARY);
-        valueDisplayBaseGroup.add(binary);
-        JRadioButtonMenuItem ternary = new JRadioButtonMenuItem(settingsValueDisplayBaseTernaryAction);
-        ternary.setText(NumberBase.TERNARY.getKey());
-        ternary.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.TERNARY);
-        valueDisplayBaseGroup.add(ternary);
-        JRadioButtonMenuItem quaternary = new JRadioButtonMenuItem(settingsValueDisplayBaseQuaternaryAction);
-        quaternary.setText(NumberBase.QUATERNARY.getKey());
-        quaternary.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.QUATERNARY);
-        valueDisplayBaseGroup.add(quaternary);
-        JRadioButtonMenuItem quinary = new JRadioButtonMenuItem(settingsValueDisplayBaseQuinaryAction);
-        quinary.setText(NumberBase.QUINARY.getKey());
-        quinary.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.QUINARY);
-        valueDisplayBaseGroup.add(quinary);
-        JRadioButtonMenuItem senary = new JRadioButtonMenuItem(settingsValueDisplayBaseSenaryAction);
-        senary.setText(NumberBase.SENARY.getKey());
-        senary.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.SENARY);
-        valueDisplayBaseGroup.add(senary);
-        JRadioButtonMenuItem octal = new JRadioButtonMenuItem(settingsValueDisplayBaseOctalAction);
-        octal.setText(NumberBase.OCTAL.getKey());
-        octal.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.OCTAL);
-        valueDisplayBaseGroup.add(octal);
-        JRadioButtonMenuItem decimal = new JRadioButtonMenuItem(settingsValueDisplayBaseDecimalAction);
-        decimal.setText(NumberBase.DECIMAL.getKey());
-        decimal.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.DECIMAL);
-        valueDisplayBaseGroup.add(decimal);
-        JRadioButtonMenuItem hexadecimal = new JRadioButtonMenuItem(settingsValueDisplayBaseHexadecimalAction);
-        hexadecimal.setText(NumberBase.HEXADECIMAL.getKey());
-        hexadecimal.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.HEXADECIMAL);
-        valueDisplayBaseGroup.add(hexadecimal);
-        JRadioButtonMenuItem ascii = new JRadioButtonMenuItem(settingsValueDisplayBaseASCIIAction);
-        ascii.setText(NumberBase.ASCII.getKey());
-        ascii.setSelected(Globals.getSettings().getNumberBaseSetting() == NumberBase.ASCII);
-        valueDisplayBaseGroup.add(ascii);
-
-        valueDisplayBase.add(binary);
-        valueDisplayBase.add(ternary);
-        valueDisplayBase.add(quaternary);
-        valueDisplayBase.add(quinary);
-        valueDisplayBase.add(senary);
-        valueDisplayBase.add(octal);
-        valueDisplayBase.add(decimal);
-        valueDisplayBase.add(hexadecimal);
-        valueDisplayBase.add(ascii);
-
         JCheckBoxMenuItem settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
-        settingsLabel.setSelected(BooleanSetting.LABEL_WINDOW_VISIBILITY.get());
+        settingsLabel.setSelected(Globals.getSettings().getBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY));
         JCheckBoxMenuItem settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
-        settingsPopupInput.setSelected(BooleanSetting.POPUP_SYSCALL_INPUT.get());
-
-        settingsValueDisplayBase = new JMenuItem(settingsValueDisplayBaseAction);
-        //settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
-        //settingsValueDisplayBase.setSelected(BooleanSetting.DISPLAY_VALUES_IN_HEX.get());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
-
+        settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT));
+        settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
+        settingsValueDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
-        /***********
         mainPane.getExecutePane().getValueDisplayBaseChooser().setSettingsMenuItem(settingsValueDisplayBase);
-         ********/
         settingsAddressDisplayBase = new JCheckBoxMenuItem(settingsAddressDisplayBaseAction);
-        settingsAddressDisplayBase.setSelected(BooleanSetting.DISPLAY_ADDRESSES_IN_HEX.get());//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
+        settingsAddressDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getAddressDisplayBaseChooser().setSettingsMenuItem(settingsAddressDisplayBase);
         JCheckBoxMenuItem settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
-        settingsExtended.setSelected(BooleanSetting.EXTENDED_ASSEMBLER_ENABLED.get());
+        settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED));
         JCheckBoxMenuItem settingsDelayedBranching = new JCheckBoxMenuItem(settingsDelayedBranchingAction);
-        settingsDelayedBranching.setSelected(BooleanSetting.DELAYED_BRANCHING_ENABLED.get());
+        settingsDelayedBranching.setSelected(Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED));
         JCheckBoxMenuItem settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
-        settingsSelfModifyingCode.setSelected(BooleanSetting.SELF_MODIFYING_CODE_ENABLED.get());
+        settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         JCheckBoxMenuItem settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
-        settingsAssembleOnOpen.setSelected(BooleanSetting.ASSEMBLE_ON_OPEN_ENABLED.get());
+        settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ON_OPEN_ENABLED));
         JCheckBoxMenuItem settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
-        settingsAssembleAll.setSelected(BooleanSetting.ASSEMBLE_ALL_ENABLED.get());
+        settingsAssembleAll.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED));
         JCheckBoxMenuItem settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
-        settingsWarningsAreErrors.setSelected(BooleanSetting.WARNINGS_ARE_ERRORS.get());
+        settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
         JCheckBoxMenuItem settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
-        settingsStartAtMain.setSelected(BooleanSetting.START_AT_MAIN.get());
+        settingsStartAtMain.setSelected(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));
         JCheckBoxMenuItem settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
-        settingsProgramArguments.setSelected(BooleanSetting.PROGRAM_ARGUMENTS.get());
+        settingsProgramArguments.setSelected(Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS));
         JMenuItem settingsEditor = new JMenuItem(settingsEditorAction);
         JMenuItem settingsHighlighting = new JMenuItem(settingsHighlightingAction);
         JMenuItem settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);
@@ -754,8 +593,7 @@ public class VenusUI extends JFrame {
         settings.add(settingsProgramArguments);
         settings.add(settingsPopupInput);
         settings.add(settingsAddressDisplayBase);
-        //settings.add(settingsValueDisplayBase);
-        settings.add(valueDisplayBase);
+        settings.add(settingsValueDisplayBase);
         settings.addSeparator();
         settings.add(settingsAssembleOnOpen);
         settings.add(settingsAssembleAll);
@@ -984,7 +822,7 @@ public class VenusUI extends JFrame {
         runAssembleAction.setEnabled(true);
         // If assemble-all, allow previous Run menu settings to remain.
         // Otherwise, clear them out.  DPS 9-Aug-2011
-        if (!BooleanSetting.ASSEMBLE_ALL_ENABLED.get()) {
+        if (!Globals.getSettings().getBooleanSetting(mars.Settings.ASSEMBLE_ALL_ENABLED)) {
             runGoAction.setEnabled(false);
             runStepAction.setEnabled(false);
             runBackstepAction.setEnabled(false);
@@ -1274,7 +1112,7 @@ public class VenusUI extends JFrame {
      * @return the menu item
      **/
 
-    public JMenuItem getValueDisplayBaseMenuItem() {
+    public JCheckBoxMenuItem getValueDisplayBaseMenuItem() {
         return settingsValueDisplayBase;
     }
 

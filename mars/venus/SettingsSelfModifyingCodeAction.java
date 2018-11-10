@@ -49,7 +49,8 @@ public class SettingsSelfModifyingCodeAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        BooleanSetting.SELF_MODIFYING_CODE_ENABLED.setTo(((JCheckBoxMenuItem) e.getSource()).isSelected());
+        Globals.getSettings().setBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED,
+                ((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 
 }

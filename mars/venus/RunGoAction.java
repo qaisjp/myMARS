@@ -195,7 +195,7 @@ public class RunGoAction extends GuiAction {
     private void processProgramArgumentsIfAny() {
         String programArguments = executePane.getTextSegmentWindow().getProgramArguments();
         if (programArguments == null || programArguments.length() == 0 ||
-                !BooleanSetting.PROGRAM_ARGUMENTS.get()) {
+                !Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
             return;
         }
         new ProgramArgumentList(programArguments).storeProgramArguments();
